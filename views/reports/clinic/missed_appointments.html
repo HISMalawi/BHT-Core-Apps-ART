@@ -122,7 +122,7 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','First name','Last name', 'Gender','birthdate','Date defaulted','Address'];
+  var headers = ['ARV#','First name','Last name', 'Gender','DOB','Appointment','Eventual visit date','Contact details'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -146,23 +146,12 @@ function buildDataTable(e) {
   
   }
 
-  initDataTable();
 }
-
-  var setDataTable = null;
-
-function initDataTable() {
-  /*setDataTable = jQuery('#clients').DataTable( {
-    fixedHeader: true,
-    searching: false
-  });*/
-}
-
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/defaulter_list?start_date=" + sdate + "&end_date=" + edate
-  url += "&program_id=" + sessionStorage.programID + "&pepfar=false";
+  url += "/missed_appointments?start_date=" + sdate + "&end_date=" + edate
+  url += "&program_id=" + sessionStorage.programID;
   url += "&date=" + sessionStorage.sessionDate;
 
   document.getElementById('spinner').style = 'display: inline;';
@@ -191,10 +180,8 @@ function loadClients(data) {
     var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
     var arv_num = data[i].arv_number;
     var person_id = data[i].person_id;
-    var outcome_date = data[i].defaulter_date;
-    if(outcome_date)
-     outcome_date = moment(data[i].defaulter_date).format('DD/MMM/YYYY');
-
+    var appointment_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
+    var ecame_one = data[i].eventually_came_on;
     var contact = [];
     if(data[i].cell_number)
       contact.push("CELL: " + data[i].cell_number);
@@ -208,16 +195,20 @@ function loadClients(data) {
     if(data[i].village)
       contact.push("Village: " + data[i].village);
 
+    if(ecame_one)
+     ecame_one = moment(ecame_one).format('DD/MMM/YYYY');
+
     var contact_details = '';
     for(var j = 0; j < contact.length; j++) {
       if(j > 0)
         contact_details += '<br />';
 
-     contact_details += contact[j];
+     contact_details += contact[j];   
     }
 
     formatted_data.push([arv_num, given_name, 
-      family_name, gender, birthdate, outcome_date, contact_details]);
+      family_name, gender, birthdate, appointment_date,
+      ecame_one, contact_details]);
   }
  
   var period = start_date + " - " + end_date;
@@ -227,7 +218,7 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        450,
+    scrollY:        400,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
@@ -292,8 +283,6 @@ function addClassIMGcontainter(person_id) {
     if(i == 4) 
       cells[i].setAttribute('class', 'birthdate');
 
-
-
   }
 }
 
@@ -308,7 +297,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Defaulter list" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="Missed appointments" optional = "true"/>
 
       </form>
 

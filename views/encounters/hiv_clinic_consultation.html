@@ -57,8 +57,8 @@
     <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
 
 
-    <!-- link rel="stylesheet" href="/apps/ART/assets/css/consultation.history.css" type="text/css">
-    <script type="text/javascript" src="/apps/ART/assets/js/consultation.history.js"></script-->
+    <link rel="stylesheet" href="/apps/ART/assets/css/consultation.history.css" type="text/css">
+    <script type="text/javascript" src="/apps/ART/assets/js/consultation.history.js"></script>
 
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
@@ -2460,8 +2460,12 @@
             }
 
             var tubal_ligation = false;
-            var refer_to_clinician = true;
+            var refer_to_clinician = false;
             var refer_to_clinician_already_asked = false;
+            
+            if(sessionStorage.userRoles.match(/Nurse/i)) {
+              var refer_to_clinician = true;
+            }
 
             function initializeVariables() {
                 jQuery(".loader").show();
@@ -3280,9 +3284,10 @@
 
             <!-- previous selected side effects -->
 
-            <!-- input type="text" name="summary"
-                               tt_onLoad="__$('keyboard').style.display = 'none'; consultationHistory();"
-                               tt_pageStyleClass="NoControls" helpText="Consultation history (summary)" optional="true"/ -->
+            <input type="text" name="summary"
+             tt_onLoad="__$('keyboard').style.display = 'none'; consultationHistory();"
+             tt_pageStyleClass="NoControls" 
+             helpText="Side effects / Contraindications history" optional="true"/>
 
 
             <!-- previous selected side effects ends -->
@@ -4203,11 +4208,16 @@
 
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                        var obj = JSON.parse(this.responseText);
-                        extended_fpm_assessment = (obj['extended.family.planning'] == 'true' ? true : false);
-
-                        setTimeout(closeCover(), 2000);
+                    if (this.readyState == 4 ) {
+                        if(this.status == 201 || this.status == 200) {
+                            var obj = JSON.parse(this.responseText);
+                            extended_fpm_assessment = (obj['extended.family.planning'] == 'true' ? true : false);
+                            setTimeout(closeCover(), 2000);
+                        }else if(this.status == 404) {
+                            extended_fpm_assessment = false;
+                            setTimeout(closeCover(), 2000);
+                        }
+                        
                     }
                 };
                 xhttp.open("GET", url, true);

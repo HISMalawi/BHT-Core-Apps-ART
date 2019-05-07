@@ -4,6 +4,18 @@
 <link rel="stylesheet" href="/assets/css/custom.css">
 
 <style type="text/css" xmlns="http://www.w3.org/1999/html">
+       
+@page {
+  size: auto;   /* auto is the current printer page size */
+  margin: 0mm;  /* this affects the margin in the printer settings */
+  font-size: 12px;
+}
+
+body {
+  background-color:#FFFFFF; 
+  border: solid 1px black ;
+  margin: 0px;  /* the margin on the content before printing */
+}
 
 #spinner {
     position: absolute;
@@ -31,7 +43,7 @@
         border: 0;
         border-spacing: 0;
         font-family: "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
-        font-size: large;
+        font-size: 12px;;
         overflow: auto;
         text-overflow: ellipsis;
         margin: auto;
@@ -44,7 +56,7 @@
         border: 0;
         border-spacing: 0;
         font-family: "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
-        font-size: large;
+        font-size: 12px;
         overflow: auto;
         text-overflow: ellipsis;
         margin: auto;
@@ -2790,7 +2802,7 @@ function showDisaggregatedReport(){
         <button id="btnNext" class="green right" style="margin: 5px 0px 0px; padding: 0px; float: right;" onclick="location='/';">
             <span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Finish &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;</span>
         </button>
-        <button id="activities" class="btn btn-success buttons blue" style="margin-right: 5px;" onmousedown="javascript:printPDF();">
+        <button id="activities" class="btn btn-success buttons blue" style="margin-right: 5px;" onmousedown="javascript:printWindow();">
             <span>&nbsp; &nbsp; &nbsp; Print &nbsp; &nbsp; &nbsp;</span>
         </button>
         <button id="tasks" class="btn btn-success buttons blue" style="margin-right: 5px;"  onmousedown="showDisaggregatedReport();">
@@ -3456,10 +3468,9 @@ function getIndicators() {
       renderResults();
       document.getElementById('spinner').style = 'display: none;';
       document.getElementById('report-cover').style = 'display: none;';
-      runningReport = false;
-    }else{
+    } else if (this.readyState === 4) {
       runningReport = true;
-      checkIfReportReady();
+      setTimeout(getIndicators, 60000);
     }
   };
   xhttp.open("GET", url, true);
@@ -3473,7 +3484,7 @@ var myVar;
 var runningReport = true;
 
 function checkIfReportReady() {
-  myVar = setTimeout("getIndicators()", 60000);
+  myVar = setTimeout(getIndicators, 60000);
   if(runningReport == false)
     location.reload()
 
@@ -3521,8 +3532,12 @@ getIndicators();
 
 
 
-
-
+function printWindow() {
+  var footer = document.getElementsByClassName('footer')[0];
+  footer.style = 'display: none;';
+  window.print();
+  footer.style = 'display: inline;';
+}
 
 
 
