@@ -2178,6 +2178,10 @@
                         concept_id: refer_to_art_clinician_concept_id,
                         value_coded: (answers_hash["refer_to_art_clinician"].length > 0 ? (answers_hash["refer_to_art_clinician"].trim().toUpperCase() == "YES" ? 1065 : 1066) : "")
                     })
+                }else{
+                    obs.observations.push({
+                      concept_id: refer_to_art_clinician_concept_id, value_coded: 1066
+                    })
                 }
 
                 submitParameters(obs, "/observations", "nextPage")
@@ -2662,7 +2666,7 @@
             <!-- Extended family assessment -->
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' && extended_fpm_assessment == true"
+                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' && (!$('fpm_used').value.match(/DEPO-PROVERA/)) && extended_fpm_assessment == true"
                     helpText="Main reason for not using family planning methods"
                     id="reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
