@@ -6,7 +6,9 @@
  <script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery-3.3.1.js"></script>
  <script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
  <script type="text/javascript" charset="utf8" src="/assets/js/virtual.keyboard.js"></script>
+ <script type="text/javascript" charset="utf8" src="/assets/js/moment.js"></script>
 
+ <script type="text/javascript" charset="utf8" src="/apps/ART/views/cohort_tool/driller/natural.js"></script>
 
 <style>
   .title-table {
@@ -82,10 +84,10 @@
     padding: 4px;
     margin-top: -5px;
   }
-  .table-date-enrolled th{
+  .table-incomplete-visits th{
     text-align: left;
   }
-  .table-date-enrolled tbody tr:nth-of-type(odd) {
+  .table-incomplete-visits tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.05);
   }
   
@@ -98,7 +100,7 @@
     padding-top: 0px;
     height: 57px;
 }
-  .table-date-enrolled tbody tr td {
+  .table-incomplete-visits tbody tr td {
     text-align: center;
     padding: 10px;
     position: relative;
@@ -131,6 +133,11 @@
   margin-left:45%;
   z-index: 991;
 }
+
+#missing_arv_dispensation_length {
+  display: none;
+}
+
 </style> 
 
 <div class="top-cover-wrapper">
@@ -139,7 +146,8 @@
   </div>  
   
   <div class="page-title">
-   <center>Patients with date enrolled on ART or earliest start date less than date of birth</center>
+      Patient with prescriptions without dispensation<br />
+      Report period: &nbsp;<span id="report-period"</span>
   </div>
 
   <div class="search-area" style="display:none;">
@@ -150,16 +158,15 @@
 </div>
   
 <div class="title-table">
-      <table id="date_enrolled" class="table table-date-enrolled" style="width:100%">
+      <table id="missing_arv_dispensation" class="table table-incomplete-visits" style="width:100%">
         <thead>  
           <tr>     
-          <th>ARV number</th>
-          <th>Name</th>
-          <th>Earliest start date</th>
-          <th>Date enrolled</th>
-          <th>Gender</th>
-          <th>Birth Date</th>
-          <th>Action</th>
+            <th>ARV number</th>
+            <th>Name</th>
+            <th>Patient Id</th>
+            <th>Gender</th>
+            <th>Birth Date</th>
+            <th>Action</th>
          </tr>
         </thead>
 
@@ -184,6 +191,16 @@
 
 <script type="text/javascript"> 
 
+  
+var passedUrl = window.location.href;
+passedUrl = new URL(passedUrl);
+var start_date = passedUrl.searchParams.get("start_date");
+var end_date = passedUrl.searchParams.get("end_date");
+
+var report_period = document.getElementById('report-period');
+report_period.innerHTML = moment(start_date).format('DD/MMM/YYYY');
+report_period.innerHTML += ' ' + moment(end_date).format('DD/MMM/YYYY');
+
    jQuery(document).ready(function($) {
             $('#logout').click(function() {
                 window.location = '/clinic';
@@ -193,20 +210,26 @@
 
             })
 
-            $('#button').click(function() {
-                window.location = '/views/patient/mastercard.html';
-
-            })
         })
 
   /**
   * Quick search from the returned queries
   */
+  var dateEnrolled = [];
+
+  
+  /* Write data to the view
+  */
+ 
+  // function addRows(){
+  //   dTable.row.add().draw(["1","2","3","4","5","6","7"]).draw()
+  // }
+
   function renderData(data) {
-    var table = document.getElementById("date_enrolled").getElementsByTagName("tbody")[0];
+    var table = document.getElementById("missing_arv_dispensation").getElementsByTagName("tbody")[0];
     var obj = data;
     for (var index = 0; index < obj.length; index++) {
-        console.log(obj[index])
+
         
         var tr = document.createElement("tr");
         table.appendChild(tr);
@@ -215,20 +238,13 @@
         td.innerHTML = obj[index].arv_number;
         tr.appendChild(td);
 
-        var name = obj[index].given_name;
-        name += " " + obj[index].family_name;
-
         var td = document.createElement("td");
         td.style.textAlign = 'left'
-        td.innerHTML = name;
+        td.innerHTML = obj[index].given_name + " " + obj[index].family_name;
         tr.appendChild(td); 
 
         var td = document.createElement("td");
-        td.innerHTML = obj[index].earliest_start_date;
-        tr.appendChild(td);
-
-        var td = document.createElement("td");
-        td.innerHTML = obj[index].date_enrolled;
+        td.innerHTML = obj[index].patient_id;
         tr.appendChild(td);
 
         var td = document.createElement("td");
@@ -244,7 +260,7 @@
         
         var btn = document.createElement('button');
         btn.innerHTML = '<span>View</span>';
-        btn.setAttribute('class', 'button blue navButton1');
+        btn.setAttribute('class', 'button blue navButton');
         btn.setAttribute('onclick', "redirectToMastercard('"+obj[index].patient_id+"')");
         td.appendChild(btn);
     }
@@ -254,7 +270,7 @@
   dTable = null;
   jQuery(document).ready(function() {
     //initTable();
-    getDateEnrolled();
+    getMissingArvDispensation();
   });
  
  function redirectToMastercard(patient_id){
@@ -265,14 +281,16 @@
 
   function initTable(){
 
-    dTable = jQuery('#date_enrolled');
+    dTable = jQuery('#missing_arv_dispensation');
     dTable.dataTable({
                   "lengthChange":true,
                   "pageLength" : 10,
                   "autoWidth": true,
-                  "order": [],
+                  "pagingType":"full_numbers",
                   "bInfo" : true,
-                  "pagingType": "full_numbers",
+                  columnDefs: [{
+                    targets: 0, type: 'natural'
+                  } ],
                   "sScrollY": "441px",
                   olanguage: {
                     sProcessing: "<img src='/assets/images/loading.gif'>"
@@ -294,18 +312,19 @@
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
 
-  function getDateEnrolled() {
+  function getMissingArvDispensation() {
     var apiProtocol = sessionStorage.apiProtocol;
     var apiURL = sessionStorage.apiURL;
     var apiPort = sessionStorage.apiPort;
+    
     var start_date = getUrlParameterByName('start_date',window.location.href);
     var end_date = getUrlParameterByName('end_date',window.location.href);
     
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/art_data_cleaning_tools?start_date=" + start_date + "&end_date=" + end_date + "&program_id=1&report_name=DOB MORE THAN DATE ENROLLED";
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/art_data_cleaning_tools?start_date=" + start_date + "&end_date=" + end_date + "&program_id=1&report_name=PRESCRIPTION WITHOUT DISPENSATION";
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-          var table = document.getElementById("date_enrolled").getElementsByTagName("tbody")[0];
+          var table = document.getElementById("missing_arv_dispensation").getElementsByTagName("tbody")[0];
           var obj = JSON.parse(this.responseText);
           // console.log(obj);
           document.getElementById("cover-div").style="display:none;";
@@ -313,6 +332,7 @@
           /**
           * Keeping the returned queries
           */
+          dateEnrolled.push(...obj);
           
           /**
           * Displaying the returned results

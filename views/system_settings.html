@@ -55,12 +55,14 @@ function reportGrouping(group) {
       ["Ask pills remaining at home",'',"global_property/global_property_yes_no.html?value=ask_pills_remaining_at_home",'link'],
       ["Set site code",'',"global_property/site_code.html",'link'],
       ["Set site location",'',"global_property/set_location.html",'link'],                             
+      ["Set target lab",'',"global_property/set_lab.html",'link'],                             
       ["Filing numbers (activate)",'',"global_property/global_property_yes_no.html?value=use_filing_numbers",'link'],
       ["Filing numbers (limit)",'',"global_property/limit.html?value=filing.number.limit",'link'],
       ["Set appointment limit",'',"global_property/limit.html?value=clinic.appointment.limit",'link'],         
       ["Extended family planning",'',"global_property/global_property_yes_no.html?value=extended_family_planning",'link'],
       ["Activate VL routine check",'',"global_property/global_property_yes_no.html?value=activate_vl_routine_check",'link'],
-      ["Activate drug management",'',"../../index.html",'link'],
+      ["Activate Extended Labs",'',"global_property/global_property_yes_no.html?value=extended_labs",'link'],
+      ["Activate drug management",'',"global_property/global_property_yes_no.html?value=activate_drug_management",'link'],
       ["Activate Hypertension screening",'',"global_property/global_property_yes_no.html?value=activate.htn.enhancement",'link'],
       ["Cervical Cancer module",'', "global_property/global_property_yes_no.html?value=activate.cervical.cancer.screening",'link'],
       ["Activate Fast Track",'', "global_property/global_property_yes_no.html?value=enable_fast_track",'link'],
@@ -69,7 +71,7 @@ function reportGrouping(group) {
       ["Drug management", '',"drug management",'function'],
       ["Set Hypertension Thresholds", '',"global_property/htn_threshold.html",'link'],
       ["Set Hypertension Screen Age	", '',"global_property/htn_age.html",'link'],
-      ["Data management", '',"data management",'function'],
+      ["Data management", '/assets/images/clean.jpg',"data management",'function'],
       ["View system configurations", '',"global_property/system_configurations.html",'link']
     ];
   }else if(group == 'drug management'){
@@ -91,12 +93,22 @@ function reportGrouping(group) {
     sessionStorage.mergeClientParametersLeft = '';
     sessionStorage.mergeClientParametersRight = '';
     return [
-      ['Merge clients','','/views/data_management/merge_clients.html', 'link']
+      ['Merge clients','','/views/data_management/merge_clients.html', 'link'],
+      ['Incomplete visit','','#', 'link'],
+      ['Prescriptions without dispensations','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=missing_arv_dispensation', 'link'],
+      ['Missing start reason','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=missing_start_reason', 'link'],
+      ['Multiple start reasons','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=multiple_start_reasons', 'link'],
+      ['Patients with Pre-ART / Unknown outcome','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=patients_with_pre_art_unknown', 'link'],
+      ['Encounters after Death','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=dead_encounters','link'],
+      ['Enrolled on ART before birth','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=date_enrolled','link'],                 
+      ['Date enrolled < Earliest start date','', '/apps/ART/views/reports/data_inconsistent/report_dates.html?report=earliest_start_date','link'],                 
+      ['Male patients with female observations','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=male_with_female_obs', 'link'],
+      ['DOB > Date enrolled','', '/apps/ART/views/reports/data_inconsistent/report_dates.html?report=dob_more_than_start_date','link'],                 
     ];
   }else{
   }  
 }	
-
+//['Male patients with female observations','','/apps/ART/views/reports/data_inconsistent/male_with_female_obs.html', 'link']
 function buildReportLinks(group) {
   var counter = 0;
   var row = null;
@@ -105,7 +117,7 @@ function buildReportLinks(group) {
 
   var reports = reportGrouping(group);
 
-  for(var i = 0 ; i < reports.length ; i++){
+  for(var i = 0 ; i < reports.sort().length ; i++){
     if(counter == 0) {
       row = document.createElement("div");
       row.setAttribute("class","reports-container-row");

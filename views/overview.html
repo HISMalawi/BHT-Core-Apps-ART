@@ -151,7 +151,7 @@
     var start_date = moment().subtract(5, "days").format("YYYY-MM-DD");
 
     function getVisits() {
-        var url = 'http://' + apiURL + ':' + apiPort + '/api/v1/programs/1/reports/visits?name=visits&start_date=' + start_date + '&end_date=' + end_date;
+        var url = sessionStorage.apiProtocol+ '://' + apiURL + ':' + apiPort + '/api/v1/programs/1/reports/visits?name=visits&start_date=' + start_date + '&end_date=' + end_date;
         var req = new XMLHttpRequest();
         req.onreadystatechange = function () {
 
@@ -196,8 +196,20 @@
         var encounter_date = document.getElementById("encounter-date");
         encounter_date.innerHTML = moment(new Date()).format("DD/MMM/YYYY");
 
+        var encounter_names = [
+          'HIV clinic registration',
+          'HIV reception','Vitals',
+          'HIV staging','HIV clinic consultation',
+          'ART adherence','Treatment',
+          'Dispensing','Appointments'
+        ];
+
         var tby = document.getElementById("stats-table-body");
-        for (var encounter_type_id in stats) {
+        for(var i = 0; i < encounter_names.length; i++) {
+          for (var encounter_type_id in stats) {
+            if(encounter_types[encounter_type_id].toUpperCase() != encounter_names[i].toUpperCase())
+              continue;
+
             var tr = document.createElement("tr");
             var td = document.createElement("td");
             td.setAttribute("class", "encounter-types");
@@ -242,6 +254,7 @@
             }
 
             counter++;
+          }
         }
 
         buildChart(stats);

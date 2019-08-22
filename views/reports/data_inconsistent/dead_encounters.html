@@ -3,9 +3,12 @@
 
 <link rel="stylesheet" type="text/css" href="/assets/css/datatables/jquery.dataTables.min.css">
 <link rel="stylesheet" media="screen" href="/assets/css/extra_buttons.css" />
- <script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery-3.3.1.js"></script>
- <script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
- <script type="text/javascript" charset="utf8" src="/assets/js/virtual.keyboard.js"></script>
+<script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery-3.3.1.js"></script>
+<script type="text/javascript" charset="utf8" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/assets/js/virtual.keyboard.js"></script>
+<script type="text/javascript" charset="utf8" src="/assets/js/moment.js"></script>
+
+<script type="text/javascript" charset="utf8" src="/apps/ART/views/cohort_tool/driller/natural.js"></script>
 
 
 
@@ -67,7 +70,6 @@
   }
   .top-cover-wrapper .page-title {
     font-size: 20px;
-    text-align: center;
     width: 60%;
     padding: 15px;
   }
@@ -136,7 +138,13 @@
 #name{
   float: left;
 }
+
+#dead_encounters_length {
+  display: none;
+}
+
 </style> 
+
 </script>
 
 <div class="top-cover-wrapper">
@@ -145,7 +153,8 @@
   </div>  
   
   <div class="page-title">
-   <center>Patients with encounters after death</center>
+    Patients with encounters after being declared dead<br />
+    Report period: &nbsp;<span id="report-period"</span>
   </div>
 
   <div class="search-area" style="display:none;">
@@ -161,13 +170,12 @@
       <table id="dead_encounters" class="table table-dead-encounters" style="width:100%">
         <thead>  
           <tr>     
-          <th>ARV number</th>
-          <th class="name">Name</th>
-          <th>Earliest start date</th>
-          <th>Date enrolled</th>
-          <th>Gender</th>
-          <th>Birth Date</th>
-          <th>Action</th>
+            <th>ARV number</th>
+            <th>Name</th>
+            <th>Patient Id</th>
+            <th>Gender</th>
+            <th>Birth Date</th>
+            <th>Action</th>
          </tr>
         </thead>
       </span>
@@ -190,6 +198,14 @@
 </div>
 </div>
 <script type="text/javascript"> 
+var passedUrl = window.location.href;
+passedUrl = new URL(passedUrl);
+var start_date = passedUrl.searchParams.get("start_date");
+var end_date = passedUrl.searchParams.get("end_date");
+
+var report_period = document.getElementById('report-period');
+report_period.innerHTML = moment(start_date).format('DD/MMM/YYYY');
+report_period.innerHTML += ' ' + moment(end_date).format('DD/MMM/YYYY');
 
    jQuery(document).ready(function($) {
             $('#logout').click(function() {
@@ -220,20 +236,16 @@
         table.appendChild(tr);
 
         var td = document.createElement("td");
-        td.innerHTML = obj[index].identifier;
+        td.innerHTML = obj[index].arv_number;
         tr.appendChild(td);
 
         var td = document.createElement("td");
         td.style.textAlign = 'left'
-        td.innerHTML = obj[index].name;
+        td.innerHTML = obj[index].given_name + " " + obj[index].family_name;
         tr.appendChild(td); 
 
         var td = document.createElement("td");
-        td.innerHTML = obj[index].earliest_start_date;
-        tr.appendChild(td);
-
-        var td = document.createElement("td");
-        td.innerHTML = obj[index].date_enrolled;
+        td.innerHTML = obj[index].patient_id;
         tr.appendChild(td);
 
         var td = document.createElement("td");
@@ -276,11 +288,12 @@
                   "lengthChange":true,
                   "pageLength" : 10,
                   "autoWidth": true,
-                  "order": [],
                   "pagingType": "full_numbers",
                   "bInfo" : true,
                   "sScrollY": "441px",
-                  
+                 columnDefs: [{
+                    targets: 0, type: 'natural'
+                  } ], 
                 "processing": true,
         "language": {
             "loadingRecords": '&nbsp;',
@@ -290,14 +303,28 @@
                 });
           
         lookForTag()
-  }  
+  } 
+
+  function getUrlParameterByName(name, url) {
+
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  } 
 
   function getDeadEncounters() {
     var apiProtocol = sessionStorage.apiProtocol;
     var apiURL = sessionStorage.apiURL;
     var apiPort = sessionStorage.apiPort;
     
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/dead_encounters";
+    var start_date = getUrlParameterByName('start_date',window.location.href);
+    var end_date = getUrlParameterByName('end_date',window.location.href);
+    
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/art_data_cleaning_tools?start_date=" + start_date + "&end_date=" + end_date + "&program_id=1&report_name=CLIENTS WITH ENCOUNTERS AFTER DECLARED DEAD";
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {

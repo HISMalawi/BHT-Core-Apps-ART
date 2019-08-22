@@ -1,0 +1,376 @@
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+        defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+
+<script src="/assets/js/HighCharts/highcharts.js"></script>
+<script src="/assets/js/HighCharts/highcharts-3d.js"></script>
+<script src="/assets/js/HighCharts/exporting.js"></script>
+<script src="/assets/js/HighCharts/export-data.js"></script>
+<script src="/assets/js/moment.js"></script>
+
+<script type="text/javascript">
+
+    function loadAdultsMedicationGraph() {
+        jQuery("#keyboard").hide();
+        jQuery("#clearButton").hide();
+        jQuery("#cancelButton").hide();
+
+        jQuery(".inputFrameClass").css("width", "96%");
+        jQuery(".inputFrameClass").css("height", "80%");
+        jQuery(".inputFrameClass").css("overflow", "scroll");
+    }
+
+    function changeNextBTN() {
+        var nextBTN = document.getElementById("nextButton");
+        nextButton.setAttribute("onmousedown", "gotoHome();");
+    }
+
+    function gotoHome() {
+        window.location = "/";
+    }
+
+</script>
+
+
+<style>
+    #clearButton {
+        display: none;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
+<body id="mateme">
+<div id="container">
+    <div id="content">
+
+        <form>
+            <input type="text" name="adults_medication"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; plotGraph('Paeds');"
+                   tt_pageStyleClass="NoControls" helpText="Stock levels" optional="true"/>
+
+            <input type="text" name="pediatric_medication"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; plotGraph('Adults'); changeNextBTN();"
+                   tt_pageStyleClass="NoControls" helpText="Stock levels" optional="true"/>
+
+        </form>
+
+    </div>
+
+</div>
+</body>
+
+
+<script type="text/javascript">
+    var drugs = [];
+    var data_list = {};
+    var paeds_drug_ids = [];
+    var adult_drug_ids = [];
+
+    var adults_drugs_hash = {
+        "976": "Darunavir 600mg",
+        "977": "Ritonavir 100mg",
+        "978": "Etravirine 100mg",
+        "954": "RAL (Raltegravir 400mg)",
+        "22": "NVP (Nevirapine 200 mg tablet)",
+        "969": "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)",
+        "731": "AZT/3TC/NVP (300/150/200mg tablet)",
+        "39": "AZT/3TC (Zidovudine and Lamivudine 300/150mg)",
+        "11": "EFV (Efavirenz 600mg tablet)",
+        "735": "TDF/3TC/EFV (300/300/600mg tablet)",
+        "734": "TDF/3TC (Tenofavir and Lamivudine 300/300mg tablet",
+        "932": "ATV/r (Atazanavir 300mg/Ritonavir 100mg)",
+        "73": "LPV/r (Lopinavir and Ritonavir 200/50mg tablet)",
+        "576": "Cotrimoxazole (960mg)",
+        "297": "Cotrimoxazole (480mg tablet)",
+        "931": "INH or H (Isoniazid 300mg tablet)"
+    };
+
+    var paedsDrugsHash = {
+        "733": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets",
+        "968": "Nevirapine 50mg, tin of 60 tablets",
+        "732": "Zidovudine / lamivudine /Nevirapine 30 / 60 / 50mg, tin of 60 tablets",
+        "736": "Zidovudine / lamivudine 60 / 30mg, tin of 60 tablets",
+        "30": "Efavirenz 200mg, tin of 90 tablets",
+        "74": "Lopinavir / Ritonavir 100 / 25mg, tin of 60 tablets",
+        "979": "LPV/r pellets",
+        "963": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets",
+        "24": "Isoniazid 100mg, tin of 100 tablets"
+    };
+
+    function getPaedsDrugsData() {
+        if (paeds_drug_ids.length == 0) {
+            graph("Paeds");
+        }
+
+        if (paeds_drug_ids.length > 0) {
+            var drugID = paeds_drug_ids.pop();
+            var drugName = paedsDrugsHash[drugID];
+
+            var stockLevelsUrl = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/drug_consumption?drug_id=" + drugID;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var stockLevels = JSON.parse(this.responseText);
+                    var consumptionRate = stockLevels["consumption_rate"];
+                    var stockLevel = stockLevels["stock_level"];
+                    var stockLevelInMonths = stockLevels["stock_level_in_months"];
+                    var active = true;
+                    var stockedOut = false;
+
+                    if (parseInt(stockLevels) != 0 && parseInt(consumptionRate) == 0) {
+                        active = false;
+                    }
+
+                    if (parseInt(consumptionRate) != 0 && parseInt(stockLevelInMonths) == 0) {
+                        stockedOut = true;
+                    }
+                    drugs.push(drugName);
+                    data_list[drugName] = {
+                        month_of_stock: stockLevelInMonths,
+                        stock_level: stockLevel,
+                        consumption_rate: consumptionRate,
+                        stocked_out: stockedOut,
+                        expiry_stock: 0,
+                        active: active
+                    };
+                    console.log(data_list[drugName]);
+                    getPaedsDrugsData();
+                }
+            };
+
+            xhttp.open("GET", stockLevelsUrl, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+        }
+    }
+
+    function getAdultsDrugsData() {
+        if (adult_drug_ids.length == 0) {
+            graph("Adults");
+        }
+
+        if (adult_drug_ids.length > 0) {
+            var drugID = adult_drug_ids.pop();
+            var drugName = adults_drugs_hash[drugID];
+
+            var stockLevelsUrl = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/drug_consumption?drug_id=" + drugID;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var stockLevels = JSON.parse(this.responseText);
+                    var consumptionRate = stockLevels["consumption_rate"];
+                    var stockLevel = stockLevels["stock_level"];
+                    var stockLevelInMonths = stockLevels["stock_level_in_months"];
+                    var active = true;
+                    var stockedOut = false;
+
+                    if (parseInt(stockLevels) != 0 && parseInt(consumptionRate) == 0) {
+                        active = false;
+                    }
+
+                    if (parseInt(consumptionRate) != 0 && parseInt(stockLevelInMonths) == 0) {
+                        stockedOut = true;
+                    }
+                    drugs.push(drugName);
+                    data_list[drugName] = {
+                        month_of_stock: stockLevelInMonths,
+                        stock_level: stockLevel,
+                        consumption_rate: consumptionRate,
+                        stocked_out: stockedOut,
+                        expiry_stock: 0,
+                        active: active
+                    };
+
+                    getAdultsDrugsData();
+                }
+            };
+
+            xhttp.open("GET", stockLevelsUrl, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+        }
+    }
+
+    function plotGraph(paedsOrAdult) {
+        paeds_drug_ids = [733, 968, 732, 736, 30, 74, 979, 963, 24];
+        adult_drug_ids = [976, 977, 978, 954, 22, 969, 731, 39, 11, 735, 734, 932, 73, 576, 297, 931];
+        drugs = [];
+        data_list = [];
+
+        if (paedsOrAdult.match(/Paeds/i)) {
+            getPaedsDrugsData();
+        } else {
+            getAdultsDrugsData();
+        }
+    }
+
+    function graph(paedsOrAdult){
+        jQuery('.inputFrameClass').highcharts({
+            chart: {
+                type: 'bar',
+                borderWidth: 1,
+                plotBorderWidth: 1,
+                // Edit chart spacing
+                spacingBottom: 15,
+                spacingTop: 10,
+                spacingLeft: 10,
+                spacingRight: 10,
+                // Explicitly tell the width and height of a chart
+                height: 620
+
+            },
+            title: {
+                style: {
+                    fontFamily: "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
+                    fontSize: '14px'
+                },
+                text: '<b>Stock Levels for ' + paedsOrAdult + '</b>'
+            },
+            xAxis: {
+                categories: drugs,
+                title: {
+                    text: null,
+                    style: {
+                        font: "12px 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif"
+                    }
+
+                },
+                labels: {
+                    style: {
+                        color: '#000000',
+                        font: "12px Arial, 'Helvetica Neue', Helvetica, sans-serif;"
+                    },
+
+                    formatter: function () {
+                        if (!data_list[this.value]["active"]) {
+                            return '<span style="fill: grey;">' + this.value + '</span>';
+                        }
+                        else if (data_list[this.value]["stocked_out"]) {
+
+                            return '<span style="fill: red;">' + this.value + '</span>';
+
+                        }
+                        else {
+                            return this.value;
+                        }
+                    }
+
+                }
+            },
+            yAxis: {
+                min: 0,
+                max: 9,
+                tickInterval: 1,
+                title: {
+                    text: 'Months of Stock',
+                    align: 'high',
+                    style: {
+                        font: "13px 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif"
+                    }
+                },
+                labels: {
+                    overflow: 'justify',
+                    style: {
+                        color: '#000000',
+                        font: "13px 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif"
+                    }
+                },
+                plotBands: [{ // mark the weekend
+                    color: '#66CDAA',
+                    from: 2,
+                    to: 4
+                },
+                    {
+                        color: 'rgb(225, 225, 225)',
+                        from: 0,
+                        to: 2
+                    },
+                    {
+                        color: 'rgb(225, 225, 225)',
+                        from: 4,
+                        to: 9
+                    }]
+            },
+            tooltip: {
+                shared: true,
+                useHTML: true,
+                valueSuffix: ' ',
+                formatter: function () {
+
+                    var stock_level_string = (this.y == 0) ? ' 0' : ' ' +
+                        ((parseInt(this.y) == 0) ? '' : parseInt(this.y) + (parseInt(this.y) == 1 ? ' month ' : ' months ')) +
+                        parseInt((this.y * 30 % 30)) + (parseInt((this.y * 30 % 30)) == 1 ? " day" : " days");
+
+                    return '<span  style= "font-weight: bold; font-size : 10px;">' +
+                        'Drug Name:  &nbsp&nbsp&nbsp&nbsp<span style="color: #097054; " >' + this.x + '</span> <br />' +
+                        'Months of stock:  &nbsp&nbsp&nbsp<span style="color: #097054; " >' + stock_level_string + '</span> <br />' +
+                        'Stock level:  &nbsp&nbsp&nbsp<span style="color: #097054; ">' + data_list[this.x]['stock_level'] + ' tins</span><br />' +
+                        'Consumption rate:  &nbsp&nbsp&nbsp<span style="color: #097054; ">' + data_list[this.x]['consumption_rate'] + ' tins/month</span> </span>';
+                }
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                },
+                series: {
+                    showInLegend: false,
+                    pointWidth: 20,
+                    stacking: 'normal'
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            series: dataG(),
+            exporting: {enabled: false}
+
+
+        })
+    }
+
+    stock_level = {};
+    expiry_stocks = {};
+
+    function dataG() {
+        var correctedWeights = [];
+        var correctedWeights_two = [];
+
+        for (var key in data_list) {
+            var val = parseFloat(data_list[key]["month_of_stock"]);
+            console.log(val);
+            var col = (val <= 2) ? 'red' : (val > 4 ? 'yellow' : 'green');
+            correctedWeights.push({y: val, color: col});
+        }
+
+        for (var key in data_list) {
+            var val = parseFloat(data_list[key]["expiry_stock"]);
+            var col = (val <= 2) ? 'red' : (val > 4 ? 'yellow' : 'green');
+            correctedWeights_two.push({y: val, color: col});
+        }
+
+        stock_level.data = correctedWeights;
+        expiry_stocks.data = correctedWeights_two;
+
+        var data = [{data: expiry_stocks.data}, {data: stock_level.data}];
+        return data;
+    }
+
+</script>

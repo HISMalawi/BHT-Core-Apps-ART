@@ -28,6 +28,8 @@
     <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
 
     <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/provider.css" type="text/css">
+    <script type="text/javascript" src="/assets/js/provider.js  "></script>
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
         var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
@@ -305,7 +307,6 @@ bottom: 0px;
 <div id="container">
     <div id="content">
         <script type="text/javascript">
-
             var age = parseInt(sessionStorage.patientAge);
             var ageInMonths = age * 12;
             var firstPositiveHivTestType = "";
@@ -317,6 +318,13 @@ bottom: 0px;
             var currentBMI = parseFloat(sessionStorage.bmi);
             var currentWeight = parseFloat(sessionStorage.currentWeight)
             var patientGender = sessionStorage.patientGender;
+            checkIfInBDMode();
+            // Code for patients from ANC
+            //if (sessionStorage.switchedFromANC == "true"){
+
+              //sessionStorage.showPregnantQuestion = false;
+
+            //}
 
             function getFirstPositiveHivTestTypeObservation() {
                 var confirmatory_hiv_test_type_concept_id = 7880;
@@ -1230,20 +1238,47 @@ bottom: 0px;
                     encounter_type_id: 52,
                     patient_id: patient_id,
                     encounter_datetime: encounter_datetime
+                };
+
+                if(providerID != null) {
+                    encounter.provider_id = providerID;
                 }
+
 
                 submitParameters(encounter, "/encounters", "postHIVStagingObs");
             }
 
+            var whoStageConceptMapHash = {
+                "WHO STAGE 1": 9145,
+                "WHO STAGE 2": 9146,
+                "WHO STAGE 3": 2932,
+                "WHO STAGE 4": 2933,
+                "WHO STAGE I ADULT": 7561,
+                "WHO STAGE I ADULT AND PEDS": 7041,
+                "WHO STAGE I PEDS": 7049,
+                "WHO STAGE II ADULT": 7046,
+                "WHO STAGE II ADULT AND PEDS": 7042,
+                "WHO STAGE II PEDS": 7050,
+                "WHO STAGE III ADULT": 7047,
+                "WHO STAGE III ADULT AND PEDS": 7043,
+                "WHO STAGE III PEDS": 7051,
+                "WHO STAGE IV ADULT": 7048,
+                "WHO STAGE IV ADULT AND PEDS": 7044,
+                "WHO STAGE IV PEDS": 7052
+
+
+
+            }
             function postHIVStagingObs(encounter) {
                 var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [
-                        {concept_id: 7562, value_text: answers_hash["who_stage"]},
+                        {concept_id: 7562, value_coded: whoStageConceptMapHash[answers_hash["who_stage"].toUpperCase()]},
                         {concept_id: 8262, value_text: answers_hash["cd4_less_than_or_equal_to_250"]},
                         {concept_id: 8207, value_text: answers_hash["cd4_less_than_or_equal_to_350"]},
                         {concept_id: 9389, value_text: answers_hash["cd4_less_than_or_equal_to_500"]},
                         {
+
                           concept_id: 7563, value_coded: reasonForART(answers_hash["reason_for_art_eligibility"]), 
                           value_text: answers_hash["reason_for_art_eligibility"]
                         },
@@ -1256,7 +1291,22 @@ bottom: 0px;
                         }
                     ]
                 };
+                if (patientGender == "F") {
+                    try {
+                        obs.observations.push({
+                        concept_id: 6131,
+                        value_coded: (answers_hash["is_patient_pregnant"].length > 0 ? (answers_hash["is_patient_pregnant"].trim().toUpperCase() == "YES" ? 1065 : 1066) : "")
+                        })
+                        obs.observations.push({
+                            concept_id: 7965,
+                            value_coded: (answers_hash["is_patient_breastfeeding"].length > 0 ? (answers_hash["is_patient_breastfeeding"].trim().toUpperCase() == "YES" ? 1065 : 1066) : "")
+                        })
+                    }catch(e) {
 
+                    }
+                    
+
+                }
 
                 for (condition in selected_stage_conditions) {
                     if (selected_stage_conditions[condition].length > 0) {
@@ -1381,6 +1431,12 @@ bottom: 0px;
             function updatePregnancyBreastFeedingInputs(){
                 try {
                     var pregnant_value = yesNo_Hash["Pregnant-Breastfeeding"]["Pregnant?"];
+                    
+                    if (pregnant_value == undefined && sessionStorage.switchedFromANC == "true"){ 
+                       
+                        pregnant_value = "yes"; 
+                    
+                    }
                     var breast_feeding_value = yesNo_Hash["Pregnant-Breastfeeding"]["Breastfeeding?"];
                     __$("pregnant").value = pregnant_value.toUpperCase();
                     __$("breast_feeding").value = breast_feeding_value.toUpperCase();
@@ -1416,11 +1472,30 @@ bottom: 0px;
             return reasons[reason_for_art_eligibility];
           }
 
+
+          function updateBreastFeedingPregnancyAnswers() {
+                try{
+                    preganncy_status = yesNo_Hash["Pregnant-Breastfeeding"]["Pregnant?"];
+                breast_feeding_status = yesNo_Hash["Pregnant-Breastfeeding"]["Breastfeeding?"];
+            
+                answers_hash["is_patient_pregnant"] = preganncy_status;
+                answers_hash["is_patient_breastfeeding"] = breast_feeding_status;
+
+                $('pregnant').value = preganncy_status.toUpperCase();
+                $("breastfeeding").value = breast_feeding_status.toUpperCase();
+                }catch(e) {
+
+                }
+                
+
+            }
+
         </script>
 
         <form>
+            
             <input allowFreeText="false" id="breastfeeding" name="observations[][value_coded_or_text]"
-                   condition="patientGender == 'F'" type="hidden"/>
+                   condition="patientGender == 'F'" type="hidden" tt_onLoad=""/>
 
             <input type="text" name="pregnant-breastfeeding-questions"
                    condition="patientGender == 'F' && patientAge >= 12 &&
