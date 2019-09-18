@@ -1845,6 +1845,12 @@
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
 
+                if($('tb_treatment_question').value.toLowerCase() == "yes"){
+                    answers_hash["on_tb_treatment"] = 1065
+                }else{
+                    answers_hash["on_tb_treatment"] = 1066
+                }
+
                 var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [
