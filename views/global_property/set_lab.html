@@ -21,7 +21,7 @@ function validateGPentry() {
   }
 
   var gp = {
-    property: 'current_health_center_id', 
+    property: 'target.lab', 
     property_value: inputField.getAttribute('tstvalue')
   };
 
@@ -37,13 +37,13 @@ function gpSet(e){ document.location = '/' }
 
       <form>
 
-        <select objectType="location" ajaxURL="/locations?name=" 
+        <select objectType="labs" ajaxURL="/programs/1/lab_tests/labs?search_name=" 
           allowFreeText="true" 
           field_type="alpha" 
-          helpText="Please select facility name" 
-          id="current_health_center_id"
+          helpText="Please select target lab" 
+          id="target_lab"
           tt_onload="changeNext()"
-          name="current_health_center_id"></select>
+          name="target_lab"></select>
       </form>
 
    </div>
