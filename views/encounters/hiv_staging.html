@@ -1270,27 +1270,29 @@ bottom: 0px;
 
             }
             function postHIVStagingObs(encounter) {
+                var new_cd4_count_available = $("new_cd4_count_available").value;
                 var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [
-                        {concept_id: 7562, value_coded: whoStageConceptMapHash[answers_hash["who_stage"].toUpperCase()]},
-                        {concept_id: 8262, value_text: answers_hash["cd4_less_than_or_equal_to_250"]},
-                        {concept_id: 8207, value_text: answers_hash["cd4_less_than_or_equal_to_350"]},
-                        {concept_id: 9389, value_text: answers_hash["cd4_less_than_or_equal_to_500"]},
+                        {concept_id: 7562, value_text: answers_hash["who_stage"]},
                         {
 
                           concept_id: 7563, value_coded: reasonForART(answers_hash["reason_for_art_eligibility"]), 
                           value_text: answers_hash["reason_for_art_eligibility"]
-                        },
-                        {concept_id: 6830, value_text: answers_hash["cd4_location"]},
-                        {concept_id: 6831, value_datetime: answers_hash["cd4_datetime"]},
-                        {
-                            concept_id: 5497,
-                            value_numeric: answers_hash["cd4_count"],
-                            value_modifier: cd4_count_modifier_global
                         }
                     ]
                 };
+
+                if(new_cd4_count_available.toLowerCase() === "yes"){
+                    obs.observations.push({concept_id: 8262, value_text: answers_hash["cd4_less_than_or_equal_to_250"]});
+                    obs.observations.push({concept_id: 8207, value_text: answers_hash["cd4_less_than_or_equal_to_350"]});
+                    obs.observations.push({concept_id: 9389, value_text: answers_hash["cd4_less_than_or_equal_to_500"]});
+                    obs.observations.push({concept_id: 6830, value_text: answers_hash["cd4_location"]});
+                    obs.observations.push({concept_id: 6831, value_datetime: answers_hash["cd4_datetime"]});
+                    obs.observations.push({concept_id: 5497,value_numeric: answers_hash["cd4_count"],value_modifier: cd4_count_modifier_global});
+                }
+
+
                 if (patientGender == "F") {
                     try {
                         obs.observations.push({
@@ -1316,7 +1318,6 @@ bottom: 0px;
                         }
                     }
                 }
-
 
                 submitParameters(obs, "/observations", "nextPage")
             }
