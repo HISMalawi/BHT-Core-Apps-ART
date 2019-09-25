@@ -1846,13 +1846,51 @@
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
+                if(sessionStorage.guardianOnly === "true") {
+                    var obs = {
+                    encounter_id: encounter.encounter_id,
+                    observations: [ ]
+                    }
+                    var medication_orders = ["ARV", "CPT", "IPT"];
+                    if (__$('touchscreenInput' + tstCurrentPage)) {
+                        var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
-                if($('tb_treatment_question').value.toLowerCase() == "yes"){
-                    answers_hash["on_tb_treatment"] = 1065
+                        if (current_input_help_text.match(/Medication/i)) {
+                            //Becareful here. We will assume the help text for prescription contains this phrase
+                            selected_drugs = __$('touchscreenInput' + tstCurrentPage).value.split(";")
+                            if (selected_drugs.includes("NONE OF THE ABOVE")) {
+                                obs.observations.push({concept_id: prescribe_drugs_concept_id, value_coded: 1066})
+                            }
+                            else {
+                                for (var i = 0; i <= selected_drugs.length - 1; i++) {
+                                    if (selected_drugs[i] == "ARVs") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: arv_concept_id
+                                        })
+                                    }
+                                    if (selected_drugs[i] == "CPT") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: cpt_concept_id
+                                        })
+                                    }
+                                    if (selected_drugs[i] == "IPT") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: ipt_concept_id
+                                        })
+                                    }
+                                }
+
+                                obs.observations.push({concept_id: prescribe_drugs_concept_id, value_coded: 1065})
+
+                            }
+                        }
+                    }
+                    submitParameters(obs, "/observations", "nextPage");
                 }else{
-                    answers_hash["on_tb_treatment"] = 1066
-                }
-
+                
                 var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [
@@ -2194,8 +2232,28 @@
                 }
 
                 submitParameters(obs, "/observations", "nextPage")
+                }
             }
 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             function changeCPTMedicationOption() {
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
                 img_src = "/public/touchscreentoolkit/lib/images/unticked.jpg";
@@ -2627,7 +2685,17 @@
             <input allowFreeText="false" id="breastfeeding" name="observations[][value_coded_or_text]" type="hidden"
                    condition=""/>
 
-
+            <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
+            name="observations[][value_coded_or_text]"
+            condition="sessionStorage.guardianOnly === 'true'"
+            tt_pageStyleClass="NoKeyboard" multiple="multiple"
+            tt_onUnLoad="removeAllergicToCPT();"
+            tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
+               <option value="ARVs">ARVs</option>
+               <option value="CPT">CPT</option>
+               <option value="IPT">IPT</option>
+               <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
+           </select>
             <input type="text" name="lab-summary"
                    tt_onLoad="removeAttrFromNextBTN();__$('keyboard').style.display = 'none';buildLabOrderDisplay();changeNextButtonForLabOrders();"
                    tt_onUnload="removeOrderBtn();"
