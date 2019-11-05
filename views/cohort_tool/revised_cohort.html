@@ -4,7 +4,12 @@
 <link rel="stylesheet" href="/assets/css/custom.css">
 
 <style type="text/css" xmlns="http://www.w3.org/1999/html">
-       
+
+#tasks {
+  visibility: hidden;
+  margin-right: 10px;
+}
+
 @page {
   size: auto;   /* auto is the current printer page size */
   margin: 0mm;  /* this affects the margin in the printer settings */
@@ -3540,7 +3545,27 @@ function printWindow() {
   footer.style = 'display: inline;';
 }
 
+function checkIfTempTablesExisit() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/temp_earliest_start_table_exisit";
 
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      cohortResults = JSON.parse(this.responseText);
+      if(cohortResults.status != 'Down'){
+        document.getElementById('tasks').style = "visibility: visible;";
+      }
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+
+}
+
+
+checkIfTempTablesExisit();
 
 </script>
 
