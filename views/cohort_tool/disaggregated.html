@@ -304,13 +304,13 @@ function quarterEndDate(quarter) {
   var year = quarter.split(' ')[1];
 
   if(q == 'Q1'){
-    return year + "-03-31";
+    return [year + "-01-01", year + "-03-31"];
   }else if(q == 'Q2'){
-    return year + "-03-30";
+    return [year + "-04-01", year + "-06-30"];
   }else if(q == 'Q3'){
-    return year + "-09-30";
+    return [year + "-07-01", year + "-09-30"];
   }else if(q == 'Q4'){
-    return year + "-12-31";
+    return [year + "-10-01", year + "-12-31"];
   }
 }
 
@@ -323,8 +323,8 @@ function fetchTBscreenedClients(td) {
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += '/screened_for_tb';
-  url += "?start_date=" + quarterEndDate(quarter);
-  url += "&end_date=" + quarterEndDate(quarter);
+  url += "?start_date=" + quarterEndDate(quarter)[0];
+  url += "&end_date=" + quarterEndDate(quarter)[1];
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
@@ -363,8 +363,8 @@ function fetchIPTclients(td) {
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += '/clients_given_ipt';
-  url += "?start_date=" + quarterEndDate(quarter);
-  url += "&end_date=" + quarterEndDate(quarter);
+  url += "?start_date=" + quarterEndDate(quarter)[0];
+  url += "&end_date=" + quarterEndDate(quarter)[1];
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
@@ -680,8 +680,8 @@ function fetchTBscreenedFemaleClients(td) {
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += '/screened_for_tb';
-  url += "?start_date=" + quarterEndDate(quarter);
-  url += "&end_date=" + quarterEndDate(quarter);
+  url += "?start_date=" + quarterEndDate(quarter)[0];
+  url += "&end_date=" + quarterEndDate(quarter)[1];
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
@@ -722,8 +722,8 @@ function fetchIPTfemaleClients(td) {
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += '/clients_given_ipt';
-  url += "?start_date=" + quarterEndDate(quarter);
-  url += "&end_date=" + quarterEndDate(quarter);
+  url += "?start_date=" + quarterEndDate(quarter)[0];
+  url += "&end_date=" + quarterEndDate(quarter)[1];
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
