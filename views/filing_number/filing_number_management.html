@@ -31,6 +31,9 @@ div p {
 var urlToSearch = new URL(document.URL);
 var patient_id = urlToSearch.searchParams.get("patient_id");
 
+if(patient_id == undefined || patient_id == null)
+  patient_id = sessionStorage.patientID;
+
 try {
   var archive_client = urlToSearch.searchParams.get("archive_client");
   archive_client = (archive_client == 'true' ? true : false);

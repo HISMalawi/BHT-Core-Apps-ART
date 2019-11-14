@@ -152,7 +152,7 @@ function addData(e, data) {
   tr.appendChild(th);
   tr.appendChild(td);
   table.appendChild(tr);
-
+ 
   if((!outcome.match(/died/i) && !outcome == 'TO') && data.appointment_date) {
     tr = document.createElement('tr');
     th = document.createElement('th');
@@ -163,6 +163,20 @@ function addData(e, data) {
     tr.appendChild(td);
     table.appendChild(tr);
   }
+  
+  tr = document.createElement('tr');
+  th = document.createElement('th');
+  td = document.createElement('td');
+  th.innerHTML = 'LAD:';
+  try{
+    td.innerHTML = moment(data.appointment_date).format('DD/MMM/YYYY');
+  }catch(x){
+    td.innerHTML = 'N/A';
+  }
+  tr.appendChild(th);
+  tr.appendChild(td);
+  table.appendChild(tr);
+
 
   e.appendChild(table);
   e.setAttribute('onmousedown', "selectClent(" + data.patient_id + ",'" + data.identifier + "');");
@@ -202,12 +216,10 @@ function archivePatient(id, identifier) {
     identifier: identifier
   }
 
-  console.log(url);
   submitParameters(parameters, url, 'displayResults')
 }
 
 function displayResults(obj) {
-  console.log(obj);
   var url2 = '/apps/ART/views/filing_number/filing_numbers.html';
   url2 += '?primary_patient_id=' + obj.primary_patient_id;
   url2 += '&secondary_patient_id=' + obj.secondary_patient_id;
@@ -251,14 +263,11 @@ function formatFilingNumber(num, prefix) {
 }
 
 function renderState(num) {
-  if(num == '2')
+  if(num.match(/trans/i))
     return 'TO'
 
-  if(num == '3')
-    return 'Died'
-
-  if(num == '6')
-    return 'Treatment stopped'
+  if(num.match(/stop/i))
+    return 'Tx stopped'
 
   return num
 }

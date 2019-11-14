@@ -40,10 +40,10 @@
       var apiURL = sessionStorage.getItem("apiURL");
       var apiPort = sessionStorage.getItem("apiPort");
       var apiProtocol = sessionStorage.getItem("apiProtocol");
-      var id = sessionStorage.getItem("patientID");
+      var id = sessionStorage.patientID;
 
       function ajaxRequest() {
-        var url = sessionStorage.apiProtocol+ '://' + apiURL + ':' + apiPort + '/api/v1/programs/1/patients/' + id;
+        var url = sessionStorage.apiProtocol+ '://' + apiURL + ':' + apiPort + '/api/v1/programs/1/patients/' + sessionStorage.patientID;
         var req = new XMLHttpRequest();
         req.onreadystatechange = function () {
 
@@ -56,6 +56,9 @@
               document.getElementById("arv-number").innerHTML = ((results.arv_number !== "N/A") ? "("+results.arv_number+")" : "No ARV Number Available");
               document.getElementById("current-outcome").innerHTML =  ((results.current_outcome !== "N/A") ? results.current_outcome : "No Outcome Available");
               document.getElementById("current-regimen").innerHTML =  ((results.current_regimen !== "N/A") ? results.current_regimen : "No Regimen Available");
+              if (document.getElementById("filing-number").innerHTML != 'No Filing Number Available')
+                sessionStorage.filingNumnerAvailable = true;
+              
             }
           }
         };
