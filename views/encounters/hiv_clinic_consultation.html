@@ -1769,17 +1769,17 @@
             }
 
             function getTBStatusConceptID(concept_name) {
-                console.log(concept_name);
+                if (isNumeric(concept_name)) {
+                  if(parseInt(concept_name) > 0) {
+                    return parseInt(concept_name);
+                  }
+                }
 
                 var tb_treatment_answer = __$('tb_treatment_question').value;
                 if (tb_treatment_answer == "Yes") {
                     concept_name = "Confirmed TB on treatment";
                 }
-
-                if (isNumeric(concept_name) && concept_name > 0) {
-                    return concept_name;
-                }
-
+                
                 if (concept_name.length < 1) {
                    concept_name = 'TB NOT suspected';
                 }
@@ -1996,6 +1996,8 @@
                     ]
                 };
 
+
+
                 //other_side_effect = yesNo_Hash["MALAWI ART SIDE EFFECTS"]["Other"];
                 //if (other_side_effect.toUpperCase() == "YES"){
                 //  obs.observations.push({concept_id: malawi_art_side_effects_concept_id, value_coded: other_concept_id, child: {concept_id: other_concept_id, value_text: othe_side_effect_value}})
@@ -2045,6 +2047,7 @@
                         child: {concept_id: cough_concept_id, value_coded: getOtherSideEffectAnswer('Cough')}
                     }
                 ];
+                
                 if (OtherSideEffects !== false) {
                     for (let index = 0; index < f.length; index++) {
                         obs.observations.push(f[index]);
@@ -2143,7 +2146,6 @@
                         });
                     } else {
                         var meds = data.drug_ids;
-                        console.log(data)
                         for (var d = 0; d < meds.length; d++) {
                             obs.observations.push({
                                 concept_id: 7567,
@@ -2231,7 +2233,7 @@
                     })
                 }
 
-                submitParameters(obs, "/observations", "nextPage")
+                submitParameters(obs, "/observations", "nextPage");
                 }
             }
 
@@ -2406,7 +2408,7 @@
                         return "1066";
                     }
                 } catch (e) {
-                    return "";
+                    return "1175";
                 }
             }
 
