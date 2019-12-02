@@ -1527,19 +1527,26 @@
                         concept_id: 6981,
                         value_text: answers_hash["art_number_at_previous_location"]
                     });
+                    
                     obs.observations.push({
                         concept_id: 7751,
                         value_datetime: answers_hash["date_art_last_taken"],
                         value_text: date_art_last_taken_value_text
                     });
-                    obs.observations.push({
-                        concept_id: 7752,
-                        value_coded: answers_hash["taken_art_in_the_last_two_months"].trim().toUpperCase() == "YES" ? 1065 : 1066
-                    });
-                    obs.observations.push({
-                        concept_id: 6394,
-                        value_coded: answers_hash["taken_art_in_the_last_two_weeks"].trim().toUpperCase() == "YES" ? 1065 : 1066
-                    });
+                    
+
+                    if(answers_hash["date_art_last_taken"] == 'Unknown') {
+                      obs.observations.push({
+                          concept_id: 7752,
+                          value_coded: answers_hash["taken_art_in_the_last_two_months"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                      });
+                    
+                      obs.observations.push({
+                          concept_id: 6394,
+                          value_coded: answers_hash["taken_art_in_the_last_two_weeks"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                      });
+                    }
+                    
                     obs.observations.push({concept_id: 7750, value_text: answers_hash["location_of_art_initiation"]});
                     obs.observations.push({concept_id: 1499, value_datetime: answers_hash["drug_start_date"]});
                     obs.observations.push({concept_id: 2516, value_datetime: answers_hash["date_art_started"]});
@@ -1597,7 +1604,6 @@
                         child: {concept_id: visit_only_concept_id, value_coded: visit_only_answer_value_coded}
                     }
                 )
-
 
                 submitParameters(obs, "/observations/", "submitVitalsRegistration()");
             }
@@ -1892,20 +1898,40 @@
                 month_art_taken = __$("month_art_last_taken").value;
                 day_art_taken = parseInt(__$("day_art_last_taken").value);
 
-                if (taken_art_in_the_last_two_months == 'YES') {
+
+                if(year_art_last_taken) {
+                  if (year_art_taken > 1 && month_art_taken != 'Unknown' && !(isNaN(day_art_taken)) && day_art_taken > 0) {
+                      date = year_art_taken + "/" + month_art_taken + "/" + day_art_taken;
+                      answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
+                      date_art_last_taken_value_text = "Not Estimated";
+                  }
+
+                  if (year_art_taken > 1 && month_art_taken == 'Unknown') {
+                      date = year_art_taken + "/July/01";
+                      answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
+                      date_art_last_taken_value_text = "Estimated";
+                  }else if (year_art_taken > 1 && month_art_taken != 'Unknown' && isNaN(day_art_taken)) {
+                      date = year_art_taken + "/" + month_art_taken + "/15";
+                      answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
+                      date_art_last_taken_value_text = "Estimated";
+                  }
+                
+                }else{
+
+                  if (taken_art_in_the_last_two_months == 'YES') {
                     if (taken_art_in_the_last_two_weeks == 'YES') {
-                        var date = new Date();
-                        date.setDate(date.getDate() - 14); //two weeks
-                        date = date.toDateString();
-                        answers_hash["date_art_last_taken"] = date;
-                        date_art_last_teken_value_text = "Estimated";
+                      var date = new Date();
+                      date.setDate(date.getDate() - 14); //two weeks
+                      date = date.toDateString();
+                      answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
+                      date_art_last_teken_value_text = "Estimated";
                     }
                     if (taken_art_in_the_last_two_weeks == 'NO') {
-                        var date = new Date();
-                        date.setDate(date.getDate() - 60); // 2 months
-                        date = date.toDateString();
-                        answers_hash["date_art_last_taken"] = date;
-                        date_art_last_taken_value_text = "Estimated";
+                      var date = new Date();
+                      date.setDate(date.getDate() - 60); // 2 months
+                      date = date.toDateString();
+                      answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
+                      date_art_last_taken_value_text = "Estimated";
                     }
                 }
 
@@ -1913,82 +1939,70 @@
                     var date = new Date();
                     date.setDate(date.getDate() - 90); //3 months
                     date = date.toDateString();
-                    answers_hash["date_art_last_taken"] = date;
+                    answers_hash["date_art_last_taken"] = moment(date).format("YYYY-MM-DD");
                     date_art_last_taken_value_text = "Estimated";
                 }
 
-                if (year_art_taken > 1 && month_art_taken != 'Unknown' && !(isNaN(day_art_taken)) && day_art_taken > 0) {
-                    date = year_art_taken + "/" + month_art_taken + "/" + day_art_taken;
-                    answers_hash["date_art_last_taken"] = date;
-                }
 
-                if (year_art_taken > 1 && month_art_taken == 'Unknown') {
-                    date = year_art_taken + "/July/01";
-                    answers_hash["date_art_last_taken"] = date;
-                    date_art_last_taken_value_text = "Estimated";
-                }
-                else if (year_art_taken > 1 && month_art_taken != 'Unknown' && isNaN(day_art_taken)) {
-                    date = year_art_taken + "/" + month_art_taken + "/15";
-                    answers_hash["date_art_last_taken"] = date;
-                    date_art_last_taken_value_text = "Estimated";
-                }
+              }
 
-            }
 
-            function setDateARTStarted() {
-                year_started_art = parseInt(__$("year_started_art").value);
-                month_started_art = __$("month_started_art").value;
-                day_started_art = parseInt(__$("day_started_art").value);
+          }
 
-                art_start_date_estimation = __$("art_start_date_estimation").value;
+          function setDateARTStarted() {
+              year_started_art = parseInt(__$("year_started_art").value);
+              month_started_art = __$("month_started_art").value;
+              day_started_art = parseInt(__$("day_started_art").value);
 
-                if (art_start_date_estimation.match(/6 months/i)) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 180); // 6 months
-                    date = date.toDateString();
-                    answers_hash["date_art_started"] = date;
-                }
+              art_start_date_estimation = __$("art_start_date_estimation").value;
 
-                if (art_start_date_estimation.match(/12 months/i)) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 365); // 6 months
-                    date = date.toDateString();
-                    answers_hash["date_art_started"] = date;
-                }
+              if (art_start_date_estimation.match(/6 months/i)) {
+                  var date = new Date();
+                  date.setDate(date.getDate() - 180); // 6 months
+                  date = date.toDateString();
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
 
-                if (art_start_date_estimation.match(/18 months/i)) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 540); // 6 months
-                    date = date.toDateString();
-                    answers_hash["date_art_started"] = date;
-                }
+              if (art_start_date_estimation.match(/12 months/i)) {
+                  var date = new Date();
+                  date.setDate(date.getDate() - 365); // 6 months
+                  date = date.toDateString();
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
 
-                if (art_start_date_estimation.match(/24 months/i)) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 730); // 6 months
-                    date = date.toDateString();
-                    answers_hash["date_art_started"] = date;
-                }
+              if (art_start_date_estimation.match(/18 months/i)) {
+                  var date = new Date();
+                  date.setDate(date.getDate() - 540); // 6 months
+                  date = date.toDateString();
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
 
-                if (art_start_date_estimation.match(/Over 2 years/i)) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 730); // 6 months
-                    date = date.toDateString();
-                    answers_hash["date_art_started"] = date;
-                }
+              if (art_start_date_estimation.match(/24 months/i)) {
+                  var date = new Date();
+                  date.setDate(date.getDate() - 730); // 6 months
+                  date = date.toDateString();
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
 
-                if (year_started_art > 1 && month_started_art != 'Unknown' && day_started_art > 0) {
-                    date = year_started_art + "/" + month_started_art + "/" + day_started_art;
-                    answers_hash["date_art_started"] = date;
-                }
+              if (art_start_date_estimation.match(/Over 2 years/i)) {
+                  var date = new Date();
+                  date.setDate(date.getDate() - 730); // 6 months
+                  date = date.toDateString();
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
+
+              if (year_started_art > 1 && month_started_art != 'Unknown' && day_started_art > 0) {
+                  date = year_started_art + "/" + month_started_art + "/" + day_started_art;
+                  answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
+              }
 
                 if (year_started_art > 1 && month_started_art == 'Unknown') {
                     date = year_started_art + "/July/01";
-                    answers_hash["date_art_started"] = date;
+                    answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
                 }
                 else if (year_started_art > 1 && month_started_art != 'Unknown' && isNaN(day_started_art)) {
                     date = year_started_art + "/" + month_started_art + "/15";
-                    answers_hash["date_art_started"] = date;
+                    answers_hash["date_art_started"] = moment(date).format("YYYY-MM-DD");
                 }
 
             }
@@ -2097,7 +2111,7 @@
 
         </script>
 
-        <form onsubmit="submitParameters();">
+        <form> 
 
             <input type="text" name="side-effects"
                    tt_onLoad="checkIfInBDMode();__$('keyboard').style.display = 'none'; addAgreesToFollowupYesNo();"
