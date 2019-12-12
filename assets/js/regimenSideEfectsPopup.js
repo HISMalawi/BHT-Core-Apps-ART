@@ -598,23 +598,22 @@ function buildRecommendationPopUP() {
 }
 
 var contraindications = {};
-contraindications[0] = ['Jaundice','hepatitis','hypersensitivity', 'fever', 'vomiting', 'cough', 'treatment failure'];
-contraindications[2] = ['Jaundice','Anemia','hepatitis', 'vomiting', 'Lactic Acidosis', 'Treatment failure'];
+contraindications[0] = ['Jaundice','hepatitis','hypersensitivity', 'fever', 'vomiting', 'cough'];
+contraindications[2] = ['Jaundice','Anemia','hepatitis', 'vomiting', 'Lactic Acidosis'];
 contraindications[4] = ['Anemia','Psychosis', 'vomiting', 'Lactic acidosis'];
-contraindications[5] = ['Renal Failure','Kidney Failure','Psychosis', 'Treatment failure', 'Dizziness'];
-contraindications[6] = ['Jaundice','Renal Failure','Kidney Failure','Hepatitis', 'Treatment failure'];
-contraindications[7] = ['Jaundice','Renal Failure','Kidney Failure','Hepatitis', 'Treatment failure'];
-contraindications[8] = ['Anemia','Jaundice', 'Hepatitis', 'vomiting', 'Lactic acidosis', 'Treatment failure'];
-contraindications[9] = ['hypersensitivity', 'fever', 'vomiting', 'cough', 'diarrhoea', 'vomiting', 'dizziness', 'headache','Treatment failure'];
-contraindications[10] = ['Renal Failure', 'Kidney Failure','Uncontrolled BP', 'vomiting', 'diziness', 'headache', 'Treatment failure'];
-contraindications[11] = ['Anemia', 'vomiting', 'lactic acidosis', 'diarrhoea', 'vomiting', 'dizziness', 'headache', 'Treatment failure'];
+contraindications[5] = ['Renal Failure','Kidney Failure','Psychosis', 'Dizziness'];
+contraindications[6] = ['Jaundice','Renal Failure','Kidney Failure','Hepatitis'];
+contraindications[7] = ['Jaundice','Renal Failure','Kidney Failure','Hepatitis'];
+contraindications[8] = ['Anemia','Jaundice', 'Hepatitis', 'vomiting', 'Lactic acidosis'];
+contraindications[9] = ['hypersensitivity', 'fever', 'vomiting', 'cough', 'diarrhoea', 'vomiting', 'dizziness', 'headache'];
+contraindications[10] = ['Renal Failure', 'Kidney Failure','Uncontrolled BP', 'vomiting', 'diziness', 'headache'];
+contraindications[11] = ['Anemia', 'vomiting', 'lactic acidosis', 'diarrhoea', 'vomiting', 'dizziness', 'headache'];
 contraindications[12] = ['Diarrhoea', 'vomiting', 'headache', 'dizziness', 'jaundice'];
-contraindications[13] = ['Renal Failure','Hepatitis','Uncontrolled BP', 'headache', 'nausea', 'diarrhoea', 'Treatment failure'];
-contraindications[14] = ['Anemia','Hepatitis', 'vomitiing', 'headache', 'nausea', 'Treatment failure'];
-contraindications[15] = ['hypersensitivity','Hepatitis', 'fever', 'cough', 'insomnia', 'headache', 'nausea', 'diahrhoea', 'Treatment failure'];
-
-
-
+contraindications[13] = ['Renal Failure','Hepatitis','Uncontrolled BP', 'headache', 'nausea', 'diarrhoea'];
+contraindications[14] = ['Anemia','Hepatitis', 'vomitiing', 'headache', 'nausea'];
+contraindications[15] = ['hypersensitivity','Hepatitis', 'fever', 'cough', 'insomnia', 'headache', 'nausea', 'diahrhoea'];
+contraindications[16] = ['Fever', 'body pains', 'vomiting', 'cough','Insomnia','headache','nausea','diarrhoea'];
+contraindications[17] = ['Fever', 'body pains', 'vomiting', 'cough','Hepatitis', 'rash', 'psychosis', 'gynaecomastia'];
 
 
 var sideEffects = [                                                         
