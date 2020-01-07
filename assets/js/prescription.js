@@ -1714,7 +1714,11 @@ function prepareForSubmitting() {
                 var selectedARV_id = selectedARVs[i].drug_id
 
                 for (var x = 0; x < data.length; x++) {
-                    var pillCountDrugID = data[x].order.drug_order.drug_inventory_id;
+                    try {
+                      var pillCountDrugID = data[x].order.drug_order.drug_inventory_id;
+                    }catch(n){
+                      var pillCountDrugID = 0;
+                    }
                     if (pillCountDrugID == selectedARV_id) {
                         showSuggestion = true;
                         break;
