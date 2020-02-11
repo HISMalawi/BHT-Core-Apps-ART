@@ -299,16 +299,16 @@ function createContainers(side) {
 
 function showSelectedMeds() {
 
-    if (!pelletsActivated) {
-        continueShowSelectedMeds();
+    if (lpvDrugType != 'pellets' && lpvDrugType != 'granules') {
+        continueShowSelectedMeds(); // Regimens when retrieved by default are in tabs.
         return;
     }
 
     var regimen = parseInt(selectedRegimens, 10);
     var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-    url += "/programs/1/pellets_regimen?regimen=" + regimen;
-    url += "&patient_id=" + sessionStorage.patientID;
-    url += "&use_pellets=true";
+    url += "/programs/1/regimens/" + regimen;
+    url += "?patient_id=" + sessionStorage.patientID;
+    url += "&lpv_drug_type=" + lpvDrugType;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -951,10 +951,10 @@ function continueValidateRegimenSelection() {
     checkIFStartPackApplies();
 }
 
-var pelletsActivated;
+var lpvDrugType;
 
 function checkIFRegimenHasLPv() {
-    pelletsActivated = false;
+    lpvDrugType = false;
 
     var regimen = parseInt(selectedRegimens, 10);
     var w = parseFloat(sessionStorage.currentWeight);
@@ -1018,7 +1018,7 @@ function buildPalletBox() {
     buttonContainer.appendChild(buttonContainerRow);
 
 
-    var cells = ['Pellets', 'Tabs'];
+    var cells = ['Granules', 'Pellets', 'Tabs'];
 
     for (var i = 0; i < cells.length; i++) {
         var buttonContainerCell = document.createElement('div');
@@ -1028,11 +1028,15 @@ function buildPalletBox() {
         buttonContainerCell.setAttribute('id', 'buttonContainerCell-blue');
 
         buttonContainerRow.appendChild(buttonContainerCell);
-        if (i == 0) {
-            buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("pellets");');
-        } else {
-            buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("tabs");');
-        }
+
+        var drugType = cells[i].toLowerCase();
+        buttonContainerCell.setAttribute('onmousedown', `prescribePelletsTabs("${drugType}");`);
+
+        // if (i == 0) {
+        //     buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("pellets");');
+        // } else {
+        //     buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("tabs");');
+        // }
         buttonContainerRow.appendChild(buttonContainerCell);
     }
     /* ################################## */
@@ -1045,7 +1049,7 @@ function prescribePelletsTabs(ans) {
     box.style = "display: none;";
     cover.style = "display: none;";
 
-    pelletsActivated = (ans == 'pellets' ? true : false);
+    lpvDrugType = ans;
     gotoNextPage();
 }
 
