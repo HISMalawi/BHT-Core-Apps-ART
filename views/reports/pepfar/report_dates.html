@@ -107,12 +107,13 @@
       return;
     }
    
-    if(reportType() == 'patient_art_refill_periods')
+    if(reportType() === 'patient_art_refill_periods') {
       start_day = '01'; start_month = '01'; start_year = '1900';
+    }
 
     var start_date  = moment(start_year + '-' + start_month + '-' + start_day).format('YYYY-MM-DD'); 
     var end_date    = moment(end_year + '-' + end_month + '-' + end_day).format('YYYY-MM-DD'); 
-  
+ 
     if(start_date > end_date){
       showMessage('Start date is greater than end date');
       return;
