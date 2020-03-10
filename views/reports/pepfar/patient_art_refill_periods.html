@@ -190,8 +190,7 @@ function initializeTable() {
         <th></th>
         <th class="disaggregated-numbers"># of clients receiving <3<br />months of ARVs</th>
         <th class="disaggregated-numbers"># of clients receiving 3-5<br />months of ARVs</th>
-        <th class="disaggregated-numbers"># of clients receiving 6 <br />months of ARVs</th>
-        <th class="disaggregated-numbers"># of clients receiving >6 <br />months of ARVs</th>
+        <th class="disaggregated-numbers"># of clients receiving >=6 <br />months of ARVs</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -219,13 +218,13 @@ function initializeReport(group, min_age, max_age) {
   url += "&end_date=" + end_date;
   url += "&min_age=" + min_age;
   url += "&max_age=" + max_age;
+  url += "&org=pepfar";
   url += '&program_id=' + sessionStorage.programID;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
-      //getData(age_groups[0]);
       addNumbers(group, obj);
       fetchData();
     }
@@ -271,7 +270,7 @@ function addTableBody() {
       table_body.appendChild(tr);
       var td_count = 0;
 
-      while (td_count < 7) {
+      while (td_count < 6) {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
@@ -395,24 +394,20 @@ function addNumbers(group, data) {
     if(row == undefined)
       continue;
 
-    var prescribed_months = data[patient_id].prescribed_months;
+    var prescribed_days = data[patient_id].prescribed_days;
     var row_colunms  = row.getElementsByClassName('disaggregated-numbers');
     var less_than_three = row_colunms[0];
     var three_and_five = row_colunms[1];
-    var six = row_colunms[2];
-    var more_than_six = row_colunms[3];
+    var six_and_more = row_colunms[2];
 
-    if(prescribed_months < 3)
+    if(prescribed_days < 90)
       less_than_three.innerHTML = parseInt(less_than_three.innerHTML) + 1;
 
-    if(prescribed_months >= 3 && prescribed_months <= 5)
+    if(prescribed_days >= 90 && prescribed_days <= 179)
       three_and_five.innerHTML = parseInt(three_and_five.innerHTML) + 1;
 
-    if(prescribed_months == 6)
-      six.innerHTML = parseInt(six.innerHTML) + 1;
-
-    if(prescribed_months > 6)
-      more_than_six.innerHTML = parseInt(more_than_six.innerHTML) + 1;
+    if(prescribed_days >= 180)
+      six_and_more.innerHTML = parseInt(six_and_more.innerHTML) + 1;
 
       
     total_clients.innerHTML = parseInt(total_clients.innerHTML) + 1;
