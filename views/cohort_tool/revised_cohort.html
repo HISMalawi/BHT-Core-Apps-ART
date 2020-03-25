@@ -3,6 +3,8 @@
 <link rel="stylesheet" href="/assets/css/maindashboard/footer.css">
 <link rel="stylesheet" href="/assets/css/custom.css">
 
+<script src="/assets/js/moment.js"></script>
+
 <style type="text/css" xmlns="http://www.w3.org/1999/html">
 
 #tasks {
@@ -3450,7 +3452,14 @@ function getIndicators() {
   document.getElementById('report-cover').style = 'display: inline;';
   
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/1/reports/cohort?name=";
-  url += Quarter + " " + Year;
+
+  if(Quarter == 'Custom'){
+    url += "Cohort";
+    url += "&start_date="  + start_date;
+    url += "&end_date="  + end_date;
+  }else{
+    url += Quarter + " " + Year;
+  }
 
   if(regenerate_report === true) {
     url += "&regenerate=true";
@@ -3527,8 +3536,18 @@ function regenerateReport() {
   getIndicators();
 }
 
-var Year    = getUrlVars()["quarter"].split("+")[1];
-var Quarter = getUrlVars()["quarter"].split("+")[0];
+var quarter_val  = getUrlVars()["quarter"];
+
+if(quarter_val == undefined) {
+    var start_date = getUrlVars()["start_date"];
+    var end_date = getUrlVars()["end_date"];
+    var Quarter = 'Custom';
+    var Year = moment(end_date).format("YYYY"); 
+}else{
+    quarter_val  = quarter_val.replace(/%20/," ");
+    var Year    = quarter_val.split(" ")[1];
+    var Quarter = quarter_val.split(" ")[0];
+}
 
 document.getElementById("display-quarter").innerHTML = "Quarter: " + Quarter;
 document.getElementById("display-quarter-year").innerHTML = "Year: " + Year;

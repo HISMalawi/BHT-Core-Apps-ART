@@ -98,6 +98,10 @@ function loadQuarters() {
   }
 
   var sel = document.getElementById('quarters');
+  var opt = document.createElement('option');
+  opt.setAttribute('value', "Set custom period");
+  opt.innerHTML = 'Set custom period';
+  sel.appendChild(opt);
   
   for(var i = 0; i < qtrs.length; i++){
     var opt = document.createElement('option');
@@ -128,6 +132,25 @@ function survivalAnalysis() {
   }
 }
 
+function changeFinishBtn() {
+  var btn = document.getElementById("nextButton");
+  btn.setAttribute("onmousedown","submitSelectedOpts();");
+}
+
+function submitSelectedOpts(){
+  var selected_val = $("touchscreenInput0").value;
+  if(selected_val.length < 1){
+    showMessage('Please select one option from the list');
+    return;
+  }
+
+  if(selected_val == 'Set custom period'){
+    document.location = '../reports/clinic/report_dates.html?report=revised_cohort';
+    return;
+  }
+
+  document.location = "revised_cohort.html?quarter=" + selected_val;
+}
 </script>
 
 <style>
@@ -151,7 +174,7 @@ function survivalAnalysis() {
     <div id="content">
       <form id='quarter' action="revised_cohort.html" method="get">
         <select helpText="Select Quarter" id="quarters" 
-          name="quarter" tt_onLoad="__$('keyboard').style.display = 'none';loadQuarters();survivalAnalysis();" 
+          name="quarter" tt_onLoad="__$('keyboard').style.display = 'none';loadQuarters();survivalAnalysis();changeFinishBtn();" 
           tt_onUnLoad="__checkSelected();">
         </select>
 

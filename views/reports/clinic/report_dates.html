@@ -119,9 +119,15 @@
     url = new URL(url);
     var report = url.searchParams.get("report");
 
-    url = '/apps/ART/views/reports/clinic/';
+    if(report == 'revised_cohort'){
+      url = "/apps/ART/views/cohort_tool/";
+    }else{
+      url = '/apps/ART/views/reports/clinic/';
+    }
+
     url += report + ".html?start_date=" + start_date;
     url += '&end_date=' + end_date;
+
     document.location = url;
   }
 </script>
