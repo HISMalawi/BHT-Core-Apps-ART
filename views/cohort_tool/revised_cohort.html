@@ -3454,7 +3454,7 @@ function getIndicators() {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/1/reports/cohort?name=";
 
   if(Quarter == 'Custom'){
-    url += "Cohort";
+    url += "Cohort-" + start_date + "-" + end_date;
     url += "&start_date="  + start_date;
     url += "&end_date="  + end_date;
   }else{
@@ -3542,7 +3542,8 @@ if(quarter_val == undefined) {
     var start_date = getUrlVars()["start_date"];
     var end_date = getUrlVars()["end_date"];
     var Quarter = 'Custom';
-    var Year = moment(end_date).format("YYYY"); 
+    var Year = moment(start_date).format("DD/MMM/YYYY"); 
+    Year += " " + moment(end_date).format("DD/MMM/YYYY"); 
 }else{
     quarter_val  = quarter_val.replace(/%20/," ");
     var Year    = quarter_val.split(" ")[1];
