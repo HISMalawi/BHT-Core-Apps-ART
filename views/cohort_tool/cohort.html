@@ -1,0 +1,2344 @@
+<html>
+  <meta charset="utf-8"/>
+
+<title>Revised Cohort Report</title>
+<link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="/assets/css/maindashboard/footer.css">
+<link rel="stylesheet" href="/assets/css/custom.css">
+
+<script src="/assets/js/moment.js"></script>
+
+<style type="text/css" xmlns="http://www.w3.org/1999/html">
+
+#tasks {
+  visibility: hidden;
+  margin-right: 10px;
+}
+
+@page {
+  size: auto;   /* auto is the current printer page size */
+  margin: 0mm;  /* this affects the margin in the printer settings */
+  font-size: 12px;
+}
+
+body {
+  background-color:#FFFFFF; 
+  border: solid 1px black ;
+  margin: 0px;  /* the margin on the content before printing */
+}
+
+#spinner{
+  display: none;
+}
+
+#report-cover {
+  display: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  border-style: solid;
+  border-width: 1px;
+}
+
+#version {
+  text-align: right;
+  padding-right: 5px;
+  font-size: 10px;
+}
+
+.numbers {
+  width: 2.5%;
+  text-align: center;
+  border-width: 0px 1px 0px 0px;
+  border-style: dotted;
+}
+
+.row-title {
+  width: 17.75%;
+  text-align: left;
+  padding-left: 5px;
+  border-style: dotted;
+}
+
+.signatures {
+  width: 39.875%;
+  text-align: left;
+  padding-left: 5px;
+  border-style: dotted;
+}
+
+.row-name {
+  width: 39.875%;
+  text-align: left;
+  padding-left: 5px;
+  border-style: dotted;
+  border-left-style: solid;
+}
+
+.no-borders {
+  border-width: 0px;
+}
+
+#version-row td {
+  height: 30px;
+}
+
+
+
+
+
+
+
+
+/* .......... second section starts here ------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+tr {
+  height: 45px;
+}
+
+.vertical-separator {
+  border-width: 0px;
+}
+
+td {
+  border-style: solid;
+  border-width: 1px;
+}
+
+.section-description td {
+  border-width: 0px;
+}
+
+.horisonatl-separator td {
+  border-width: 0px;
+}
+
+.numbers {
+  width: 2.5%;
+  text-align: center;
+  border-width: 0px 1px 0px 0px;
+  border-style: dotted;
+}
+
+.sum-arrows {
+  width: 75px;
+  height: 55px;
+}
+
+.postfixes {
+  font-size: x-small;
+  font-weight: bold;
+  position: relative;
+  top: -15px;
+  left: -40px;
+}
+
+
+
+#spinner {
+    position: absolute;
+    top: 150px;
+    left: 40%;
+  }
+
+#report-cover {
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 102%;
+    left: 0%;
+    top: 0%;
+    z-index: 990;
+    opacity: 0.65;
+}
+
+td {
+  padding-right: 15px;
+  text-align: right;
+}
+
+</style>
+
+<script>
+
+var print_pdf_attr = {};
+
+function drillDown(indicator, report_name, quarter) {
+    indicator = indicator.split(",");
+    window.location = "/apps/ART/views/cohort_tool/driller/driller.html?resource_id=" + indicator[0] + "&report_name=" + indicator[1]+ "&quarter=" + Quarter;
+}
+
+
+function showDisaggregatedReport(){
+  var url = window.location.href;
+  url = new URL(url);
+  var quarter = url.searchParams.get("quarter");
+
+  if(quarter == undefined || quarter == null) {
+    var start_date = getUrlVars()["start_date"];
+    var end_date = getUrlVars()["end_date"];
+    quarter = 'Custom';
+    url = 'disaggregated.html?quarter=' + quarter;
+    url += "&start_date=" + start_date; 
+    url += "&end_date=" + end_date; 
+  }else{
+    url = 'disaggregated.html?quarter=' + quarter; 
+  }
+
+  var on_art = document.getElementById('total_alive_and_on_art').innerHTML;
+  url += '&total_alive_and_on_art=' + on_art;
+  location = url;
+}
+
+</script>
+
+
+<div id="consistency_check">
+  <div id="patients_consistency"></div>
+  <div id="cum_patients_consistency"></div>
+  <div id="gender_consistency"></div>
+  <div id="cum_gender_consistency"></div>
+  <div id="age_consistency"></div>
+  <div id="cum_age_consistency"></div>
+  <div id="reasons_consistency"></div>
+  <div id="cum_reasons_consistency"></div>
+  <div id="conditions_consistency"></div>
+  <div id="cum_conditions_consistency"></div>
+  <div id="died_consistency"></div>
+  <div id="total_consistency"></div>
+  <div id="regimen_consistency"></div>
+  <div id="pregnant_consistency"></div>
+  <div id="tb_status_consistency"></div>
+  <div id="side_effect_consistency"></div>
+  <div id="adherence_consistency"></div>
+</div>
+
+<div id="content">
+
+<!-- starts here ..........................................................................................................................-->
+
+<table>
+  <tr id="version-row">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="4" id="version">Version 24</td>
+  </tr>
+  <tr>
+    <td class="numbers">1.</td>
+    <td class="row-title" style="border-right-style: solid; border-bottom: 0px !important; font-weight: bold;">Clinic name</td>
+    <td class="row-title" colspan="3" style="border-bottom-style: solid;" id="clinic-name">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">2.</td>
+    <td class="row-title" style="border: 0px !important; ">Supervisors</td>
+    <td class="row-name" style="font-weight: bold;">Name</td>
+    <td colspan="2" class="signatures" style="font-weight: bold;">Signature</td>
+  </tr>
+  <tr>
+    <td class="numbers">3</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">4</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">5</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">6</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">7</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">8</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">9</td>
+    <td class="row-title no-borders">&nbsp;</td>
+    <td class="row-name name-left">&nbsp;</td>
+    <td colspan="2" class="signatures">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="numbers">10.</td>
+    <td class="row-title" style="border-bottom-style: solid; border-top-style: none;">Quarter evaluated</td>
+    <td class="row-name name-left" style="border-bottom-style: solid;">Year:&nbsp;<b id="display-quarter-year">&nbsp;</b></td>
+    <td colspan="2" class="signatures" style="border-bottom-style: solid;">Quarter:&nbsp;<b id="display-quarter">&nbsp;</b></td>
+  </tr>
+</table>
+
+
+<table>
+    
+  <tr class="section-description">
+    <td class="numbers">&nbsp;</td>
+    <td style="font-weight: bold;" colspan="2">ART Clinic</td>
+    <td colspan="3" style="text-align: center; font-weight: bold;">Newly registered in quarter</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td colspan="3" style="text-align: center; font-weight: bold;">Cumulative ever registered</td>
+  </tr>
+
+  <tr class="section-description">
+    <td class="numbers">&nbsp;</td>
+    <td style="font-weight: bold;" colspan="2">Patients registration details</td>
+    <td style="font-weight: normal; text-align:center;">E-Mastercard</td>
+    <td style="font-weight: normal; text-align:center;">Clinic own*</td>
+    <td style="font-weight: normal; text-align:center;">Checked data</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal; text-align:center;">E-Mastercard</td>
+    <td style="font-weight: normal; text-align:center;">Clinic own*</td>
+    <td style="font-weight: normal; text-align:center;">Checked data</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">25.</td>
+    <td style="font-weight: normal;text-align:left;padding-left:5px;" colspan="2">Total registered</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('total_registered');"
+      id="total_registered">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_total_registered');" 
+      id="cum_total_registered"></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td colspan="10">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">26.</td>
+    <td style="font-weight: normal; border-right-style: none !important; border-bottom-style: none !important;
+      padding-left: 10px; text-align:left; padding-left:5px;">
+      <b>FT</b>&nbsp;&nbsp;Patients initiated
+    </td>
+    <td style="font-weight: normal; border-left-style: none !important; 
+      text-align:left; border-bottom-style: none !important;">Male</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('males_initiated_on_art_first_time');"
+      id="males_initiated_on_art_first_time">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_males_initiated_on_art_first_time');"
+      id="cum_males_initiated_on_art_first_time">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">27.</td>
+    <td style="font-weight: normal; border-right-style: none !important; padding-left: 10px; text-align: left;
+       border-top-style: none !important; border-bottom-style: none !important;width:100px;">on ART
+    </td>
+    <td style="font-weight: normal; border-left-style: none !important; text-align: left;
+       border-top-style: none !important; border-bottom-style: none !important;">Female Non-pregnant</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('initial_non_pregnant_females_all_ages');"
+      id="initial_non_pregnant_females_all_ages">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_initial_non_pregnant_females_all_ages');"
+      id="cum_initial_non_pregnant_females_all_ages">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">28.</td>
+    <td style="font-weight: normal; border-right-style: none !important; padding-left: 10px;
+       border-top-style: none !important; border-bottom-style: none !important; text-align:left;">
+      first time
+    </td>
+    <td style="font-weight: normal; border-left-style: none !important; text-align:left; 
+       border-top-style: none !important; border-bottom-style: none !important;">Female pregnant</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('initial_pregnant_females_all_ages');"
+      id="initial_pregnant_females_all_ages">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_initial_pregnant_females_all_ages');"
+      id="cum_initial_pregnant_females_all_ages">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">29.</td>
+    <td style="font-weight: normal; border-right-style: none !important; padding-left: 28px;
+       border-top-style: none !important; border-bottom-style: none !important;">
+      &nbsp;
+    </td>
+    <td style="font-weight: normal; border-left-style: none !important; text-align:left; 
+       border-top-style: dotted !important; border-bottom-style: none !important">FT Init., Non-disagg.</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('unknown_gender');"
+      id="unknown_gender">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_unknown_gender');"
+      id="cum_unknown_gender">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">30.</td>
+    <td style="font-weight: normal; border-right-style: none !important; padding-left: 28px;
+       border-top-style: none !important;">
+      &nbsp;
+    </td>
+    <td style="font-weight: normal; border-left-style: none !important; text-align:left; 
+       border-top-style: dotted !important;">CHECK: Total FT</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('initiated_on_art_first_time');"
+      id="initiated_on_art_first_time">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_initiated_on_art_first_time');"
+      id="cum_initiated_on_art_first_time">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">31.</td>
+    <td style="text-align: left;border-bottom-style: none;
+      font-weight: normal;padding-left: 10px;" colspan="2"><b>Re</b>&nbsp;&nbsp;Patients re-initiated on ART</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('re_initiated_on_art');"
+      id="re_initiated_on_art">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_re_initiated_on_art');"
+      id="cum_re_initiated_on_art">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">32.</td>
+    <td style="text-align: left;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>TI</b>&nbsp;&nbsp;Patients transferred in on ART
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('transfer_in');"
+      id="transfer_in">&nbsp;</a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_transfer_in');"
+      id="cum_transfer_in"><!-- cum_transfer_in --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td colspan="10">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">33.</td>
+    <td style="text-align: left;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>M</b>&nbsp;&nbsp;Males (all ages)
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('quarterly_all_males');"
+      id="quarterly_all_males"><!-- quarterly_all_males --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_all_males');"
+      id="cum_all_males"><!-- cummulative_all_males --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">34.</td>
+    <td style="text-align: left;border-top-style: none;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>FNP</b>&nbsp;&nbsp;Non-pregnant Females (all ages)
+    </td>
+  <td style="font-weight: normal;"><a href="#" @click="drillDown('non_pregnant_females');"
+    id="non_pregnant_females"><!-- non_pregnant_females --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_non_pregnant_females');"
+      id="cum_non_pregnant_females"><!-- cum_non_pregnant_females --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">35.</td>
+    <td style="text-align: left;border-top-style: none;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>FP</b>&nbsp;&nbsp;Pregnant Females (all ages)
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('pregnant_females_all_ages');"
+      id="pregnant_females_all_ages"><!-- pregnant_females_all_ages --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_pregnant_females_all_ages');"
+      id="cum_pregnant_females_all_ages"><!-- cum_pregnant_females_all_ages --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td colspan="10">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">36.</td>
+    <td style="text-align: left;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>A</b>&nbsp;&nbsp;Children below 24 m at ART initiation
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('children_below_24_months_at_art_initiation');"
+      id="children_below_24_months_at_art_initiation"><!-- children_below_24_months_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_children_below_24_months_at_art_initiation');"
+      id="cum_children_below_24_months_at_art_initiation"><!-- cum_children_below_24_months_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">37.</td>
+    <td style="text-align: left;border-top-style: none;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>B</b>&nbsp;&nbsp;Children 24 m - 14 yrs at ART initiation
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('children_24_months_14_years_at_art_initiation');"
+      id="children_24_months_14_years_at_art_initiation"><!-- children_24_months_14_years_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_children_24_months_14_years_at_art_initiation');"
+      id="cum_children_24_months_14_years_at_art_initiation"><!-- cum_children_24_months_14_years_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">38.</td>
+    <td style="text-align: left;border-top-style: none;font-weight: normal;padding-left: 10px;" colspan="2">
+      <b>C</b>&nbsp;&nbsp;Adults 15 years+ at ART initiation
+    </td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('adults_at_art_initiation');"
+      id="adults_at_art_initiation"><!-- adults_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_adults_at_art_initiation');"
+      id="cum_adults_at_art_initiation"><!-- cum_adults_at_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">Reason for starting ART</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">39.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; text-align: left;
+      border-bottom-width:0px;"><b>PSHD</b></td>
+    <td style="border-left-style: none; text-align: left; padding-left:10px;
+      border-bottom-width:0px;">&nbsp;&nbsp;Pres. Sev. HIV disease age <12 m</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('presumed_severe_hiv_disease_in_infants');"
+      id="presumed_severe_hiv_disease_in_infants"><!-- presumed_severe_hiv_disease_in_infants --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_presumed_severe_hiv_disease_in_infants');"
+      id="cum_presumed_severe_hiv_disease_in_infants"><!-- cum_presumed_severe_hiv_disease_in_infants --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">40.</td>
+
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-width: 0px !important; border-bottom-style:none;
+      border-left-width:1px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-left-width:1px !important; border-right-width:1px !important;
+      border-bottom-width:0px !important; border-style: dotted; text-align: left; padding-left:10px;
+      border-top-width:0px;"><b>PCR</b> Infants <12 mths PCR</td>
+
+
+    <td style="border-top-width:0px; border-bottom-width:0px; font-weight: normal;"><a href="#" @click="drillDown('confirmed_hiv_infection_in_infants_pcr');"
+      id="confirmed_hiv_infection_in_infants_pcr"><!-- confirmed_hiv_infection_in_infants_pcr --></a></td>
+    <td style="border-top-width:0px; border-bottom-width:0px; font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_confirmed_hiv_infection_in_infants_pcr');"
+      id="cum_confirmed_hiv_infection_in_infants_pcr"><!-- cum_confirmed_hiv_infection_in_infants_pcr --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">41.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; 
+      border-bottom-width:0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-left-width: 1px;
+      border-top-width:0px; border-style:dotted; text-align: left; padding-left:10px;
+      border-bottom-width:0px;"><b>U5</b> Children 12-59mths</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('quarterly_children_12_59_months');"
+      id="quarterly_children_12_59_months"><!-- quarterly_children_12_59_months --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_children_12_59_months');"
+      id="cum_children_12_59_months"><!-- cum_children_12_59_months --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">42.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-width:1px !important; border-bottom-width:0px;
+      border-top-width:0px; border-style: dotted;">&nbsp;</td>
+    <td style="border-left-style: none;
+      border-top-width:0px; text-align: left; padding-left:10px;
+      border-bottom-width:0px;"><b>Preg</b> Pregnant women</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('pregnant_women');"
+      id="pregnant_women"><!-- pregnant_women --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_pregnant_women');"
+      id="cum_pregnant_women"><!-- cum_pregnant_women --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">43.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; border-style: dotted;
+      border-left-width:1px;
+      border-top-width:0px; border-bottom-width:0px;">&nbsp;</td>
+    <td style="border-left-style: none;
+      border-top-width:0px; text-align: left; padding-left:10px;
+      border-bottom-width:0px;"><b>BF</b> Breastfeeding mothers</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('breastfeeding_mothers');"
+      id="breastfeeding_mothers"><!-- breastfeeding_mothers --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_breastfeeding_mothers');"
+      id="cum_breastfeeding_mothers"><!-- cum_breastfeeding_mothers --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">44.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; border-style: dotted;
+      border-left-width:1px;
+      border-top-width:0px; border-bottom-width:0px;">&nbsp;</td>
+    <td style="border-left-style: none;
+      border-top-width:0px; text-align: left; padding-left:10px;
+      border-bottom-width:0px;"><b>CD4</b> CD4 below threshold</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_two');"
+      id="who_stage_two"><!-- who_stage_two --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_two');"
+      id="cum_who_stage_two"><!-- cum_who_stage_two --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">45.</td>
+    
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; border-style: dotted;
+      border-left-width:1px;
+      border-top-width:0px; border-bottom-width:0px;">&nbsp;</td>
+    <td style="border-left-style: none;
+      border-top-width:0px; text-align: left; padding-left:10px;
+      border-bottom-width:0px;"><b>Asy</b> Asymptomatic / mild</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('asymptomatic');"
+      id="asymptomatic"><!-- asymptomatic --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_asymptomatic');"
+      id="cum_asymptomatic"><!-- cum_asymptomatic --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">46.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important;
+      border-top-width:0px; text-align: left;
+      border-bottom-width:0px;"><b>3</b></td>
+    <td style="border-left-style: none;
+      border-bottom-width:0px; text-align: left; padding-left:10px;
+      border-top-width:0px;">WHO stage 3</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_three');"
+      id="who_stage_three"><!-- who_stage_three --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_three');"
+      id="cum_who_stage_three"><!-- cum_who_stage_three --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">47.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important;
+      border-top-width:0px; text-align: left;
+      border-bottom-width:0px;"><b>4</b></td>
+    <td style="border-left-width:0px;
+      border-bottom-style:none; text-align: left; padding-left:10px;
+      border-top-width:0px;">WHO stage 4</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_four');"
+      id="who_stage_four"><!-- who_stage_four --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_four');"
+      id="cum_who_stage_four"><!-- cum_who_stage_four --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">48.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px;
+      border-right-style: none !important; text-align: left;
+      border-top-style:none;"><b>Unk</b></td>
+    <td style="border-left-style: none; text-align: left; padding-left:10px;
+      border-top-style:none;">Unknown / reason outside guidelines</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('unknown_other_reason_outside_guidelines');"
+      id="unknown_other_reason_outside_guidelines"><!-- unknown_other_reason_outside_guidelines --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_unknown_other_reason_outside_guidelines');"
+      id="cum_unknown_other_reason_outside_guidelines"><!-- cum_unknown_other_reason_outside_guidelines --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">Stage defining conditions at ART initiation</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">49.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px; text-align: left; padding-left:10px;
+      border-right-style: none !important;"><b>Nev/>2yrs</b></td>
+    <td style="border-left-style: none; text-align: left; padding-left:10px;">Never TB / TB over 2 years ago</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('no_tb');"
+      id="no_tb"><!-- no_tb --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_no_tb');"
+      id="cum_no_tb"></a><!-- cum_no_tb --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">50.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px; text-align: left; padding-left:10px;
+      border-right-style: none !important;"><b>Last 2yrs</b></td>
+    <td style=" text-align: left; padding-left:10px;border-left-style: none;">TB within the last 2 years</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('tb_within_the_last_two_years');"
+      id="tb_within_the_last_two_years"><!-- tb_within_the_last_two_years --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_tb_within_the_last_two_years');"
+      id="cum_tb_within_the_last_two_years"><!-- cum_tb_within_the_last_two_years --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">51.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px; text-align: left; padding-left:10px;
+      border-right-style: none !important;"><b>Curr</b></td>
+    <td style="border-left-style: none; text-align: left; padding-left:10px;">Current episode of TB</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('current_episode_of_tb');"
+      id="current_episode_of_tb"><!-- current_episode_of_tb --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_current_episode_of_tb');"
+      id="cum_current_episode_of_tb"><!-- cum_current_episode_of_tb --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td colspan="10" style="text-align: left;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">52.</td>
+    <td style="font-weight: normal;padding-left: 10px;width: 15px; text-align: left; padding-left:10px;
+      border-right-style: none !important;"><b>KS</b></td>
+    <td style="border-left-style: none; text-align: left; padding-left:10px;">Kaposi’s Sarcoma</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('kaposis_sarcoma');"
+      id="kaposis_sarcoma"><!-- kaposis_sarcoma --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td class="vertical-separator">&nbsp;</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_kaposis_sarcoma');"
+      id="cum_kaposis_sarcoma"><!-- cum_kaposis_sarcoma --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="6" style="text-align: left;"><b>Primary outcomes as of the end of the quarter evaluated</b></td>
+    <td colspan="3" style="text-align: center;"><b>Out of all patients ever registered</b></td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="6" style="text-align: left;">&nbsp;</td>
+    <td style="text-align: center;">E-Mastercard</td>
+    <td style="text-align: center;">Clinic own**</td>
+    <td style="text-align: center;">Checked data</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">53.</td>
+    <td style="text-align: left; padding-left: 10px;" colspan="6">Total alive and on ART</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('total_alive_and_on_art');" id="total_alive_and_on_art"></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="9" style="text-align: center;">&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">54.</td>
+    <td style="font-weight: bold; text-align: right;border-right-style: none;
+      border-bottom-style: none;border-left-style: none;" colspan="2">M1</td>
+    <td style="text-align: left; padding-left: 10px;
+      border-right-style: none;border-bottom-style: none; border-left-style: none;" 
+      colspan="4">Died within the 1st month after ART initiation</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_1st_month_of_art_initiation');"
+      id="died_within_the_1st_month_of_art_initiation"><!-- died_within_the_1st_month_of_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">55.</td>
+    <td style="font-weight: bold; text-align:right; border-right-style: none;
+      border-top-style: none;border-left-style: none;
+      border-bottom-style: none;" colspan="2">M2</td>
+    <td style="text-align: left; padding-left: 10px;border-top-style: none;
+      border-right-style: none;border-bottom-style: none; border-left-style: none;" 
+      colspan="4">Died within the 2nd month after ART initiation</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_2nd_month_of_art_initiation');"
+      id="died_within_the_2nd_month_of_art_initiation"><!-- died_within_the_2nd_month_of_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">56.</td>
+    <td style="font-weight: bold; text-align: right; border-right-style:none;
+      border-bottom-style:none; border-left-style:none; border-top-style: none;" colspan="2">M3</td>
+    <td style="text-align: left; padding-left:10px; border-top-style: none;
+      border-right-style:none; border-bottom-style:none; border-left-style: none;" 
+      colspan="4">Died within the 3rd month after ART initiation</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_3rd_month_of_art_initiation');"
+      id="died_within_the_3rd_month_of_art_initiation"><!-- died_within_the_3rd_month_of_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">57.</td>
+    <td style="font-weight: bold; text-align:right; border-right-style: none;
+      border-left-style: none; border-top-style: none;" colspan="2">M4+</td>
+    <td style="text-align: left; padding-left: 10px;
+      border-right-style:none; border-left-style:none; border-top-style: none;" 
+      colspan="4">Died after the end of the 3rd month after ART initiation</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_after_the_3rd_month_of_art_initiation');"
+      id="died_after_the_3rd_month_of_art_initiation"><!-- died_after_the_3rd_month_of_art_initiation --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">58.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-style:none;" colspan="6">Died total</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_total');"
+      id="died_total"><!-- died_total --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">59.</td>
+    <td style="text-align: left; padding-left: 10px;
+      border-top-style:none; border-bottom-style:none;" colspan="6">Defaulted (more than 2 months overdue after expected to have run out of ARVs)</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('defaulted');" id="defaulted"><!-- defaulted --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">60.</td>
+    <td style="text-align: left; padding-left: 10px;
+      border-top-style:none; border-bottom-style:none;" colspan="6">Stopped taking ARVs (clinician or patient own decision, last known alive)</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('stopped_art');" id="stopped_art"><!-- stopped_art --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">61.</td>
+    <td style="text-align: left; padding-left: 10px;border-top-style:none;" colspan="6">Transferred Out</td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('transfered_out');" id="transfered_out"><!-- transfered_out --></a></td>
+    <td style="font-weight: normal;">&nbsp;</td>
+    <td style="font-weight: normal;">&nbsp;</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td>&nbsp;</td>
+    <td colspan="6" style="font-style: italic; text-align: center;">Check completeness of ‘Clinic own data’</td>
+    <td><img src="../../assets/images/sum-arrow.png" class="sum-arrows"/></td>
+    <td><img src="../../assets/images/sum-arrow.png" class="sum-arrows"/></td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td class="numbers">62.</td>
+    <td colspan="2">&nbsp;</td>
+    <td colspan="5" style="text-align: center; border-style:dotted;
+     border-width:1px 1px 0px 1px; text-align: left; padding-left:10px;">Total adv. outcomes = Died total + Defaulted + Stopped + TO</td>
+    <td style="border-style:solid; border-width:1px;"><span class="postfixes">A</span></td>
+    <td style="border-style:solid; border-width:1px;"><span class="postfixes">B</span></td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td class="numbers">63.</td>
+    <td colspan="2">&nbsp;</td>
+    <td colspan="5" style="text-align: center; border-style:dotted;
+     border-width:0px 0px 1px 1px; text-align: left; padding-left:10px;">Calculate completeness %&nbsp;&nbsp;
+     A / B x 100 (Use difference if greater than 100%)</td>
+    <td style="border-style:dotted; border-bottom-width:1px;">&nbsp;</td>
+    <td style="border-style:solid; border-width:1px;"><span style="left: 40px;" class="postfixes">%</span></td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="7" style="text-align:left; font-weight: bold; padding-left: 10px;">Secondary outcomes of those alive on ART</td>
+    <td><b>P</b>aeds formul.</td>
+    <td><b>A</b>dults formul.</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">64.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px;">ART Regimens</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">0</td>
+    <td><a href="#" @click="drillDown('zero_p');"  id="zero_p"><!-- zero_p --></a></td>
+    <td><a href="#" @click="drillDown('zero_a');" id="zero_a"><!-- zero_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">65.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">2</td>
+    <td><a href="#" @click="drillDown('two_p');" id="two_p"><!-- two_p --></a></td>
+    <td><a href="#" @click="drillDown('two_a');" id="two_a"><!-- two_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">66.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">Count regimen for <u>all patients registered</u></td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">4</td>
+    <td><a href="#" @click="drillDown('four_p');" id="four_p"><!-- four_p --></a></td>
+    <td><a href="#" @click="drillDown('four_a');" id="four_a"><!-- four_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">67.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">at this site, including those who currently</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">5</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('five_a');" id="five_a"><!-- five_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">68.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-style:dotted;
+     border-bottom-width: 1px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 1px; border-style:dotted;
+      border-left-width:0px; border-top-width:0px; text-align:left;" colspan="3">get supplies from another site</td>
+    <td style="border-right-width:0px; border-bottom-width: 1px; border-style:dotted;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 1px; border-style: dotted;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">6</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('six_a');" id="six_a"><!-- six_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">69.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">7</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('seven_a');" id="seven_a"><!-- seven_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">70.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">8</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('eight_a');" id="eight_a"><!-- eight_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">71.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">9</td>
+    <td><a href="#" @click="drillDown('nine_p');" id="nine_p"><!-- nine_p --></a></td>
+    <td><a href="#" @click="drillDown('nine_a');" id="nine_a"><!-- nine_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">72.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">10</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('ten_a');" id="ten_a"><!-- ten_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">73.</td>
+    <td colspan="1" style="text-align:left; padding-left: 10px;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="4">Specify ‘Other’ Regimens and number of patients on each</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">11</td>
+    <td><a href="#" @click="drillDown('eleven_p');" id="eleven_p"><!-- eleven_p --></a></td>
+    <td><a href="#" @click="drillDown('eleven_a');" id="eleven_a"><!-- eleven_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">74.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">12</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('twelve_a');" id="twelve_a"><!-- twelve_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">75.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">13</td>
+    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td><a href="#" @click="drillDown('thirteen_a');" id="thirteen_a"><!-- thirteen_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">76.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">14</td>
+    <td><a href="#" @click="drillDown('fourteen_p');" id="fourteen_p"><!-- fourteen_p --></a></td>
+    <td><a href="#" @click="drillDown('fourteen_a');" id="fourteen_a"><!-- fourteen_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">77.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">15</td>
+    <td><a href="#" @click="drillDown('fifteen_p');" id="fifteen_p"><!-- fifteen_p --></a></td>
+    <td><a href="#" @click="drillDown('fifteen_a');" id="fifteen_a"><!-- fifteen_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">78.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">16</td>
+    <td><a href="#" @click="drillDown('sixteen_p');" id="sixteen_p"><!-- sixteen_p --></a></td>
+    <td><a href="#" @click="drillDown('sixteen_a');" id="sixteen_a"><!-- sixteen_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">79.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 0px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 0px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;">Regimen</td>
+    <td style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
+      font-weight:bold;">17</td>
+    <td><a href="#" @click="drillDown('seventeen_p');" id="seventeen_p"><!-- seventeen_p --></a></td>
+    <td><a href="#" @click="drillDown('seventeen_a');" id="seventeen_a"><!-- seventeen_a --></a></td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">80.</td>
+    <td colspan="2" style="text-align:left; padding-left: 10px; border-top-style:dotted;
+     border-bottom-width: 1px; border-right-width: 0px; border-top-width:1px;">&nbsp;</td>
+    <td style="border-right-width:1px; border-bottom-width: 1px; border-top-style:dotted;
+      text-align:left; border-left-width:0px; border-top-width:1px;" colspan="3">&nbsp;</td>
+    <td colspan="2" style="border-right-width:0px; border-bottom-width: 0px;
+      border-left-width:0px; border-top-width:0px;
+      text-align:left; padding-left:10px;">Other (paed./adult)</td>
+    <td>&nbsp;</td>
+    <td><a href="#" @click="drillDown('unknown_regimen');" id="unknown_regimen"><!-- unknown_regimen --></a></td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">81.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-right-width:0px;">Pregnant / Breastfeeding</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px;" colspan="4">(as of the last visit before end of quarter)</td>
+    <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">Pregnant</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_pregnant_women');"
+      id="total_pregnant_women"><!-- total_pregnant_women --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">82.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">Breastfeeding</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_breastfeeding_women');"
+      id="total_breastfeeding_women"><!-- total_breastfeeding_women --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">83.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 1px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;" colspan="2">All others (not circled)</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_other_patients');"
+      id="total_other_patients"><!-- total_other_patients --></a></td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">84.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-right-width:0px;" colspan="2">Current TB status<br/>any form of TB</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px;" colspan="3">(as of the last visit before end of quarter)</td>
+    <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">TB not suspected</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_not_suspected');"
+      id="tb_not_suspected"><!-- tb_not_suspected --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">85.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">TB suspected</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_suspected');"
+      id="tb_suspected"><!-- tb_suspected --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">86.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">TB conf., <b>not</b> on Rx</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_confirmed_currently_not_yet_on_tb_treatment');"
+      id="tb_confirmed_currently_not_yet_on_tb_treatment"><!-- tb_confirmed_currently_not_yet_on_tb_treatment --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">87.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">TB conf., <b>on</b> TB Rx</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_confirmed_on_tb_treatment');"
+      id="tb_confirmed_on_tb_treatment"><!-- tb_confirmed_on_tb_treatment --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">88.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 1px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('unknown_tb_status');"
+      id="unknown_tb_status"><!-- unknown_tb_status --></a></td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">89.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-right-width:0px;">Side effects</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px;" colspan="4">(as of the last visit before end of quarter)</td>
+    <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">None</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_patients_without_side_effects');"
+      id="total_patients_without_side_effects"><!-- total_patients_without_side_effects --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">90.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4">ADRReportformfilledforeachcase?(seeQ110.)◄</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">Any side effects</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_patients_with_side_effects');"
+      id="total_patients_with_side_effects"><!-- total_patients_with_side_effects --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">91.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 1px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('unknown_side_effects');"
+      id="unknown_side_effects"><!-- unknown_side_effects --></a></td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td>&nbsp;</td>
+    <td colspan="9" style="text-align: left;">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class="numbers">92.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-right-width:0px;">Adherence</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px;" colspan="4">(as of the last visit before end of quarter)</td>
+    <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">0 – 3 doses missed</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_0_6_doses_missed_at_their_last_visit');"
+      id="patients_with_0_6_doses_missed_at_their_last_visit"><!-- patients_with_0_6_doses_missed_at_their_last_visit --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">93.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:0px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 0px; border-top-width:0px;" colspan="4"></td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:0px;
+      text-align:left; padding-left:10px;" colspan="2">4+ doses missed</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_7_plus_doses_missed_at_their_last_visit');"
+      id="patients_with_7_plus_doses_missed_at_their_last_visit"><!-- patients_with_7_plus_doses_missed_at_their_last_visit --></a></td>
+  </tr>
+
+  <tr>
+    <td class="numbers">94.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 0px; border-right-width:0px;">&nbsp;</td>
+    <td style="font-weight: normal; border-left-width:0px; border-right-width:0px; 
+    border-bottom-width: 1px; border-top-width:0px;" colspan="4">&nbsp;</td>
+    <td style="font-weight: normal; border-top-width:0px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
+    <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_unknown_adhrence');"
+      id="patients_with_unknown_adhrence"><!-- patients_with_unknown_adhrence --></a></td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="9" style="text-align:left; font-weight: bold; padding-left: 10px;">Preventive services / HIV related diseases</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">95.</td>
+    <td style="text-align:left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px; font-weight: bold;">CPT / IPT</td>
+    <td colspan="4" style="font-weight: normal; border-top-width:1px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;">Approx. % of patients retained in ART who are currently on CPT / IPT</td>
+    <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_cpt');"
+      id="total_patients_on_arvs_and_cpt"><!-- total_patients_on_arvs_and_cpt --></a></td>
+    <td style="font-weight:bold; order-top-width:1px; text-align:right;
+      border-left-width:0px; border-bottom-width:1px; padding-right:5px;">CPT%</td>
+    <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_ipt');"
+      id="total_patients_on_arvs_and_ipt"><!-- total_patients_on_arvs_and_ipt --></a></td>
+    <td style="font-weight:bold; order-top-width:1px; text-align: right;
+      border-left-width:0px; border-bottom-width:1px; padding-right:5px;">IPT%</td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="9">&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">96.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px; font-weight: bold;">PIFP</td>
+    <td colspan="4" style="font-weight: normal; border-top-width:1px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;">Approx. % of women who received Depo at ART in the last quarter</td>
+    <!--td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px;"><!-- total_patients_on_family_planning --></td-->
+    <td colspan="4" style="text-align: right; padding-right:10px; order-top-width:1px;
+      border-left-width:0px; border-bottom-width:1px;"><span><a href="#" @click="drillDown('total_patients_on_family_planning');"
+      id="total_patients_on_family_planning"><!-- total_patients_on_family_planning --></a></span>&nbsp;%</td>
+  </tr>
+  
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="9">&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td class="numbers">97.</td>
+    <td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px; font-weight: bold;">BP screen</td>
+    <td colspan="4" style="font-weight: normal; border-top-width:1px;
+      border-left-width:0px; border-bottom-width:1px;
+      text-align:left; padding-left:10px;">Approx. % of adult ART patients with BP recorded at least once this year</td>
+    <!--td style="text-align: left; padding-left: 10px; border-bottom-width:1px;
+      border-top-width: 1px; border-right-width:0px;"><!-- total_patients_with_screened_bp --></td-->
+    <td colspan="4" style="text-align: right; padding-right:10px; order-top-width:1px;
+      border-left-width:0px; border-bottom-width:1px;"><span><a href="#" @click="drillDown('total_patients_on_family_planning');"
+      id="total_patients_on_family_planning"><!-- total_patients_with_screened_bp --></a></span>&nbsp;%</td>
+  </tr>
+
+  <tr class="horisonatl-separator">
+    <td class="numbers">&nbsp;</td>
+    <td colspan="9">&nbsp;</td>
+  </tr>
+  
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end here ..........................................................................................................................-->
+
+
+</div>
+<div id="editor"></div>
+
+<!-- Controls -->
+<!-- <div class="row-button-print">
+  <div class="buttons">
+    <button class="button button-finish" onmousedown="javascript:location='/'">Finish</button>
+    <button class="button button-print" onmousedown="javascript:printPDF();">Print</button>
+    <button class="button button-disaggregated" onmousedown="showDisaggregatedReport();">Cohort disaggregated report</button>
+
+  </div>
+</div> -->
+<footer class="footer">
+    <div class="container-footer">
+        <button id="btnNext" class="green right" style="margin: 5px 0px 0px; padding: 0px; float: right;" onclick="location='/';">
+            <span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Finish &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;</span>
+        </button>
+        <button id="activities" class="btn btn-success buttons blue" style="margin-right: 5px;" onmousedown="javascript:printWindow();">
+            <span>&nbsp; &nbsp; &nbsp; Print &nbsp; &nbsp; &nbsp;</span>
+        </button>
+        <button id="tasks" class="btn btn-success buttons blue" style="margin-right: 5px;"  onmousedown="showDisaggregatedReport();">
+            <span>&nbsp; Disaggregated report &nbsp;</span>
+        </button>
+        <button id="btnNext" class="red right" style="margin: 5px 0px 0px; padding: 0px; float: left;" onmousedown="regenerateReport();">
+            <span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Regenerate &nbsp; &nbsp;&nbsp;</span>
+        </button>
+    </div>
+</footer>
+
+<form id="patients" method="post" action="/cohort_tool/list_more_details" name="pat_drilldown">
+  <input id='patient_ids' type='hidden' name = 'patient_ids' />
+  <input id='indicator' type='hidden' name = 'indicator' />
+</form>
+
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
+
+<script type="text/javascript">
+
+function validateReport() {  
+  cum_total_registered = 1200;
+  return; 
+  /**############### Initializing numbers to be compared #################*/
+  var total_registered = parseInt(document.getElementById("total_registered").innerHTML);
+  var cum_total_registered = parseInt(document.getElementById("cum_total_registered").innerHTML);
+  var total_alive_and_on_art = parseInt(document.getElementById("total_alive_and_on_art").innerHTML);
+
+  report_inconsistency = 0;
+
+  /**############### Initializing total values to zero ####################*/
+  total_on_art = 0;
+  total_cum_on_art = 0;
+  total_gender = 0;
+  total_cum_gender = 0;
+  total_age = 0;
+  total_cum_age = 0;
+  total_reasons = 0;
+  total_cum_reasons = 0;
+  total_conditions = 0;
+  total_cum_conditions = 0;
+  total_dead = 0;
+  died_total = parseInt(document.getElementById("died_total").innerHTML);
+  total_registered_on_art = 0;
+  total_regimen = 0;
+  total_tb_status = 0;
+  total_side_effects = 0;
+  total_adherence = 0;
+  total_pregnant = 0;
+
+  /**################# getting class objects ##############################*/
+  on_art = document.getElementsByClassName("on-art");
+  cum_on_art = document.getElementsByClassName("cum-on-art")
+  gender1 = document.getElementsByClassName("gender1");
+  cum_gender = document.getElementsByClassName("cum-gender");
+  age = document.getElementsByClassName("age");
+  cum_age = document.getElementsByClassName("cum-age");
+  reasons = document.getElementsByClassName("reason");
+  cum_reasons = document.getElementsByClassName("cum-reason");
+  conditions = document.getElementsByClassName("condition");
+  cum_conditions = document.getElementsByClassName("cum-condition");
+  dead = document.getElementsByClassName("dead");
+  registered_on_art = document.getElementsByClassName("registered-on-art");
+  regimen = document.getElementsByClassName("regimen");
+  tb_status = document.getElementsByClassName("tb_status");
+  side_effects = document.getElementsByClassName("side_effects");
+  adherence = document.getElementsByClassName("adherence");
+  pregnant = document.getElementsByClassName("preg_breastfeed");
+
+  /****************************block 1****************************/
+  /** Compare the sum of patients  initiated, re-initiated and   */
+  /** transfer in against total registered                       */
+  /***************************************************************/
+
+  for(var i = 0; i < on_art.length; i++){
+
+    total_on_art += parseInt(on_art[i].innerHTML);
+
+  }
+
+  for(var i = 0; i < cum_on_art.length; i++){
+
+    total_cum_on_art += parseInt(cum_on_art[i].innerHTML);
+
+  }
+
+  if(total_on_art !== total_registered){
+
+    patient_consistency_div = document.getElementById("patients_consistency");
+    patients_on_art = document.getElementsByClassName("patients_on_art")
+    report_inconsistency += 1;
+
+    patient_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to "
+    patient_consistency_div.innerHTML += "sum of (Newly registered in quarter) values from 27 through 29";
+
+    for(var i = 0; i < patients_on_art.length; i++){
+
+      patients_on_art[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  if(total_cum_on_art !== cum_total_registered){
+
+    cum_patients_consistency_div = document.getElementById("patients_consistency");
+    cum_patients_on_art = document.getElementsByClassName("cum_patients_on_art");
+    report_inconsistency += 1;
+
+    cum_patients_consistency_div.innerHTML = "26. Cumulative total registered is not equal to ";
+    cum_patients_consistency_div.innerHTML += "the sum of (Cumulative ever registered) values from 27 through 29";
+
+    for(var i = 0; i < cum_patients_on_art.length; i++){
+
+      cum_patients_on_art[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /***************************block 2*****************************/
+  /** Compare the sum of Males, Non-pregnant Females and         */
+  /** Pregnant Females against total registered                  */
+  /***************************************************************/
+
+  for(var i = 0; i < gender1.length; i++){
+
+    total_gender += parseInt(gender1[i].innerHTML);
+
+  }
+
+  for(var i = 0; i < cum_gender.length; i++){
+
+    total_cum_gender += parseInt(cum_gender[i].innerHTML);
+
+  }
+
+  if(total_gender !== total_registered){
+
+    gender_class = document.getElementsByClassName("gender_class")
+    gender_consistency_div = document.getElementById("gender_consistency");
+    report_inconsistency += 1;
+
+    gender_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
+    gender_consistency_div.innerHTML += "the sum of (Newly registered in quarter) values from 30 through 32";
+
+    for(var i = 0; i < gender_class.length; i++){
+
+      gender_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  if(total_cum_gender !== cum_total_registered){
+
+    cum_gender_class = document.getElementsByClassName("cum_gender_class")
+    cum_gender_consistency_div = document.getElementById("cum_gender_consistency");
+    report_inconsistency += 1;
+
+    cum_gender_consistency_div.innerHTML = "26. Cumulative total registered is not equal to "
+    cum_gender_consistency_div.innerHTML += "the sum of (Cumulative ever registered) values from 30 through 32";
+
+    for(var i = 0; i < cum_gender_class.length; i++){
+
+      cum_gender_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /************************block 3********************************/
+  /* Compare the sum of Children below 24 m at ART initiation,   */
+  /* Children 24 m - 14 yrs at ART initiation,                   */
+  /* Adults 15 years or older at ART initiation and Unknown age  */
+  /* against total registered                                    */
+  /***************************************************************/
+
+  for(var i = 0; i < age.length; i++){
+
+    total_age += parseInt(age[i].innerHTML);
+
+  }
+
+  for(var i = 0; i < cum_age.length; i++){
+
+    total_cum_age += parseInt(cum_age[i].innerHTML);
+
+  }
+
+  if(total_age !== total_registered){
+
+    age_class = document.getElementsByClassName("age_class");
+    age_consistency_div = document.getElementById("age_consistency");
+    report_inconsistency += 1;
+
+    age_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
+    age_consistency_div.innerHTML += "the sum of (Newly registered in quarter) values from 33 through 35";
+
+    for(var i = 0; i < age_class.length; i++){
+
+      age_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  if(total_cum_age !== cum_total_registered){
+
+    age_class = document.getElementsByClassName("cum_age_class");
+    cum_age_consistency_div = document.getElementById("cum_age_consistency");
+    report_inconsistency += 1;
+
+    cum_age_consistency_div.innerHTML = "26. Cumulative ever registered is not equal to ";
+    cum_age_consistency_div.innerHTML += "the sum of (Cumulative ever registered) values from 33 through 35";
+
+    for(var i = 0; i < cum_age_class.length; i++){
+
+      cum_age_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /****************************block 4****************************/
+  /* Comparing the sum values of Reason for starting ART against */
+  /* total registered                                            */
+  /***************************************************************/
+
+  for(var i = 0; i < reasons.length; i++){
+
+    total_reasons += parseInt(reasons[i].innerHTML);
+
+  }
+
+  for(var i = 0; i < cum_reasons.length; i++){
+
+    total_cum_reasons += parseInt(cum_reasons[i].innerHTML);
+
+  }
+
+  if(total_reasons !== total_registered){
+
+    reason_class = document.getElementsByClassName("reason_class")
+    reasons_consistency_div = document.getElementById("reasons_consistency");
+    report_inconsistency += 1;
+
+    reasons_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
+    reasons_consistency_div.innerHTML += "Reasons for starting ART.";
+
+    for(var i = 0; i < reason_class.length; i++){
+
+      reason_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  if(total_cum_reasons !== cum_total_registered){
+
+    cum_reason_class = document.getElementsByClassName("cum_reason_class")
+    cum_reasons_consistency = document.getElementById("cum_reasons_consistency");
+    report_inconsistency += 1;
+
+    cum_reasons_consistency.innerHTML = "26. Cumulative total registered is not equal to "
+    cum_reasons_consistency.innerHTML += "Reason for starting ART.";
+
+    for(var i = 0; i < cum_reason_class.length; i++){
+
+      cum_reason_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /***************************block 5*****************************/
+  /*  Comparing the sum values of                                */
+  /*  Stage defining conditions at ART initiation against        */
+  /*  total registered                                           */
+  /***************************************************************/
+
+  for(var i = 0; i < conditions.length; i++){
+
+    total_conditions += parseInt(conditions[i].innerHTML);
+
+  }
+
+  for(var i = 0; i < cum_conditions.length; i++){
+
+    total_cum_conditions += parseInt(cum_conditions[i].innerHTML);
+
+  }
+
+  if(total_conditions !== total_registered){
+
+    condition_class = document.getElementsByClassName("condition_class");
+    conditions_consistency_div = document.getElementById("conditions_consistency");
+    report_inconsistency += 1;
+
+    conditions_consistency_div.innerHTML = "26. Newly total registered in quarter) is not equal to "
+    conditions_consistency_div.innerHTML += "Stage defining condition.";
+
+    for(var i = 0; i < condition_class.length; i++){
+
+      condition_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  if(total_cum_conditions !== cum_total_registered){
+
+    cum_condition_class = document.getElementsByClassName("cum_condition_class");
+    cum_conditions_consistency_div = document.getElementById("cum_conditions_consistency");
+    report_inconsistency += 1;
+
+    cum_conditions_consistency_div.innerHTML = "26. Cumulative total registered is not equal to "
+    cum_conditions_consistency_div.innerHTML += "Stage defining conditions.";
+
+    for(var i = 0; i < cum_condition_class.length; i++){
+
+      cum_condition_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /*****************************block 6***************************/
+  /*  Comparing the sum of the values of all the patients died   */
+  /*  against the value "Died total"
+   /***************************************************************/
+
+  for(var i = 0; i < dead.length; i++){
+
+    total_dead += parseInt(dead[i].innerHTML);
+
+  }
+
+  if(total_dead !== died_total){
+
+    dead_class = document.getElementsByClassName("dead_class");
+    died_consistency_div = document.getElementById("died_consistency");
+    report_inconsistency += 1;
+
+    died_consistency_div.innerHTML = "55. Died total is not equal to  ";
+    died_consistency_div.innerHTML += "the sum of all dead patients.";
+
+
+    for(var i = 0; i < dead_class.length; i++){
+
+      dead_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /*****************************block 7***************************/
+  /*  Comparing the sum of Total alive and on ART, Died total,   */
+  /*  Defaulted, Stopped taking ARVs and Transferred Out against */
+  /*  total registered (cummulative)                             */
+  /***************************************************************/
+
+  for(var i = 0; i < registered_on_art.length; i++){
+
+    total_registered_on_art += parseInt(registered_on_art[i].innerHTML);
+
+  }
+
+  if(total_registered_on_art !== cum_total_registered){
+
+    reg_on_art_class = document.getElementsByClassName("reg_on_art_class");
+    total_consistency_div = document.getElementById("total_consistency");
+    report_inconsistency += 1;
+
+    total_consistency_div.innerHTML = "26. Cumulative total registered is not equal to ";
+    total_consistency_div.innerHTML += "(total alive patients + dead + defaulted + stopped taking art + transfered out).";
+
+
+    for(var i = 0; i < reg_on_art_class.length; i++){
+
+      reg_on_art_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /*************************block 8*******************************/
+  /*  Comparing the sum of all the regimens against total alive  */
+  /*  and on art                                                 */
+  /***************************************************************/
+
+  for(var i =0; i < regimen.length; i++){
+
+    total_regimen += parseInt(regimen[i].innerHTML);
+
+  }
+
+  if(total_alive_and_on_art != total_regimen){
+
+    regimen_class = document.getElementsByClassName("regimen_class");
+    regimen_consistency_div = document.getElementById("regimen_consistency");
+    report_inconsistency += 1;
+
+    regimen_consistency_div.innerHTML = "50. Total alive and on ART  is not equal to "
+    regimen_consistency_div.innerHTML += "Secondary outcomes of those alive on ART.";
+
+
+    for(var i =0; i < regimen_class.length; i++){
+
+      regimen_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /**************************block 9 *****************************/
+  /*  Comparing the sum of values in Pregnant / Breastfeeding    */
+  /*  against total alive                                        */
+  /***************************************************************/
+
+  for(var i = 0; i < tb_status.length; i++){
+
+    total_tb_status += parseInt(tb_status[i].innerHTML);
+
+  }
+
+  if(total_tb_status !== total_alive_and_on_art){
+
+    tb_status_class = document.getElementsByClassName("tb_status_class");
+    tb_status_consistency_div = document.getElementById("tb_status_consistency");
+    report_inconsistency += 1;
+
+    tb_status_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    tb_status_consistency_div.innerHTML += "all patients with any form of TB status.";
+
+
+    for(var i = 0; i < tb_status_class.length; i++){
+
+      tb_status_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /************************block 10*******************************/
+  /*  Comparing the sum of values in tb status against total     */
+  /*  alive                                                      */
+  /***************************************************************/
+
+  for(var i = 0; i < pregnant.length; i++){
+
+    total_pregnant += parseInt(pregnant[i].innerHTML);
+
+  }
+
+  if(total_pregnant !== total_alive_and_on_art){
+
+    pregnant_class = document.getElementsByClassName("pregnant_class");
+    pregnant_consistency_div = document.getElementById("pregnant_consistency");
+    report_inconsistency += 1;
+
+    pregnant_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    pregnant_consistency_div.innerHTML += "all patients with pregnant/breastfeeds during visit.";
+
+    for(var i = 0; i < pregnant_class.length; i++){
+
+      pregnant_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /*****************************block 11**************************/
+  /*  Comparing the sum of all the value in Side effects against */
+  /*  total alive                                                */
+  /***************************************************************/
+
+  for(var i = 0; i < side_effects.length; i++){
+
+    total_side_effects += parseInt(side_effects[i].innerHTML);
+
+  }
+
+  if(total_side_effects !== total_alive_and_on_art){
+
+    side_effects_class = document.getElementsByClassName("side_effects_class");
+    side_effect_consistency_div = document.getElementById("side_effect_consistency");
+    report_inconsistency += 1;
+
+    side_effect_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    side_effect_consistency_div.innerHTML += "total number of patients with/without Side effects.";
+
+    for(var i = 0; i < side_effects_class.length; i++){
+
+      side_effects_class[i].style.border = "3px solid red"
+
+    }
+
+  }
+
+  /***************************************************************/
+
+  /*********************block 12 *********************************/
+  /*  Comparing the sum values in adherence block against total  */
+  /*  alive                                                      */
+  /***************************************************************/
+
+  for(var i = 0; i < adherence.length; i++){
+
+    total_adherence += parseInt(adherence[i].innerHTML);
+
+  }
+
+  if(total_adherence !== total_alive_and_on_art){
+
+    adherence_class = document.getElementsByClassName("adherence_class");
+    adherence_consistency_div = document.getElementById("adherence_consistency");
+    report_inconsistency += 1;
+
+    adherence_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    adherence_consistency_div.innerHTML += "total number of patients adhering to drugs.";
+
+    for(var i = 0; i < adherence_class.length; i++){
+
+      adherence_class[i].style.border = "3px solid red"
+    }
+  }
+
+  /***************************************************************/
+
+  if(report_inconsistency > 0){
+    var title_div = document.getElementById("incosistence_title");
+    if(title_div == null) {
+      title_div = document.createElement("div");
+      var title = document.createTextNode("This report has the following ("+report_inconsistency+") inconsistences:");
+      title_div.setAttribute("id", "incosistence_title");
+      title_div.appendChild(title);
+    }
+    var current_div = document.getElementById("consistency_check");
+    document.body.insertBefore(title_div, current_div);
+  }
+
+}
+
+
+  
+  
+
+</script>
+
+<form id="pdf" method="post" action="/cohort_tool/pdf_printout_cohort.pdf" name="pdf_printout">
+</form>
+
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script>
+function getTotal(app){
+        jQuery.ajax({
+            url: '/concepts/' + app,
+            success: function(result){
+                document.getElementById('total_app_concepts').innerHTML = result;
+            },
+            error: function(error){
+                console.log(error)
+            }
+        })
+    }
+
+
+function printPDF() {
+  var pdfForm = document.getElementById('pdf')
+  for (name in print_pdf_attr){
+    var input = document.createElement('input');
+    input.setAttribute('type','hidden');
+    input.setAttribute('name',"cohort_params[" + name + "]");
+    input.setAttribute('value', print_pdf_attr[name]);
+    pdfForm.appendChild(input);
+  }
+
+  var year = Year
+  
+  var cohort_quarter = ': ' + Quarter;
+
+  var input = document.createElement('input');
+  input.setAttribute('type','hidden');
+  input.setAttribute('name',"cohort_year");
+  input.setAttribute('value', year);
+  pdfForm.appendChild(input);
+
+  input = document.createElement('input');
+  input.setAttribute('type','hidden');
+  input.setAttribute('name',"cohort_quarter");
+  input.setAttribute('value', cohort_quarter);
+  pdfForm.appendChild(input);
+
+
+  document.pdf_printout.target = "my_pdf";
+  var w = (window.innerWidth - 80) ; var h = (window.innerHeight - 8);
+  window.open("","my_pdf","width=" + w + ",height=" + h + ",toolbar=0");
+  document.pdf_printout.submit();
+}
+
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+  });
+  return vars;
+}
+
+var cohortResults;
+
+function getIndicators() {
+  if(!runningReport)
+    return;
+
+  document.getElementById('spinner').style = 'display: inline;';
+
+  document.getElementById('report-cover').style = 'display: inline;';
+  
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/1/reports/cohort?name=";
+
+  if(Quarter == 'Custom'){
+    url += "Cohort-" + start_date + "-" + end_date;
+    url += "&start_date="  + start_date;
+    url += "&end_date="  + end_date;
+  }else{
+    url += Quarter + " " + Year;
+  }
+
+  if(regenerate_report === true) {
+    url += "&regenerate=true";
+    regenerate_report = false;
+    reload_status = true;
+  }
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      runningReport = false
+      cohortResults = JSON.parse(this.responseText);
+      myStopFunction();
+      renderResults();
+
+      document.getElementById('spinner').style = 'display: none;';
+      document.getElementById('report-cover').style = 'display: none;';
+        
+      if(reload_status == true) 
+        location.reload();
+
+    } else if (this.readyState === 4) {
+      runningReport = true;
+      setTimeout(getIndicators, 60000);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+
+}
+
+var myVar;
+var runningReport = true;
+var reload_status = false;
+
+function checkIfReportReady() {
+  myVar = setTimeout(getIndicators, 60000);
+  if(runningReport == false)
+    location.reload()
+
+}
+
+function myStopFunction() {
+  clearTimeout(myVar);
+}
+
+function renderResults() {
+  var cohortValues = cohortResults.values;
+  for(var i = 0 ; i < cohortValues.length ; i++){
+    var id = cohortValues[i].name;
+    var indicator;
+    
+    try{
+      indicator = document.getElementById(id);
+      indicator.setAttribute('href', `javascript:drillDown('${cohortValues[i].id}, ${cohortValues[i].name}');`);
+      indicator.innerHTML = cohortValues[i].contents;
+      print_pdf_attr[id] = cohortValues[i].contents;
+    }catch(e){
+      continue;
+    }
+  }
+
+  runningReport = false;
+  validateReport();
+}
+
+var regenerate_report = false;
+
+function regenerateReport() {
+  regenerate_report = true;
+  runningReport = true;
+  getIndicators();
+}
+
+var quarter_val  = getUrlVars()["quarter"];
+
+if(quarter_val == undefined) {
+    var start_date = getUrlVars()["start_date"];
+    var end_date = getUrlVars()["end_date"];
+    var Quarter = 'Custom';
+    var Year = moment(start_date).format("DD/MMM/YYYY"); 
+    Year += " " + moment(end_date).format("DD/MMM/YYYY"); 
+}else{
+    quarter_val  = quarter_val.replace(/%20/," ");
+    var Year    = quarter_val.split(" ")[1];
+    var Quarter = quarter_val.split(" ")[0];
+}
+
+document.getElementById("display-quarter").innerHTML = "Quarter: " + Quarter;
+document.getElementById("display-quarter-year").innerHTML = "Year: " + Year;
+
+document.getElementById('clinic-name').innerHTML = sessionStorage.currentLocation;
+getIndicators();
+
+
+
+function printWindow() {
+  var footer = document.getElementsByClassName('footer')[0];
+  footer.style = 'display: none;';
+  window.print();
+  footer.style = 'display: inline;';
+}
+
+function checkIfTempTablesExisit() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/temp_earliest_start_table_exisit";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      cohortResults = JSON.parse(this.responseText);
+      if(cohortResults.status != 'Down'){
+        document.getElementById('tasks').style = "visibility: visible;";
+      }
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+
+}
+
+
+checkIfTempTablesExisit();
+
+</script>
+
+</html>
