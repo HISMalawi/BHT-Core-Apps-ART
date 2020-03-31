@@ -62,7 +62,7 @@ function loadQuarters() {
   var current_qtr = "";
   var curr_date = new Date();
   var curr_year = curr_date.getFullYear();
-
+  curr_date = new Date(curr_date.getFullYear() +'-'+ (curr_date.getMonth()+1) +'-'+ curr_date.getDate() + " 00:00");
   if(  curr_date >= (new Date(curr_year + '-01-01')) && curr_date <= (new Date(curr_year + '-03-31'))  ){
       current_qtr = '1 ' + curr_year;
   }else if ( curr_date >= (new Date(curr_year + '-04-01')) && curr_date <= (new Date(curr_year + '-06-30')) ){
