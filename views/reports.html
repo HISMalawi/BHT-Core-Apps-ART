@@ -78,8 +78,7 @@ function reportGrouping(group) {
       ['Cohort / disaggregated','','/apps/ART/views/cohort_tool/revised_cohort_menu.html', 'link'],
       ['Survival analysis','','/apps/ART/views/cohort_tool/revised_cohort_menu.html?type=survival_analysis', 'link'],
       ["Viral load", "","#",'link'],
-      ["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_coverage",'link'],
-      ["IPT","","#",'link']
+      ["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link']
     ];
   }else if(group == 'Clinic'){
     return [
@@ -95,7 +94,9 @@ function reportGrouping(group) {
         ["Disaggregated","","/apps/ART/views/reports/pepfar/report_dates.html?report=disaggregated",'link'],
         ["Defaulter list","","/apps/ART/views/reports/pepfar/report_dates.html?report=defaulter_list",'link'],
         ["Regimen report","","/apps/ART/views/reports/pepfar/report_dates.html?report=regimen_report",'link'],
-        ["TX CURR MMD","","/apps/ART/views/reports/pepfar/report_dates.html?report=patient_art_refill_periods",'link']
+        ["TX CURR MMD","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_curr_mmd",'link'],
+        ["TX ML","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_ml",'link'],
+        ["TX RTT","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_rtt",'link']
       ];
   }else{
   }  

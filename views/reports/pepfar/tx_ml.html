@@ -1,0 +1,409 @@
+
+<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
+
+<style>
+.disaggregated-numbers {
+  text-align: right;
+  padding-right: 10px;
+}
+
+#spinner {
+  position: absolute;
+  top: 15%;
+  left: 40%;
+  display: none;
+}
+
+#percentage-counter {
+  position: absolute;
+  top: 35%;
+  font-size: 70px;
+  z-index: 1;
+  border-radius: 38px;
+  border-style: solid;
+  padding: 30px;
+  left: 50%;
+  margin-left: -50px;
+  border-width: 10px;
+  background-color: darkgray;
+  color: white;
+}
+
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+.title-table {
+  display: table;
+  width: 100%;
+}
+
+.title-row {
+  display: table-row;
+}
+
+.title-cell {
+  display: table-cell;
+  height: 30px;
+  vertical-align: top;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+
+#title-cell-left {
+  vertical-align: middle;
+  width: 100px;
+}
+
+#title-cell-left img {
+  height: 95px;
+  width: 95px;
+  margin: 5px;
+}
+
+#title-cell-right {
+  margin-left: 5px;
+}
+
+#data-cell {
+  display: table-cell;
+  width: 100%;
+}
+
+#report {
+  width: 100%;
+}
+
+th {
+  text-align: left;
+}
+
+.dt-numbers {
+  margin-right: 15px;
+  text-align: right;
+}
+
+</style>
+
+<script>
+var url = window.location.href;
+url = new URL(url);
+var start_date = url.searchParams.get("start_date");
+var end_date = url.searchParams.get("end_date");
+var dataSet = [];
+var data_table;
+
+function initializeTable() {
+  var date_title = moment(start_date).format('DD/MMM/YYYY');
+  date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
+  document.getElementById('reporting-period').innerHTML = date_title;
+
+  data_table = $('#example').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: false,
+    scrollY: 400,
+    Processing: true,
+    ServerSide: true,
+    scroller: {
+      loadingIndicator: true
+    },
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX ML report: " + date_title
+      },
+      {
+        extend: 'pdf',
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX ML report: " + date_title
+      }
+    ],
+    columnDefs: [
+      {"className": "dt-numbers", "targets": 3},
+      {"className": "dt-numbers", "targets": 4},
+      {"className": "dt-numbers", "targets": 5},
+      {"className": "dt-numbers", "targets": 6},
+      {"className": "dt-numbers", "targets": 7}
+    ]
+  });
+
+}
+
+
+</script>
+
+
+
+
+
+<div class="title-table">
+  <div class='title-row'>
+    <div class='title-cell' id='title-cell-left'>
+      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
+    </div>
+    <div class='title-cell' id='title-cell-right'>
+      <table style="width: 100%; text-align: left; margin-left: 10px;">
+        <tr>
+          <th>Title:</th><td colspan="2" id="report-title">PEPFAR TX ML report<td>
+        </tr>
+        <tr>
+          <th>Period:</th>
+          <td id="reporting-period"><td>
+        </tr>
+        <!--tr>
+          <th>Total clients:</th>
+          <td id="total-clients">0<td>
+        </tr-->
+      </table>
+    </div>
+      </table>
+    </div>
+  </div>
+</div>
+  
+
+<div>
+  <table id="example" class="display" width="100%">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Age group</th>
+        <th>Gender</th>
+        <th class="disaggregated-numbers">Defaulted</th>
+        <th class="disaggregated-numbers">Died</th>
+        <th class="disaggregated-numbers">Stopped</th>
+        <th class="disaggregated-numbers">Transferred out</th>
+        <th class="disaggregated-numbers">Unknown</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+</div>
+
+<div id="buttons" class="buttonsDiv">
+  <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
+</div>
+
+<!--img src="/apps/OPD/assets/images/formloader.gif" id="spinner" /-->
+<!--div id="percentage-counter">0%</div-->
+<div id="report-cover"></div>
+
+
+<script>
+
+function initializeReport() {
+  var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+  url += "/tx_ml?date=" + moment().format('YYYY-MM-DD');
+  url += "&start_date=" + start_date;
+  url += "&end_date=" + end_date;
+  url += '&program_id=' + sessionStorage.programID;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      //addNumbers(obj);
+      loadGroupData(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function addClass(id) {
+  var tr = document.getElementById(id);
+  tr.style = 'background-color: lightyellow;';
+  var cells = tr.getElementsByTagName('td');
+
+  for(var i = 0 ; i < cells.length; i++){
+    if(i >= 3 )
+      cells[i].setAttribute('class','disaggregated-numbers');
+  
+  }
+}
+
+function addTableBody() {
+  var columns = [
+    '<1 year', '1-4 years',
+    '5-9 years', '10-14 years',
+    '15-19 years', '20-24 years',
+    '25-29 years', '30-34 years',
+    '35-39 years', '40-44 years',
+    '45-49 years', '50 plus years',
+    'Unknown'
+  ];
+
+  var table_body = document.getElementById('table-body');
+  var row_count = 1;
+  var gender = ['Female', 'Male'];
+
+  for(var s = 0 ; s < gender.length; s++){
+    for(var i = 0 ; i < columns.length; i++){
+      var tr = document.createElement('tr');
+      tr.setAttribute('class', gender[s] + '_row');
+      tr.setAttribute('id', gender[s] + '_' + columns[i]);
+      table_body.appendChild(tr);
+      var td_count = 0;
+
+      while (td_count < 4) {
+        var td = document.createElement('td');
+        tr.appendChild(td);
+        if(td_count == 0)
+          td.innerHTML = (row_count++);
+        
+        if(td_count == 1)
+          td.innerHTML = columns[i];
+           
+        if(td_count == 2)
+          td.innerHTML = gender[s];
+           
+        if(td_count > 2){
+          td.innerHTML = 0;
+          td.setAttribute('class','disaggregated-numbers');
+        }   
+        tr.appendChild(td);
+        td_count++;
+      }
+
+    }
+  }
+}
+
+function ageGroups() {
+  return [
+    '0-5 months', '6-11 months','12-23 months',
+    '2-4 years', '5-9 years',
+    '10-14 years', '15-17 years',
+    '18-19 years', '20-24 years',
+    '25-29 years', '30-34 years',
+    '35-39 years', '40-44 years',
+    '45-49 years', '50 plus years'
+  ]
+}
+
+//ageGroups();
+//addTableBody();
+initializeTable();
+fetchData();
+
+function fetchData() {
+  //var counter = document.getElementById('percentage-counter');
+  //counter.innerHTML = Math.round((global_counter / 13)*100) + "%";
+//      document.getElementById('report-cover').style = "display: none;";
+      //document.getElementById('percentage-counter').style = "display: none;";
+
+  global_counter++;
+  initializeReport();
+}
+
+function addNumbers(data) {
+  document.getElementById('report-cover').style = "display: none;";
+  var total_clients = document.getElementById('total-clients');
+  var table_body = document.getElementById('table-body');
+  var rows = table_body.children;
+  var total = 0;
+
+  for(var age_group in data) {
+    var genders = data[age_group];
+    for(var gender in genders) {
+      for(var j = 0; j < rows.length; j++){
+        var tds = rows[j].children;
+        if(tds[1].innerHTML  == age_group && tds[2].innerHTML  == gender){
+          tds[3].innerHTML  = data[age_group][gender].length;
+          total += parseInt(tds[3].innerHTML);
+        }
+      }
+    }
+    total_clients.innerHTML = total;
+  }
+
+  $('#example').DataTable().destroy();
+  initializeTable();
+}
+
+
+
+
+function loadGroupData(data){
+  //this.loadXLdata();
+  //this.report_title = sessionStorage.location_name + " TX ML: " + moment(this.startDate).format('DD/MMM/YYYY')
+  //this.report_title += " - " + moment(this.endtDate).format('DD/MMM/YYYY')
+  var counter = 1;
+  var report_gender = ['F','M'];
+  var set_age_groups = ageGroups();
+  //this.dTable.fnClearTable();
+
+
+  for(var j = 0; j < report_gender.length; j++){
+    var age_group_found = false;
+    for(var i = 0; i < set_age_groups.length; i++){
+
+      for(var age_group in data){
+        var gender = data[age_group];  
+        for(var sex in gender){
+          if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
+            var numbers = gender[sex];
+            data_table.row.add([ counter++, age_group, sex, numbers[0],
+                numbers[1], numbers[2], numbers[3], numbers[4]]).draw();
+            age_group_found = true;
+
+          }
+        }
+      }
+      if(!age_group_found){
+        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0,0,0 ]).draw();
+      }else{
+        age_group_found = false;
+      }
+    }
+  }
+
+  document.getElementById('report-cover').style = "display: none;";
+}
+
+
+
+
+
+
+
+
+
+
+var global_counter = 1;
+</script>
+
