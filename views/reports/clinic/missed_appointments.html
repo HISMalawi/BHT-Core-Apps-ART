@@ -122,7 +122,7 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','First name','Last name', 'Gender','DOB','Appointment','Eventual visit date','Contact details'];
+  var headers = ['ARV#','First name','Last name', 'Gender','DOB','Appointment','Current outcome','Contact details'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -181,7 +181,9 @@ function loadClients(data) {
     var arv_num = data[i].arv_number;
     var person_id = data[i].person_id;
     var appointment_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
-    var ecame_one = data[i].eventually_came_on;
+    var current_outcome = data[i].current_outcome;
+    //var ecame_one = data[i].eventually_came_on;
+
     var contact = [];
     if(data[i].cell_number)
       contact.push("CELL: " + data[i].cell_number);
@@ -195,9 +197,6 @@ function loadClients(data) {
     if(data[i].village)
       contact.push("Village: " + data[i].village);
 
-    if(ecame_one)
-     ecame_one = moment(ecame_one).format('DD/MMM/YYYY');
-
     var contact_details = '';
     for(var j = 0; j < contact.length; j++) {
       if(j > 0)
@@ -208,7 +207,7 @@ function loadClients(data) {
 
     formatted_data.push([arv_num, given_name, 
       family_name, gender, birthdate, appointment_date,
-      ecame_one, contact_details]);
+      current_outcome, contact_details]);
   }
  
   var period = start_date + " - " + end_date;
