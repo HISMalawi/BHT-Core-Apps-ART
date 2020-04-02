@@ -120,18 +120,6 @@ function loadQuarters() {
 var quarters_set = false;
 var action_set = false;
 
-function survivalAnalysis() {
-  var url = window.location.href;
-  url = new URL(url);
-  var type = url.searchParams.get("type");
-  if(type == 'survival_analysis'){
-    var f = document.getElementById('quarter');
-    f.setAttribute('action', 'survival_analysis.html');
-    action_set = true;
-    //gotoPage(0);
-  }
-}
-
 function changeFinishBtn() {
   var btn = document.getElementById("nextButton");
   btn.setAttribute("onmousedown","submitSelectedOpts();");
@@ -141,6 +129,18 @@ function submitSelectedOpts(){
   var selected_val = $("touchscreenInput0").value;
   if(selected_val.length < 1){
     showMessage('Please select one option from the list');
+    return;
+  }
+
+  var url = window.location.href;
+  url = new URL(url);
+  var type = url.searchParams.get("type");
+  if(type == 'survival_analysis'){
+    if(selected_val == 'Set custom period'){
+      showMessage("Currently Survival analysis<br />can not process custom dates.<br/>Please select a quarter");
+    }else{
+      document.location = 'survival_analysis.html?quarter=' + selected_val;
+    }
     return;
   }
 
@@ -174,7 +174,7 @@ function submitSelectedOpts(){
     <div id="content">
       <form id='quarter' action="revised_cohort.html" method="get">
         <select helpText="Select Quarter" id="quarters" 
-          name="quarter" tt_onLoad="__$('keyboard').style.display = 'none';loadQuarters();survivalAnalysis();changeFinishBtn();" 
+          name="quarter" tt_onLoad="__$('keyboard').style.display = 'none';loadQuarters();changeFinishBtn();" 
           tt_onUnLoad="__checkSelected();">
         </select>
 
