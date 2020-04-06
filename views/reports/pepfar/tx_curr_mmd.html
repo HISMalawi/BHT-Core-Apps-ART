@@ -150,9 +150,9 @@ function initializeTable() {
       }
     ],
     columnDefs: [
-      {"className": "dt-numbers", "targets": 2},
       {"className": "dt-numbers", "targets": 3},
-      {"className": "dt-numbers", "targets": 4}
+      {"className": "dt-numbers", "targets": 4},
+      {"className": "dt-numbers", "targets": 5}
     ]
   });
 
@@ -197,7 +197,7 @@ function initializeTable() {
       <tr>
         <th>#</th>
         <th>Age group</th>
-        <!--th>Gender</th-->
+        <th>Gender</th>
         <th class="center-text" scope="col"># of clients on <3 months of ARVs</th>
         <th class="center-text" scope="col"># of clients on 3 - 5 months of ARVs</th>
         <th class="center-text" scope="col"># of clients on >= 6 months of ARVs</th>
@@ -227,8 +227,20 @@ function initializeReport() {
     min_age = ages[0];
     max_age = ages[1];
   }else{
-    for(var i = 0; i < rowData.length; i++){
-      data_table.row.add(rowData[i]).draw();    
+    var gender = ["Female", "Male"];
+    var counter = 1;
+
+    for(var g = 0; g < gender.length; g++){
+      for(var i = 0; i < rowData.length; i++){
+        if(gender[g] != rowData[i][1])
+          continue;
+
+        data_table.row.add([ 
+          counter++, rowData[i][0],
+          rowData[i][1], rowData[i][2],
+          rowData[i][3], rowData[i][4] 
+        ]).draw();    
+      }
     }
     document.getElementById('report-cover').style = "display: none;";
     return;
@@ -271,8 +283,7 @@ function addTableBody() {
     '15-19 years', '20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years',
-    'Unknown'
+    '45-49 years', '50 plus years'
   ];
 
   var table_body = document.getElementById('table-body');
@@ -315,8 +326,7 @@ var ageGroups = [
   '<1 year', '1-4 years','5-9 years',
   '10-14 years', '15-19 years', '20-24 years',
   '25-29 years', '30-34 years', '35-39 years',
-  '40-44 years', '45-49 years', '50 plus years',
-  'Unknown'
+  '40-44 years', '45-49 years', '50 plus years'
 ]
 
 //ageGroups();
@@ -394,33 +404,69 @@ function  setMinMaxAges(group){
   if(group == '50 plus years')
     return [50, 10000];
 
-  if(group == 'Unknown')
-    return ['Unknown', 'Unknown'];
-
 }
 
 var rowData = [];
 
+var column_3 = {};
+var column_4 = {};
+var column_5 = {};
+
 function addRow(data){
-  var column_3 = 0;
-  var column_4 = 0;
-  var column_5 = 0;
+  var client_sex = ["Female", "Male"];
 
-  for(var person_id in data){
-    var info =  data[person_id];
-    var prescribed_days = info.prescribed_days;
+  for(var i = 0; i < client_sex.length; i++){
+    var gender = client_sex[i];
+    if(column_3[gender] == undefined){
+      column_3[gender] = {};
+      column_3[gender][ageGroups[0]] = 0;
+    }else if(column_3[gender][ageGroups[0]] == undefined){
+      column_3[gender][ageGroups[0]] = 0;
+    }
+    
+    if(column_4[gender] == undefined){
+      column_4[gender] = {};
+      column_4[gender][ageGroups[0]] = 0;
+    }else if(column_4[gender][ageGroups[0]] == undefined){
+      column_4[gender][ageGroups[0]] = 0;
+    }
 
-    if(prescribed_days < 60)
-      column_3 += 1
+    if(column_5[gender] == undefined){
+      column_5[gender] = {};
+      column_5[gender][ageGroups[0]] = 0;
+    }else if(column_5[gender][ageGroups[0]] == undefined){
+      column_5[gender][ageGroups[0]] = 0;
+    }
+        
+    for(var gender in data){
+      if(gender != client_sex[i])
+        continue;
+        
+      var patient_ids = data[gender];
+      for(var patinet_id in patient_ids){ 
+        var info =  data[gender][patinet_id];
+        var prescribed_days = info.prescribed_days;
+        
+        if(prescribed_days < 60)
+          column_3[gender][ageGroups[0]]  += 1
 
-    if(prescribed_days >= 60 && prescribed_days <= 150)
-      column_4 += 1
+        if(prescribed_days >= 60 && prescribed_days <= 150)
+          column_4[gender][ageGroups[0]]  += 1
 
-    if(prescribed_days > 150)
-      column_5 += 1
+        if(prescribed_days > 150)
+          column_5[gender][ageGroups[0]]  += 1
+
+      }
+    }
+
+    var gender = client_sex[i];
+    rowData.push([ ageGroups[0], gender,  
+      column_3[gender][ageGroups[0]], 
+      column_4[gender][ageGroups[0]], 
+      column_5[gender][ageGroups[0]] 
+    ]);
 
   }
-  rowData.push([ (rowCounter++), ageGroups[0], column_3, column_4, column_5 ]);
   ageGroups.shift();
   initializeReport();
 }
