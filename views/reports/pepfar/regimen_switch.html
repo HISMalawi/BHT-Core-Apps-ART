@@ -123,7 +123,7 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','Gender','DOB','Curr.Reg','ARVs', 'Curr.reg dispensed'];
+  var headers = ['ARV#','Patient type','Gender','DOB','Prev.Reg','Curr.Reg','ARVs', 'Curr.reg dispensed date'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -133,16 +133,16 @@ function buildDataTable(e) {
     if(i == 0) 
       th.setAttribute('class', 'npid');
 
-    if(i == 1) 
+    if(i == 2) 
       th.setAttribute('class', 'given_name');
 
-    if(i == 2) 
+    if(i == 3) 
       th.setAttribute('class', 'family_name');
 
-    if(i == 3) 
+    if(i == 4) 
       th.setAttribute('class', 'gender');
 
-    if(i == 4) 
+    if(i == 5) 
       th.setAttribute('class', 'birthdate');
   
   }
@@ -151,10 +151,10 @@ function buildDataTable(e) {
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/regimen_report?start_date=" + sdate + "&end_date=" + edate
+  url += "/regimen_switch?start_date=" + sdate + "&end_date=" + edate
   url += "&program_id=" + sessionStorage.programID;
   url += "&date=" + sessionStorage.sessionDate;
-  url +="&type=pepfar"
+  url += "&pepfar=true";
 
   document.getElementById('spinner').style = 'display: inline;';
   document.getElementById('report-cover').style = 'display: inline;';
@@ -174,7 +174,8 @@ function getList(sdate, edate) {
 
 function loadClients(info) {
   var formatted_data = [];
-  
+  var c = 0;
+
   for (var patient_id in info) {
     var data = info[patient_id];
 
@@ -183,17 +184,19 @@ function loadClients(info) {
     var gender = data.gender;
     var birthdate = moment(data.birthdate).format('DD/MMM/YYYY');
     var arv_num = data.arv_number;
+    var previous_reg = data.previous_regimen;
     var current_reg = data.current_regimen;
     var medications = [];
     var meds = data.medication;
     var prescription_date;
+    var patient_type = data.patient_type;
 
     for(var i = 0; i < meds.length; i++){
       medications.push(meds[i].medication + " (" + meds[i].quantity + ")");
       prescription_date = moment(meds[i].start_date).format('DD/MMM/YYYY');
     }  
   
-    formatted_data.push([arv_num, gender, birthdate,
+    formatted_data.push([arv_num, patient_type, gender, birthdate, previous_reg,
     current_reg, medications.join('<br />'), prescription_date]);
   }
  
@@ -217,11 +220,11 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' PEPFAR client regimen history report: ' + period
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' PEPFAR client regimen history report: ' + period
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period
       }
     ],
     columnDefs: [
@@ -283,7 +286,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Regimen report" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="Regimen switch report" optional = "true"/>
 
       </form>
 

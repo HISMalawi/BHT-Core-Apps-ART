@@ -154,6 +154,7 @@ function getList(sdate, edate) {
   url += "/regimen_report?start_date=" + sdate + "&end_date=" + edate
   url += "&program_id=" + sessionStorage.programID;
   url += "&date=" + sessionStorage.sessionDate;
+  url +="&type=moh";
 
   document.getElementById('spinner').style = 'display: inline;';
   document.getElementById('report-cover').style = 'display: inline;';
