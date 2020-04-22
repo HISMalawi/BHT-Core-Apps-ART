@@ -113,6 +113,74 @@ th {
   text-align: right;
 }
 
+
+#popupBox {
+  position: absolute;
+  background-color: lightgray;
+  left: 0%;
+  top: 0%;
+  z-index: 991;
+  opacity: 1;
+  width: 92%;
+  margin-left: 25px;
+  height: 88%; 
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+#popupData th {
+  border-width: 1px;
+  border-style: solid;
+}
+
+#popupData {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.arv-tables {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pills-info {
+  text-align: right;
+  margin-right: 5px;
+  border-width: none !important;
+}
+
+.main-table-td {
+  border-style: solid;
+  border-width: 1px;
+}
+
+#popupData_length {
+  display: none;
+}
+
+#popupData_info {
+  font-size: 18px;
+}
+
+#popupData_paginate {
+  font-size: 20px;
+}
+
+.dt-arv-numbers  {
+  text-align: center;
+  width: 120px;
+}
+
+.dt-date {
+  text-align: center;
+  width: 100px;
+}
+
+#popupBTN {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
 </style>
 
 <script>
@@ -162,7 +230,23 @@ function initializeTable() {
 </script>
 
 
+<div id="popupBox">
+  <table id="popupData">
+    <thead>
+      <tr>
+        <th>ARV#</th>
+        <th>DOB</th>
+        <th>Dispensed date</th>
+        <th>ARVs</th>
+      </tr>
+  </thead>
+    <tbody id= "popupDataBody">
+    </tbody>
+  </table>
 
+  <button class="button blue navButton" onmousedown="closeBox();" 
+    id="popupBTN"><span>Close</span></button>
+</div>
 
 
 <div class="title-table">
@@ -237,8 +321,10 @@ function initializeReport() {
 
         data_table.row.add([ 
           counter++, rowData[i][0],
-          rowData[i][1], rowData[i][2],
-          rowData[i][3], rowData[i][4] 
+          rowData[i][1], 
+          createLink(rowData[i][2], rowData[i][0], rowData[i][1], 1 ),
+          createLink(rowData[i][3], rowData[i][0], rowData[i][1], 2 ),
+          createLink(rowData[i][4], rowData[i][0], rowData[i][1], 3 )
         ]).draw();    
       }
     }
@@ -262,6 +348,38 @@ function initializeReport() {
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send();
+}
+
+function createLink(num, age_group, gender, colNum){
+  var  span = document.createElement("span");
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("onmousedown","drillDown('" + age_group + "','" + gender + "','" + colNum + "');");
+  a.innerHTML = num;
+  span.appendChild(a);
+  return span.innerHTML;
+}
+
+function drillDown(group, sex,  colNum){
+  for(var gender in drill_down_data){
+    if(gender != sex)
+      continue;
+
+    var age_groups = drill_down_data[gender];
+    for(var age_group in age_groups){
+      if(age_group != group)
+        continue;
+
+      var colNums = age_groups[age_group];
+      for(var col in colNums){
+        if(colNum != col)
+          continue;
+
+        getClients(drill_down_data[gender][age_group][col]);
+      }
+    }
+  }
+
 }
 
 function addClass(id) {
@@ -412,6 +530,8 @@ var column_3 = {};
 var column_4 = {};
 var column_5 = {};
 
+drill_down_data = {};
+
 function addRow(data){
   var client_sex = ["Female", "Male"];
 
@@ -447,15 +567,36 @@ function addRow(data){
         var info =  data[gender][patinet_id];
         var prescribed_days = info.prescribed_days;
         
-        if(prescribed_days < 60)
+        if(drill_down_data[gender]  == undefined)
+          drill_down_data[gender] = {}
+
+        if(drill_down_data[gender][ageGroups[0]]  == undefined)
+          drill_down_data[gender][ageGroups[0]] = {}
+
+        if(prescribed_days < 60){
           column_3[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][1] == undefined)
+            drill_down_data[gender][ageGroups[0]][1] = [];
 
-        if(prescribed_days >= 60 && prescribed_days <= 150)
+          
+          drill_down_data[gender][ageGroups[0]][1].push(patinet_id);
+        }
+
+        if(prescribed_days >= 60 && prescribed_days <= 150){
           column_4[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][2] == undefined)
+            drill_down_data[gender][ageGroups[0]][2] = [];
 
-        if(prescribed_days > 150)
+          drill_down_data[gender][ageGroups[0]][2].push(patinet_id);
+        }
+
+        if(prescribed_days > 150){
           column_5[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][3] == undefined)
+            drill_down_data[gender][ageGroups[0]][3] = [];
 
+          drill_down_data[gender][ageGroups[0]][3].push(patinet_id);
+        }
       }
     }
 
@@ -472,5 +613,142 @@ function addRow(data){
 }
 
 var rowCounter = 1;
+
+
+function getClients(patient_ids) {
+  var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
+  url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
+  url_path += "&end_date=" + end_date + "&program_id=1";
+
+  var params = JSON.stringify({patient_ids: patient_ids});
+  var tbody = document.getElementById("popupDataBody");
+  var tbodyHTML = "<tr><td colspan='5'>Fetching data  please wait  ...</td></tr>";
+  tbody.innerHTML = tbodyHTML;
+  var table = document.getElementById("popupBox");
+  table.style = "display:inline;";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      renderDrillDownData(obj);
+      initializePopUpTable();
+    }
+  };
+  xhttp.open("POST", url_path, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send(params);
+}
+
+function renderDrillDownData(data){
+  var tbody = document.getElementById("popupDataBody");
+  tbody.innerHTML = null;
+  for(var patient_id in data){
+    var drugs_info = [];
+    var main_info = null;
+
+    var regimens = data[patient_id];
+    for(var regimen in  regimens){
+      var drug_ids  = regimens[regimen];
+      for(var drug_id in  drug_ids){
+        var drugs = data[patient_id][regimen][drug_id];
+        
+        for(var id in  drugs){
+          var inf = data[patient_id][regimen][drug_id][id];
+          drugs_info.push([
+            inf.drug_name,
+            inf.quantity,
+            inf.dose_per_day
+          ]);
+          main_info = {
+            arv_number: inf.arv_number,
+            dob: inf.birthdate,
+            start_date: inf.start_date
+          };
+        }
+
+      }
+    }
+
+    if(!main_info)
+      continue;
+      
+    var tr =  document.createElement("tr");
+    var td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.arv_number;
+    tr.appendChild(td);
+    
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.dob;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.start_date;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    tr.appendChild(td);
+    var t = document.createElement("table");
+    t.setAttribute("class","arv-tables")
+    td.appendChild(t);
+
+    for(var i = 0; i< drugs_info.length; i++){
+      var tTr = document.createElement("tr");
+      t.appendChild(tTr);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = drugs_info[i][0];
+      tTr.appendChild(tTd);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = "  (" + drugs_info[i][1] + ", ";
+      tTd.innerHTML  += drugs_info[i][2] + " a day)";
+      tTd.setAttribute("class","pills-info");
+      tTr.appendChild(tTd);
+      
+    }
+
+    tbody.appendChild(tr);
+  }
+
+}
+
+
+
+var popupTable;
+
+function initializePopUpTable() {
+
+  popupTable = $('#popupData').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: true,
+    scrollY: 380,
+    Processing: false,
+    ServerSide: false,
+    scroller: {
+      loadingIndicator: true
+    },
+    columnDefs: [
+      {"className": "dt-arv-numbers", "targets": 0},
+      {"className": "dt-date", "targets": 1},
+      {"className": "dt-date", "targets": 2}
+    ]
+  });
+
+}
+
+function closeBox(){
+  try  {
+    popupTable.destroy();
+  }catch(e){}
+  
+  document.getElementById("popupBox").style = "display: none;";
+}
 </script>
 
