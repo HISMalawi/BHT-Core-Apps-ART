@@ -351,8 +351,35 @@ function addNumbers(data) {
   initializeTable();
 }
 
+var clients = {};
+
+function setDrillClients(age_group, sex, patient_ids, column_number){
+  if(!clients[age_group])
+    clients[age_group] = {};
+
+  if(!clients[age_group][sex])
+    clients[age_group][sex] = {};
+
+  clients[age_group][sex][column_number] = patient_ids;
+  
+  var html = "drillDown(" + column_number;
+  html += ", '" +  sex + "','" +  age_group + "')";
+
+  var span = document.createElement("span");
+  var a = document.createElement("a");
+  a.setAttribute("onclick", html);
+  a.setAttribute("href","#");
+  a.innerHTML = patient_ids.length;
+  span.appendChild(a);
 
 
+  return span.innerHTML;
+}
+
+function drillDown(column_number, sex, age_group){
+  sessionStorage.rttClients = clients[age_group][sex][column_number].join(",");
+  location = "tx_rtt_drill_down.html";
+}
 
 function loadGroupData(data){
   //this.loadXLdata();
@@ -373,8 +400,10 @@ function loadGroupData(data){
         for(var sex in gender){
           if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
             var numbers = gender[sex];
-            data_table.row.add([ counter++, age_group, sex, numbers[0],
-                numbers[1], numbers[2] ]).draw();
+            data_table.row.add([ counter++, age_group, sex, 
+              setDrillClients(age_group, sex, numbers[0], 1),
+              setDrillClients(age_group, sex, numbers[1], 2),
+              setDrillClients(age_group, sex, numbers[2], 3) ]).draw();
             age_group_found = true;
 
           }
