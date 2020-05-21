@@ -354,6 +354,9 @@ function addNumbers(data) {
 var clients = {};
 
 function setDrillClients(age_group, sex, patient_ids, column_number){
+  if(patient_ids.length < 1)
+    return 0;
+
   if(!clients[age_group])
     clients[age_group] = {};
 
