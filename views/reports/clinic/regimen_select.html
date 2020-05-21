@@ -1,0 +1,86 @@
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<!-- <script type="text/javascript" src="/assets/js/clinic_holidays.js"></script> -->
+
+<script>
+var tt_cancel_destination = "/";
+
+function changeFinishButton() {
+  var b = document.getElementById('nextButton');
+  b.setAttribute('onmousedown', 'goToReport()');
+
+  
+}
+
+function goToReport() {
+    var url = window.location.href;
+    url = new URL(url);
+    var start_date = url.searchParams.get("start_date");
+    var end_date = url.searchParams.get("end_date");
+    var regimen  = document.getElementById('regimen_select').value;
+    var formulation = document.getElementById('formulation_select').value;
+    var next_url = "/apps/ART/views/reports/clinic/regimen_distribution_pt.html?start_date=" + start_date;
+    next_url += '&end_date=' + end_date + '&formulation=' + formulation + '&regimen=' + regimen;
+    window.location.href =  next_url;
+}
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+
+      <form>
+        <select allowFreeText="false" helpText="Select Regimen" 
+         id="regimen_select" name="regimen_select"
+         tt_onLoad ="__$('keyboard').style.display = 'none';"
+         >
+          <option value=""></option>
+          <option value="0A">0A</option>
+          <option value="2A">2A</option>
+          <option value="4A">4A</option>
+          <option value="5A">5A</option>
+          <option value="6A">6A</option>
+          <option value="7A">7A</option>
+          <option value="8A">8A</option>
+          <option value="9A">9A</option>
+          <option value="10A">10A</option>
+          <option value="11A">11A</option>
+          <option value="12A">12A</option>
+          <option value="13A">13A</option>
+          <option value="14A">14A</option>
+          <option value="15A">15A</option>
+          <option value="16A">16A</option>
+          <option value="17A">17A</option>
+          <option value="0P">0P</option>
+          <option value="2P">2P</option>
+          <option value="4P">4P</option>
+          <option value="9P">9P</option>
+          <option value="11P">11P</option>
+          <option value="14P">14P</option>
+          <option value="15P">15P</option>
+          <option value="16P">16P</option>
+          <option value="17P">17P</option>
+        </select>
+        <select allowFreeText="false" helpText="Select Formulation" 
+         id="formulation_select" name="formulation_select"
+         tt_onLoad ="__$('keyboard').style.display = 'none';changeFinishButton();"
+         >
+          <option value=""></option>
+          <option value="pellets">pellets</option>
+          <option value="tablets">tablets</option>
+          <option value="granules">granules</option>
+        </select>
+
+
+      </form>
+
+   </div>
+ </div>
+</body>
