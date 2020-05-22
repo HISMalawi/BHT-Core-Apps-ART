@@ -1288,11 +1288,17 @@ function getMedication() {
                     var drug_name = objs[i].alternative_names[0].short_name;
                 }
 
+                try {
+                  var units = objs[i].units;
+                }catch(a){
+                  var units = 0;
+                }
+
                 custom_regimen_ingredients.push({
-                    name: drug_name, drug_id: objs[i].drug_id,
-                    units: (objs[i].units.length < 1 ? '0' : objs[i].units)
+                    name: drug_name, drug_id: objs[i].drug_id, units: units
                 });
             }
+            console.log(custom_regimen_ingredients);
         }
     };
     xhttp.open("GET", url, true);
