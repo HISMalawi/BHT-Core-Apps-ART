@@ -1298,7 +1298,6 @@ function getMedication() {
                     name: drug_name, drug_id: objs[i].drug_id, units: units
                 });
             }
-            console.log(custom_regimen_ingredients);
         }
     };
     xhttp.open("GET", url, true);
