@@ -43,7 +43,7 @@
             <div class='title-cell' id='title-cell-right'>
                 <table style="width: 100%; text-align: left; margin-left: 10px;">
                     <tr>
-                        <th>Title:</th><td>PEPFAR RTT drill down</td><td>
+                        <th>Title:</th><td>PEPFAR drill down</td><td>
                     </tr>
                 </table>
             </div>
@@ -109,9 +109,10 @@ function initTable(){
 
 
 function getClients(){
-  var person_ids = sessionStorage.rttClients.split(",");
+  var person_ids = sessionStorage.pepfarDrillDown.split(",");
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += "/clients?person_ids=" + person_ids;
+  sessionStorage.removeItem("pepfarDrillDown");
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -140,7 +141,6 @@ function showBTN(person_id){
   btn.innerHTML = "<span>Show</span>";
   btn.setAttribute("onmousedown", "location='" + set_uri + "'");
   span.appendChild(btn);
-  console.log(span.innerHTML);
   return span.innerHTML;
 }
 
