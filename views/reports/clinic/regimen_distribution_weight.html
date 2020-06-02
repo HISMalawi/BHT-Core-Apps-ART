@@ -1,0 +1,364 @@
+
+<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
+
+<style>
+.disaggregated-numbers {
+  text-align: right;
+  padding-right: 10px;
+}
+
+#spinner {
+  position: absolute;
+  top: 15%;
+  left: 40%;
+  display: none;
+}
+
+#percentage-counter {
+  position: absolute;
+  top: 35%;
+  font-size: 70px;
+  z-index: 1;
+  border-radius: 38px;
+  border-style: solid;
+  padding: 30px;
+  left: 50%;
+  margin-left: -50px;
+  border-width: 10px;
+  background-color: darkgray;
+  color: white;
+}
+
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+.title-table {
+  display: table;
+  width: 100%;
+}
+
+.title-row {
+  display: table-row;
+}
+
+.title-cell {
+  display: table-cell;
+  height: 30px;
+  vertical-align: top;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+
+#title-cell-left {
+  vertical-align: middle;
+  width: 100px;
+}
+
+#title-cell-left img {
+  height: 95px;
+  width: 95px;
+  margin: 5px;
+}
+
+#title-cell-right {
+  margin-left: 5px;
+}
+
+#data-cell {
+  display: table-cell;
+  width: 100%;
+}
+
+#report {
+  width: 100%;
+}
+
+th {
+  text-align: left;
+}
+
+</style>
+
+<script>
+var url = window.location.href;
+url = new URL(url);
+var start_date = url.searchParams.get("start_date");
+var end_date = url.searchParams.get("end_date");
+var dataSet = [];
+var data_table;
+
+function initializeTable() {
+  var date_title = moment(start_date).format('DD/MMM/YYYY');
+  date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
+  document.getElementById('reporting-period').innerHTML = date_title;
+
+  data_table = $('#example').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: false,
+    scrollY: 400,
+    scrollX: 400,
+    scroller: {
+      loadingIndicator: true
+    },
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "MoH " + sessionStorage.currentLocation + ": Regimen Distribution (Weight) : " + date_title
+
+      },
+      {
+        extend: 'pdf',
+        title: "MoH " + sessionStorage.currentLocation + ": Regimen Distribution (Weight) : " + date_title
+      }
+    ]
+  });
+
+}
+
+
+</script>
+
+
+
+
+
+<div class="title-table">
+  <div class='title-row'>
+    <div class='title-cell' id='title-cell-left'>
+      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
+    </div>
+    <div class='title-cell' id='title-cell-right'>
+      <table style="width: 100%; text-align: left; margin-left: 10px;">
+        <tr>
+          <th>Title:</th><td colspan="2" id="report-title">Regimen Distribution (Weight)<td>
+        </tr>
+        <tr>
+          <th>Period:</th>
+          <td id="reporting-period"><td>
+        </tr>
+      
+      </table>
+    </div>
+      </table>
+    </div>
+  </div>
+</div>
+  
+
+<div>
+  <table id="example" class="display" width="100%">
+    <thead>
+      <tr>
+        <th>Weight Band</th>
+        <th>Gender</th>
+        <th class="disaggregated-numbers">0A</th>
+        <th class="disaggregated-numbers">2A</th>
+        <th class="disaggregated-numbers">4A</th>
+        <th class="disaggregated-numbers">5A</th>
+        <th class="disaggregated-numbers">6A</th>
+        <th class="disaggregated-numbers">7A</th>
+        <th class="disaggregated-numbers">8A</th>
+        <th class="disaggregated-numbers">9A</th>
+        <th class="disaggregated-numbers">10A</th>
+        <th class="disaggregated-numbers">11A</th>
+        <th class="disaggregated-numbers">12A</th>
+        <th class="disaggregated-numbers">13A</th>
+        <th class="disaggregated-numbers">14A</th>
+        <th class="disaggregated-numbers">15A</th>
+        <th class="disaggregated-numbers">16A</th>
+        <th class="disaggregated-numbers">17A</th>
+        <th class="disaggregated-numbers">0P</th>
+        <th class="disaggregated-numbers">2P</th>
+        <th class="disaggregated-numbers">4P</th>
+        <th class="disaggregated-numbers">9P</th>
+        <th class="disaggregated-numbers">11P</th>
+        <th class="disaggregated-numbers">14P</th>
+        <th class="disaggregated-numbers">15P</th>
+        <th class="disaggregated-numbers">16P</th>
+        <th class="disaggregated-numbers">17P</th>
+        <th class="disaggregated-numbers">Unknown</th>
+        <th class="disaggregated-numbers">Total (regimen)</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+</div>
+
+<div id="buttons" class="buttonsDiv">
+  <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
+</div>
+<div id="report-cover"></div>
+
+
+<script>
+
+function initializeReport() {
+  var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+  url += '/programs/1/reports/regimens_by_weight_and_gender?';
+  url += "&start_date=" + start_date;
+  url += "&end_date=" + end_date;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      mergeRegimens(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function addClass(id) {
+  var tr = document.getElementById(id);
+  tr.style = 'background-color: lightyellow;';
+  var cells = tr.getElementsByTagName('td');
+
+  for(var i = 0 ; i < cells.length; i++){
+    if(i >= 3 )
+      cells[i].setAttribute('class','disaggregated-numbers');
+  }
+}
+
+function addTableBody(regimens) {
+
+  var table_body = document.getElementById('table-body');
+  //loop for males
+  for(var s = 0 ; s < regimens.length; s++){
+
+    var tr = document.createElement('tr');
+    tr.setAttribute('class', regimens[s] + '_row');
+    tr.setAttribute('id', regimens[s] + '_' + s);
+    table_body.appendChild(tr);
+    let td = document.createElement('td');
+    tr.appendChild(td);
+    td.innerHTML = regimens[s].weight;
+    let gender = document.createElement('td');
+    tr.appendChild(gender);
+    gender.innerHTML = "Male";
+    for(var i = 0 ; i < regimens[s]["males"].length; i++){
+        let td = document.createElement('td');
+        let r = regimens[s]["males"][i];
+        tr.appendChild(td);
+        td.innerHTML = r[Object.keys(r)[0]];
+    }
+  }
+  //loop for females
+  for(var s = 0 ; s < regimens.length; s++){
+
+    var tr = document.createElement('tr');
+    tr.setAttribute('class', regimens[s] + '_row');
+    tr.setAttribute('id', regimens[s] + '_' + s);
+    table_body.appendChild(tr);
+    let td = document.createElement('td');
+    tr.appendChild(td);
+    td.innerHTML = regimens[s].weight;
+    let gender = document.createElement('td');
+    tr.appendChild(gender);
+    gender.innerHTML = "Female";
+    for(var i = 0 ; i < regimens[s]["females"].length; i++){
+        let td = document.createElement('td');
+        let r = regimens[s]["females"][i];
+        tr.appendChild(td);
+        td.innerHTML = r[Object.keys(r)[0]];
+    }
+  }
+ $('#example').DataTable().destroy();
+  initializeTable();
+  document.getElementById('report-cover').style = "display: none;";
+}
+
+fetchData();
+
+function fetchData() {
+  initializeReport();
+}
+
+
+function mergeRegimens(regimens) {
+      regimens.forEach((element, index )=> {
+        regimens[index].males = getReg(element.males);
+        regimens[index].females = getReg(element.females);
+      });
+      addTableBody(regimens);
+    };
+   function getReg(regimens) {
+      let regimenProto = [
+            {"0A": 0},
+            {"2A": 0},
+            {"4A": 0},
+            {"5A": 0},
+            {"6A": 0},
+            {"7A": 0},
+            {"8A": 0},
+            {"9A": 0},
+            {"10A": 0},
+            {"11A": 0},
+            {"12A": 0},
+            {"13A": 0},
+            {"14A": 0},
+            {"15A": 0},
+            {"16A": 0},
+            {"17A": 0},
+            {"0P": 0},
+            {"2P": 0},
+            {"4P": 0},
+            {"9P": 0},
+            {"11P": 0},
+            {"14P": 0},
+            {"15P": 0},
+            {"16P": 0},
+            {"17P": 0},
+            {"N/A": 0},
+      ];
+      let total = {"total": 0};
+      regimens.forEach((el, innerIndex) => {
+        regimenProto.forEach((element, index) => {
+            if(element.hasOwnProperty(Object.keys(el))) {
+              regimenProto[index] = el;
+            }
+          });
+          total.total += el[Object.keys(el)[0]];
+        });
+      regimenProto.push(total);
+      return(regimenProto);
+    }
+
+var global_counter = 1;
+</script>
