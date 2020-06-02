@@ -525,8 +525,10 @@
                     }
 
                     if (verifiedQuantity) {
+                        verifiedQuantity = Math.trunc(parseFloat(verifiedQuantity));
                         rightData += "<td id='" + current_quantity_id + "' style='color: green; font-weight: bold;' id='" + verifiedQuantity + "'>" + verifiedQuantity + "</td>"
                     } else {
+                        current_quantity = Math.trunc(parseFloat(current_quantity));
                         rightData += "<td id='" + current_quantity_id + "'>" + current_quantity + "</td>";
                     }
 
