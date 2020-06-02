@@ -122,39 +122,48 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','First name','Last name', 'Gender','DOB','Appointment','Days missed','Current outcome','Contact details'];
+  var headers = ['ARV#','NHID', 'First name','Last name', 'Gender','birthdate','Date(s)'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
     
-    if(i == 0) 
+    if(i == 0 || i == 2) 
       th.setAttribute('class', 'npid');
 
-    if(i == 1) 
+    if(i == 2) 
       th.setAttribute('class', 'given_name');
 
-    if(i == 2) 
+    if(i == 3) 
       th.setAttribute('class', 'family_name');
 
-    if(i == 3) 
+    if(i == 4) 
       th.setAttribute('class', 'gender');
 
-    if(i == 4) 
+    if(i == 5) 
       th.setAttribute('class', 'birthdate');
   
   }
 
+  initDataTable();
 }
+
+  var setDataTable = null;
+
+function initDataTable() {
+  /*setDataTable = jQuery('#clients').DataTable( {
+    fixedHeader: true,
+    searching: false
+  });*/
+}
+
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/missed_appointments?start_date=" + sdate + "&end_date=" + edate
+  url += "/incomplete_visits?start_date=" + sdate + "&end_date=" + edate
   url += "&program_id=" + sessionStorage.programID;
-  url += "&date=" + sessionStorage.sessionDate;
-  document.getElementById("helpText0").innerHTML += " (" +  moment(start_date).format('DD/MMM/YYYY');
-  document.getElementById("helpText0").innerHTML += " - " +  moment(end_date).format('DD/MMM/YYYY') + ")";
+  url += "&tool_name=INCOMPLETE VISITS";
 
   document.getElementById('spinner').style = 'display: inline;';
   document.getElementById('report-cover').style = 'display: inline;';
@@ -172,44 +181,30 @@ function getList(sdate, edate) {
   xhttp.send();
 }
 
-function loadClients(data) {
+function loadClients(visits) {
   var formatted_data = [];
 
-  for (var i = 0; i < data.length; i++) {
-    var given_name = data[i].given_name;
-    var family_name = data[i].family_name;
-    var gender = data[i].gender;
-    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    var arv_num = data[i].arv_number;
-    var person_id = data[i].person_id;
-    var appointment_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
-    var current_outcome = data[i].current_outcome;
-    var days_missed = data[i].days_missed;
+  for (var patient_id in visits) {
+    var data = visits[patient_id];
+    var given_name = data.given_name;
+    var family_name = data.family_name;
+    var gender = data.gender;
+    try {
+      var birthdate = moment(data.birthdate).format('DD/MMM/YYYY');
+    }catch(e){
+      var birthdate = 'N/A';
+    }
+    var arv_num = data.arv_number;
+    var npid = data.national_id;
+    var dates = data.dates
+    var dates_html = [];
 
-    var contact = [];
-    if(data[i].cell_number)
-      contact.push("CELL: " + data[i].cell_number);
-
-    if(data[i].district)
-      contact.push("District: " + data[i].district);
-
-    if(data[i].ta)
-      contact.push("TA: " + data[i].ta);
-
-    if(data[i].village)
-      contact.push("Village: " + data[i].village);
-
-    var contact_details = '';
-    for(var j = 0; j < contact.length; j++) {
-      if(j > 0)
-        contact_details += '<br />';
-
-     contact_details += contact[j];   
+    for(var i = 0; i < dates.length; i++){
+      dates_html.push(dates[i]);
     }
 
-    formatted_data.push([arv_num, given_name, 
-      family_name, gender, birthdate, appointment_date,
-      days_missed, current_outcome, contact_details]);
+    formatted_data.push([arv_num, npid, given_name, 
+      family_name, gender, birthdate, dates_html.join("<br  />")] );
   }
  
   var period = start_date + " - " + end_date;
@@ -219,7 +214,7 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        400,
+    scrollY:        450,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
@@ -230,18 +225,18 @@ function loadClients(data) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' Incomplete  visits: ' + period
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' Incomplete  visits: ' + period
       }
     ],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6}
+      // {"className": "dt-center", "targets": 0},
+      // {"className": "dt-center", "targets": 3},
+      // {"className": "dt-center", "targets": 4},
+      // {"className": "dt-center", "targets": 6}
     ]
   } );
 
@@ -284,6 +279,8 @@ function addClassIMGcontainter(person_id) {
     if(i == 4) 
       cells[i].setAttribute('class', 'birthdate');
 
+
+
   }
 }
 
@@ -298,7 +295,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Missed appointments <span id='end-date'></span>" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="Incomplete visits" optional = "true"/>
 
       </form>
 
