@@ -156,12 +156,7 @@ function initializeTable() {
     columnDefs: [
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5},
-      {"className": "dt-numbers", "targets": 6},
-      {"className": "dt-numbers", "targets": 7},
-      {"className": "dt-numbers", "targets": 8},
-      {"className": "dt-numbers", "targets": 9},
-      {"className": "dt-numbers", "targets": 10}
+      {"className": "dt-numbers", "targets": 5}
     ]
   });
 
@@ -203,14 +198,15 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th>New on ART</th>
-        <th>Previously on ART</th>
-        <th class="disaggregated-numbers">On ART</th>
+        <th>Initiated (Denominator)</th>
+        <th>Completed - New on ART</th>
+        <th>Completed - Previously on ART</th>
+        <!--th class="disaggregated-numbers">On ART</th>
         <th class="disaggregated-numbers">Defaulted</th>
         <th class="disaggregated-numbers">Died</th>
         <th class="disaggregated-numbers">Stopped</th>
         <th class="disaggregated-numbers">TO</th>
-        <th class="disaggregated-numbers">Unknown</th>
+        <th class="disaggregated-numbers">Unknown</th-->
       </tr>
     </thead>
     <!--tfoot id="table-footer">
@@ -283,16 +279,18 @@ function disaggregateData(data){
     if(reporting_data[group][sex] == undefined) {
       reporting_data[group][sex]  = {
         new: [], old: [], art: [], defaulter: [], died: [],
-        stopped: [], transfer_out: [], unknown: []
+        stopped: [], transfer_out: [], unknown: [], initiated: []
       };
     }
 
-    if(client_type == 'New on ART')
+    if(client_type == 'New on ART' && info.course_completed)
       reporting_data[group][sex].new.push(patient_id);
 
-    if(client_type == 'Previously on ART')
+    if(client_type == 'Previously on ART' &&  info.course_completed)
       reporting_data[group][sex].old.push(patient_id);
 
+    reporting_data[group][sex].initiated.push(patient_id);
+/*
     if(outcome == 'On antiretrovirals'){
       reporting_data[group][sex].art.push(patient_id);
     }else if(outcome == "Patient transferred out"){
@@ -306,6 +304,8 @@ function disaggregateData(data){
     }else{
       reporting_data[group][sex].unknown.push(patient_id);
     }
+*/
+
   }
   document.getElementById('report-cover').style = "display: none;";
   renderResults();
@@ -325,18 +325,19 @@ function renderResults(){
       }
 
       if(info == undefined){
-        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0,0, 0,0,0,0,0 ]).draw();
+        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0,  0 ]).draw();
         continue;
       }else{
         data_table.row.add([ counter++, age_groups[i], genders[g], 
-          setDrillClients(age_groups[i], genders[g], info.new, 1),
-          setDrillClients(age_groups[i], genders[g], info.old, 2),
-          setDrillClients(age_groups[i], genders[g], info.art, 3),
-          setDrillClients(age_groups[i], genders[g], info.defaulter, 4),
+          setDrillClients(age_groups[i], genders[g], info.initiated, 1),
+          setDrillClients(age_groups[i], genders[g], info.new, 2),
+          setDrillClients(age_groups[i], genders[g], info.old, 3)
+          /*setDrillClients(age_groups[i], genders[g], info.defaulter, 4),
           setDrillClients(age_groups[i], genders[g], info.died, 5),
           setDrillClients(age_groups[i], genders[g], info.stopped, 6),
           setDrillClients(age_groups[i], genders[g], info.transfer_out, 7),
-          setDrillClients(age_groups[i], genders[g], info.unknown, 8) ]).draw();
+          setDrillClients(age_groups[i], genders[g], info.unknown, 8) */
+          ]).draw();
         delete info;
         info = undefined;
       }
@@ -349,7 +350,7 @@ function renderResults(){
 
 var clients = {};
 
-function setDrillClients(age_group, sex, patient_ids, column_number){
+function setDrillClients(age_group, sex, patient_ids, column_number, initiated){
   if(patient_ids.length < 1)
     return 0;
 
