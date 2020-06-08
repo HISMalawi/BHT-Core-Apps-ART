@@ -33,7 +33,7 @@
   position: absolute;
   top: 15%;
   left: 40%;
-  display: none;
+  display: inline;
 }
 
 #percentage-counter {
@@ -231,7 +231,7 @@ function initializeTable() {
   <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
 </div>
 
-<!--img src="/apps/OPD/assets/images/formloader.gif" id="spinner" /-->
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
 <!--div id="percentage-counter">0%</div-->
 <div id="report-cover"></div>
 
@@ -307,6 +307,7 @@ function disaggregateData(data){
 */
 
   }
+  document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";
   renderResults();
 }
