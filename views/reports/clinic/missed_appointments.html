@@ -228,11 +228,11 @@ function loadClients(data) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ],
     columnDefs: [

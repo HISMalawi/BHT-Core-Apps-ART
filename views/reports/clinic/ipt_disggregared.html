@@ -137,11 +137,11 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title
+        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title
+        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ]
   });

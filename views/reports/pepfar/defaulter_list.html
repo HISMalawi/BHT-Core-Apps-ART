@@ -217,11 +217,11 @@ function loadClients(data) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' PEPFAR defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' PEPFAR defaulterlist: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' PEPFAR defaulterlist: ' + period
+        title: sessionStorage.currentLocation + ' PEPFAR defaulterlist: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ],
     columnDefs: [

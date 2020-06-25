@@ -217,11 +217,11 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ],
     columnDefs: [

@@ -202,11 +202,11 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' Regimen Formulation: patient level:' + period
+        title: sessionStorage.currentLocation + ' Regimen Formulation: patient level:' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + '  Regimen Formulation: patient level: ' + period
+        title: sessionStorage.currentLocation + '  Regimen Formulation: patient level: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ],
     columnDefs: [

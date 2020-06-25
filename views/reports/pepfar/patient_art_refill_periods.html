@@ -137,11 +137,11 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title
+        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title
+        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
       }
     ]
   });
