@@ -129,11 +129,11 @@ function initializeTable() {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")" 
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
 
       }
     ]

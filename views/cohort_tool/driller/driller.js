@@ -118,11 +118,11 @@ function initializeTable() {
         buttons: [
             {
                 extend: 'csv',
-                title: 'MoH ' + sessionStorage.currentLocation + ': cohort drill down report'
+                title: 'MoH ' + sessionStorage.currentLocation + ': cohort drill down report' + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
             },
             {
                 extend: 'pdf',
-                title: 'MoH ' + sessionStorage.currentLocation + ': cohort drill down report'
+                title: 'MoH ' + sessionStorage.currentLocation + ': cohort drill down report' + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
             }
         ]
     });

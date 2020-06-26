@@ -202,11 +202,11 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' Regimen Formulation: patient level:' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: sessionStorage.currentLocation + ' Regimen Formulation: patient level:' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + '  Regimen Formulation: patient level: ' + period + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: sessionStorage.currentLocation + '  Regimen Formulation: patient level: ' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       }
     ],
     columnDefs: [

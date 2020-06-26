@@ -210,11 +210,11 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + "ART("+sessionStorage.ARTVersion+") " + moment().format('LLLL')
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       }
     ],
     columnDefs: [
