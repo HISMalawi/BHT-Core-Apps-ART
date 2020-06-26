@@ -77,9 +77,9 @@ function reportGrouping(group) {
     return [
       ['Cohort / disaggregated','','/apps/ART/views/cohort_tool/revised_cohort_menu.html', 'link'],
       ['Survival analysis','','/apps/ART/views/cohort_tool/revised_cohort_menu.html?type=survival_analysis', 'link'],
-      ["Viral load", "","#",'link'],
-      ["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link'],
-      ["Regimen distribution (Weight)","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_distribution_weight",'link']
+      ["Viral load", "","#",'link']
+      //["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link'],
+     // ["Regimen distribution (Weight)","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_distribution_weight",'link']
     ];
   }else if(group == 'Clinic'){
     return [
@@ -88,10 +88,10 @@ function reportGrouping(group) {
       ["Incomplete visits","","/apps/ART/views/reports/clinic/report_dates.html?report=incomplete_visits",'link'],
       ["Missed appointments","","/apps/ART/views/reports/clinic/report_dates.html?report=missed_appointments",'link'],
       ["Regimen switch","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_switch",'link'],
-      ["Regimen report","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_report",'link'],
-     // ["Regimens and Formulation ","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_select",'link'],
+      ["Regimen report","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_report",'link']
+     /* ["Regimens and Formulation ","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_select",'link'],
       ["Pregnant Patients","","/apps/ART/views/reports/clinic/report_dates.html?report=pregnant_patients",'link'],
-      ["Retention","","/apps/ART/views/reports/clinic/report_dates.html?report=retention",'link']
+      ["Retention","","/apps/ART/views/reports/clinic/report_dates.html?report=retention",'link']*/
     ];
   }else if(group == 'PEPFAR'){
       return [
@@ -101,8 +101,8 @@ function reportGrouping(group) {
         ["Regimen switch","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_switch",'link'],
         ["TX CURR MMD","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_curr_mmd",'link'],
         ["TX ML","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_ml",'link'],
-        ["TX RTT","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_rtt",'link'],
-        ["TB PREV","","/apps/ART/views/reports/pepfar/report_dates.html?report=tb_prev",'link']
+        ["TX RTT","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_rtt",'link']
+       // ["TB PREV","","/apps/ART/views/reports/pepfar/report_dates.html?report=tb_prev",'link']
       ];
   }else{
   }  
