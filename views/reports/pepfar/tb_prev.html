@@ -113,6 +113,10 @@ th {
   text-align: right;
 }
 
+#table-footer th {
+  border-style: solid;
+  border-width: 3px 0px 0px 0px;
+}
 </style>
 
 <script>
@@ -132,7 +136,7 @@ function initializeTable() {
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 400,
+    scrollY: 350,
     Processing: true,
     ServerSide: true,
     scroller: {
@@ -142,11 +146,11 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TB PREV report: " + date_title
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TB PREV report: " + date_title
       }
     ],
     columnDefs: [
@@ -173,16 +177,12 @@ function initializeTable() {
     <div class='title-cell' id='title-cell-right'>
       <table style="width: 100%; text-align: left; margin-left: 10px;">
         <tr>
-          <th>Title:</th><td colspan="2" id="report-title">PEPFAR TX RTT report<td>
+          <th>Title:</th><td colspan="2" id="report-title">PEPFAR TB PREV report<td>
         </tr>
         <tr>
           <th>Period:</th>
           <td id="reporting-period"><td>
         </tr>
-        <!--tr>
-          <th>Total clients:</th>
-          <td id="total-clients">0<td>
-        </tr-->
       </table>
     </div>
       </table>
@@ -198,13 +198,32 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Returned after 14 - 27 days</th>
-        <th class="disaggregated-numbers">Returned after 28 - 59 days</th>
-        <th class="disaggregated-numbers">Returned after 60 or more days</th>
+        <th>Initiated (Denominator)</th>
+        <th>Completed - New on ART</th>
+        <th>Completed - Previously on ART</th>
+        <!--th class="disaggregated-numbers">On ART</th>
+        <th class="disaggregated-numbers">Defaulted</th>
+        <th class="disaggregated-numbers">Died</th>
+        <th class="disaggregated-numbers">Stopped</th>
+        <th class="disaggregated-numbers">TO</th>
+        <th class="disaggregated-numbers">Unknown</th-->
       </tr>
     </thead>
-    <tbody id="table-body">
-    </tbody>
+    <!--tfoot id="table-footer">
+      <tr>
+        <th class="disaggregated-numbers" style="text-align: left; font-weight: bold;">Totals</th>
+        <th class="disaggregated-numbers">&nbsp;</th>
+        <th class="disaggregated-numbers">&nbsp;</th>
+        <th class="disaggregated-numbers" id="new">&nbsp;</th>
+        <th class="disaggregated-numbers" id="old">&nbsp;</th>
+        <th class="disaggregated-numbers" id="art">&nbsp;</th>
+        <th class="disaggregated-numbers" id="defaulter">&nbsp;</th>
+        <th class="disaggregated-numbers" id="died">&nbsp;</th>
+        <th class="disaggregated-numbers" id="stopped">&nbsp;</th>
+        <th class="disaggregated-numbers" id="transfer_out">&nbsp;</th>
+        <th class="disaggregated-numbers" id="unknown">&nbsp;</th>
+      </tr>
+    </tfoot-->
   </table>
 </div>
 
@@ -212,16 +231,17 @@ function initializeTable() {
   <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
 </div>
 
-<img src="/apps/ART/assets/images/formloader.gif" id="spinner">
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
 <!--div id="percentage-counter">0%</div-->
 <div id="report-cover"></div>
 
 
 <script>
 
+
 function initializeReport() {
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
-  url += "/tx_rtt?date=" + moment().format('YYYY-MM-DD');
+  url += "/tb_prev?date=" + moment().format('YYYY-MM-DD');
   url += "&start_date=" + start_date;
   url += "&end_date=" + end_date;
   url += '&program_id=' + sessionStorage.programID;
@@ -231,7 +251,7 @@ function initializeReport() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       //addNumbers(obj);
-      loadGroupData(obj);
+      disaggregateData(obj);
     }
   };
   xhttp.open("GET", url, true);
@@ -240,121 +260,98 @@ function initializeReport() {
   xhttp.send();
 }
 
-function addClass(id) {
-  var tr = document.getElementById(id);
-  tr.style = 'background-color: lightyellow;';
-  var cells = tr.getElementsByTagName('td');
+var reporting_data = {}
 
-  for(var i = 0 ; i < cells.length; i++){
-    if(i >= 3 )
-      cells[i].setAttribute('class','disaggregated-numbers');
-  
-  }
-}
+function disaggregateData(data){
+  var age_groups = ageGroups();
+  var genders = ["M","F"];
 
-function addTableBody() {
-  var columns = [
-    '<1 year', '1-4 years',
-    '5-9 years', '10-14 years',
-    '15-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years',
-    'Unknown'
-  ];
+  for(var patient_id in data){
+    var info  = data[patient_id];
+    var group = info.age_group;
+    var sex = info.gender;
+    var client_type = info.client;
+    var  outcome = info.outcome;
 
-  var table_body = document.getElementById('table-body');
-  var row_count = 1;
-  var gender = ['Female', 'Male'];
+    if(reporting_data[group] == undefined)
+      reporting_data[group]  = {};
 
-  for(var s = 0 ; s < gender.length; s++){
-    for(var i = 0 ; i < columns.length; i++){
-      var tr = document.createElement('tr');
-      tr.setAttribute('class', gender[s] + '_row');
-      tr.setAttribute('id', gender[s] + '_' + columns[i]);
-      table_body.appendChild(tr);
-      var td_count = 0;
-
-      while (td_count < 4) {
-        var td = document.createElement('td');
-        tr.appendChild(td);
-        if(td_count == 0)
-          td.innerHTML = (row_count++);
-        
-        if(td_count == 1)
-          td.innerHTML = columns[i];
-           
-        if(td_count == 2)
-          td.innerHTML = gender[s];
-           
-        if(td_count > 2){
-          td.innerHTML = 0;
-          td.setAttribute('class','disaggregated-numbers');
-        }   
-        tr.appendChild(td);
-        td_count++;
-      }
-
+    if(reporting_data[group][sex] == undefined) {
+      reporting_data[group][sex]  = {
+        new: [], old: [], art: [], defaulter: [], died: [],
+        stopped: [], transfer_out: [], unknown: [], initiated: []
+      };
     }
+
+    if(client_type == 'New on ART' && info.course_completed)
+      reporting_data[group][sex].new.push(patient_id);
+
+    if(client_type == 'Previously on ART' &&  info.course_completed)
+      reporting_data[group][sex].old.push(patient_id);
+
+    reporting_data[group][sex].initiated.push(patient_id);
+/*
+    if(outcome == 'On antiretrovirals'){
+      reporting_data[group][sex].art.push(patient_id);
+    }else if(outcome == "Patient transferred out"){
+      reporting_data[group][sex].transfer_out.push(patient_id);
+    }else if(outcome == "Defaulted"){
+      reporting_data[group][sex].defaulter.push(patient_id);
+    }else if(outcome.match(/Stop/i)){
+      reporting_data[group][sex].stopped.push(patient_id);
+    }else if(outcome.match(/died/i)){
+      reporting_data[group][sex].died.push(patient_id);
+    }else{
+      reporting_data[group][sex].unknown.push(patient_id);
+    }
+*/
+
   }
-}
-
-function ageGroups() {
-  return [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
-  ]
-}
-
-//ageGroups();
-//addTableBody();
-initializeTable();
-fetchData();
-
-function fetchData() {
-  //var counter = document.getElementById('percentage-counter');
-  //counter.innerHTML = Math.round((global_counter / 13)*100) + "%";
-//      document.getElementById('report-cover').style = "display: none;";
-      //document.getElementById('percentage-counter').style = "display: none;";
-
-  global_counter++;
-  initializeReport();
-}
-
-function addNumbers(data) {
-  document.getElementById('report-cover').style = "display: none;";
   document.getElementById('spinner').style = "display: none;";
-  var total_clients = document.getElementById('total-clients');
-  var table_body = document.getElementById('table-body');
-  var rows = table_body.children;
-  var total = 0;
+  document.getElementById('report-cover').style = "display: none;";
+  renderResults();
+}
 
-  for(var age_group in data) {
-    var genders = data[age_group];
-    for(var gender in genders) {
-      for(var j = 0; j < rows.length; j++){
-        var tds = rows[j].children;
-        if(tds[1].innerHTML  == age_group && tds[2].innerHTML  == gender){
-          tds[3].innerHTML  = data[age_group][gender].length;
-          total += parseInt(tds[3].innerHTML);
-        }
+function renderResults(){
+  var  counter = 1;
+  var age_groups = ageGroups();
+  var genders = ["F","M"];
+
+  for(var g = 0; g < genders.length; g++){
+    for(var i = 0; i < age_groups.length; i++){
+      try {
+        var info = reporting_data[age_groups[i]][genders[g]];
+      }catch(e){
+        var info;
       }
+
+      if(info == undefined){
+        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0,  0 ]).draw();
+        continue;
+      }else{
+        data_table.row.add([ counter++, age_groups[i], genders[g], 
+          setDrillClients(age_groups[i], genders[g], info.initiated, 1),
+          setDrillClients(age_groups[i], genders[g], info.new, 2),
+          setDrillClients(age_groups[i], genders[g], info.old, 3)
+          /*setDrillClients(age_groups[i], genders[g], info.defaulter, 4),
+          setDrillClients(age_groups[i], genders[g], info.died, 5),
+          setDrillClients(age_groups[i], genders[g], info.stopped, 6),
+          setDrillClients(age_groups[i], genders[g], info.transfer_out, 7),
+          setDrillClients(age_groups[i], genders[g], info.unknown, 8) */
+          ]).draw();
+        delete info;
+        info = undefined;
+      }
+
     }
-    total_clients.innerHTML = total;
   }
 
-  $('#example').DataTable().destroy();
-  initializeTable();
+  //addTotals();
 }
 
 var clients = {};
 
-function setDrillClients(age_group, sex, patient_ids, column_number){
+function setDrillClients(age_group, sex, patient_ids, column_number, initiated){
   if(patient_ids.length < 1)
     return 0;
 
@@ -385,55 +382,39 @@ function drillDown(column_number, sex, age_group){
   location = "pepfar_drill_down.html";
 }
 
-function loadGroupData(data){
-  //this.loadXLdata();
-  //this.report_title = sessionStorage.location_name + " TX ML: " + moment(this.startDate).format('DD/MMM/YYYY')
-  //this.report_title += " - " + moment(this.endtDate).format('DD/MMM/YYYY')
-  var counter = 1;
-  var report_gender = ['F','M'];
-  var set_age_groups = ageGroups();
-  //this.dTable.fnClearTable();
+function addTotals(){
+  var columns = ["new","old","art","defaulter","died","stopped","transfer_out","unknown"];
 
-
-  for(var j = 0; j < report_gender.length; j++){
-    var age_group_found = false;
-    for(var i = 0; i < set_age_groups.length; i++){
-
-      for(var age_group in data){
-        var gender = data[age_group];  
-        for(var sex in gender){
-          if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
-            var numbers = gender[sex];
-            data_table.row.add([ counter++, age_group, sex, 
-              setDrillClients(age_group, sex, numbers[0], 1),
-              setDrillClients(age_group, sex, numbers[1], 2),
-              setDrillClients(age_group, sex, numbers[2], 3) ]).draw();
-            age_group_found = true;
-
-          }
-        }
-      }
-      if(!age_group_found){
-        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0 ]).draw();
-      }else{
-        age_group_found = false;
+  for(var i = 0; i < columns.length; i++){
+    var count = (i + 3);
+    var old = data_table.columns(count).data().reduce( function (a, b) { return a + b; }, 0 );
+    var totals_old = old.split(",").reduce( function (a, b) { return parseInt(a) + parseInt(b); }, 0 );
+    //$("#" + columns[i]).html(totals_old);
+    var  cells =  data_table.columns().footer();
+    for(var c = 0; c < cells.length; c++){
+      if(cells[c].id == columns[i]){
+        cells[c].innerHTML  = totals_old;
       }
     }
   }
 
-  document.getElementById('spinner').style = "display: none;";
-  document.getElementById('report-cover').style = "display: none;";
+  data_table.columns.adjust(); 
 }
 
+function ageGroups() {
+  return [
+    '0-5 months', '6-11 months','12-23 months',
+    '2-4 years', '5-9 years',
+    '10-14 years', '15-17 years',
+    '18-19 years', '20-24 years',
+    '25-29 years', '30-34 years',
+    '35-39 years', '40-44 years',
+    '45-49 years', '50 plus years'
+  ]
+}
 
+initializeTable();
+initializeReport();
 
-
-
-
-
-
-
-
-var global_counter = 1;
 </script>
 

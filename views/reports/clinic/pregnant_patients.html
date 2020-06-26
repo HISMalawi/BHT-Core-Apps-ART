@@ -7,7 +7,6 @@
 
 <link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
 <link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
-<script type="text/javascript" src="/apps/ART/views/cohort_tool/driller/natural.js"></script>
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
@@ -90,11 +89,6 @@
 
 
 <script>
-var href = window.location.href;
-var url = new URL(href);
-var start_date  = url.searchParams.get("start_date");
-var end_date    = url.searchParams.get("end_date");
-
 function changeFinishButton() {
   var b = document.getElementById('nextButton');
   b.innerHTML = '<span>Finish</span>';
@@ -104,6 +98,11 @@ function changeFinishButton() {
 function back() {
   document.location = '/';
 }
+
+var href = window.location.href;
+var url = new URL(href);
+var start_date  = url.searchParams.get("start_date");
+var end_date    = url.searchParams.get("end_date");
 
 function buildList() {
   var f = document.getElementById('inputFrame' + tstCurrentPage);
@@ -123,7 +122,7 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','Gender','DOB','Weight(Kg)','Curr.Reg','ARVs', 'Curr.reg dispensed'];
+  var headers = ['ARV#','First name','Last name', 'Gender','birthdate',];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -147,14 +146,23 @@ function buildDataTable(e) {
   
   }
 
+  initDataTable();
 }
+
+  var setDataTable = null;
+
+function initDataTable() {
+  /*setDataTable = jQuery('#clients').DataTable( {
+    fixedHeader: true,
+    searching: false
+  });*/
+}
+
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/regimen_report?start_date=" + sdate + "&end_date=" + edate
-  url += "&program_id=" + sessionStorage.programID;
-  url += "&date=" + sessionStorage.sessionDate;
-  url +="&type=moh";
+  url += "/programs/1/reports/pregnant_patients?start_date=" + sdate + "&end_date=" + edate
+  url += "&paginate=false";
 
   document.getElementById('spinner').style = 'display: inline;';
   document.getElementById('report-cover').style = 'display: inline;';
@@ -172,30 +180,20 @@ function getList(sdate, edate) {
   xhttp.send();
 }
 
-function loadClients(info) {
+function loadClients(data) {
   var formatted_data = [];
-  
-  for (var patient_id in info) {
-    var data = info[patient_id];
 
-    var given_name = data.given_name;
-    var family_name = data.family_name;
-    var gender = data.gender;
-    var birthdate = moment(data.birthdate).format('DD/MMM/YYYY');
-    var arv_num = data.arv_number;
-    var current_reg = data.current_regimen;
-    var current_weight = data.current_weight;
-    var medications = [];
-    var meds = data.medication;
-    var prescription_date;
+  for (var i = 0; i < data.length; i++) {
+    var given_name = data[i].given_name;
+    var family_name = data[i].family_name;
+    var gender = data[i].gender;
+    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    var arv_num = data[i].arv_number;
+    var person_id = data[i].person_id;
+    
 
-    for(var i = 0; i < meds.length; i++){
-      medications.push(meds[i].medication + " (" + meds[i].quantity + ")");
-      prescription_date = moment(meds[i].start_date).format('DD/MMM/YYYY');
-    }  
-  
-    formatted_data.push([arv_num, gender, birthdate, current_weight,
-    current_reg, medications.join('<br />'), prescription_date]);
+    formatted_data.push([arv_num, given_name, 
+      family_name, gender, birthdate] );
   }
  
   var period = start_date + " - " + end_date;
@@ -205,29 +203,29 @@ function loadClients(info) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        400,
+    scrollY:        450,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    columnDefs: [{
-      targets: 0, type: 'natural'
-    } ],
+    order:          [[ 0, "asc" ]],
     dom: 'Bfrtip',
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: sessionStorage.currentLocation + ' Pregnant Patients: ' + period
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: sessionStorage.currentLocation + ' Pregnant Patients: ' + period
       }
     ],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 3}
+      // {"className": "dt-center", "targets": 0},
+      // {"className": "dt-center", "targets": 3},
+      // {"className": "dt-center", "targets": 4},
+      // {"className": "dt-center", "targets": 6}
     ]
   } );
 
@@ -270,6 +268,8 @@ function addClassIMGcontainter(person_id) {
     if(i == 4) 
       cells[i].setAttribute('class', 'birthdate');
 
+
+
   }
 }
 
@@ -284,7 +284,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Regimen report" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="Pregnant Patients" optional = "true"/>
 
       </form>
 
