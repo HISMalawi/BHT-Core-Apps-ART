@@ -150,9 +150,7 @@ function initializeTable() {
       }
     ],
     columnDefs: [
-      {"className": "dt-numbers", "targets": 3},
-      {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5}
+      {"className": "dt-numbers", "targets": 3}
     ]
   });
 
@@ -198,9 +196,7 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Returned after 14 - 27 days</th>
-        <th class="disaggregated-numbers">Returned after 28 - 59 days</th>
-        <th class="disaggregated-numbers">Returned after 60 or more days</th>
+        <th class="disaggregated-numbers">Returned after 30+ days</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -230,7 +226,6 @@ function initializeReport() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
-      //addNumbers(obj);
       loadGroupData(obj);
     }
   };
@@ -405,9 +400,7 @@ function loadGroupData(data){
           if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
             var numbers = gender[sex];
             data_table.row.add([ counter++, age_group, sex, 
-              setDrillClients(age_group, sex, numbers[0], 1),
-              setDrillClients(age_group, sex, numbers[1], 2),
-              setDrillClients(age_group, sex, numbers[2], 3) ]).draw();
+              setDrillClients(age_group, sex, numbers, 1) ]).draw();
             age_group_found = true;
 
           }
@@ -424,15 +417,6 @@ function loadGroupData(data){
   document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";
 }
-
-
-
-
-
-
-
-
-
 
 var global_counter = 1;
 </script>
