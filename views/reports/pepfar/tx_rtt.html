@@ -151,8 +151,6 @@ function initializeTable() {
     ],
     columnDefs: [
       {"className": "dt-numbers", "targets": 3},
-      {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5}
     ]
   });
 
@@ -198,9 +196,7 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Returned after 14 - 27 days</th>
-        <th class="disaggregated-numbers">Returned after 28 - 59 days</th>
-        <th class="disaggregated-numbers">Returned after 60 or more days</th>
+        <th class="disaggregated-numbers">Returned after 30+ days</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -355,9 +351,6 @@ function addNumbers(data) {
 var clients = {};
 
 function setDrillClients(age_group, sex, patient_ids, column_number){
-  if(patient_ids.length < 1)
-    return 0;
-
   if(!clients[age_group])
     clients[age_group] = {};
 
@@ -373,7 +366,7 @@ function setDrillClients(age_group, sex, patient_ids, column_number){
   var a = document.createElement("a");
   a.setAttribute("onclick", html);
   a.setAttribute("href","#");
-  a.innerHTML = patient_ids.length;
+  a.innerHTML = patient_ids.length ;
   span.appendChild(a);
 
 
@@ -405,16 +398,14 @@ function loadGroupData(data){
           if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
             var numbers = gender[sex];
             data_table.row.add([ counter++, age_group, sex, 
-              setDrillClients(age_group, sex, numbers[0], 1),
-              setDrillClients(age_group, sex, numbers[1], 2),
-              setDrillClients(age_group, sex, numbers[2], 3) ]).draw();
+              setDrillClients(age_group, sex, numbers, 1)]).draw();
             age_group_found = true;
 
           }
         }
       }
       if(!age_group_found){
-        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0 ]).draw();
+        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,]).draw();
       }else{
         age_group_found = false;
       }
