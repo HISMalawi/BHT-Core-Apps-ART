@@ -1843,6 +1843,7 @@
                 var arv_concept_id = 1085
                 var cpt_concept_id = 916
                 var ipt_concept_id = 656
+                var rfp_concept_id = 656
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
@@ -1851,7 +1852,7 @@
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
                     }
-                    var medication_orders = ["ARV", "CPT", "IPT"];
+                    var medication_orders = ["ARV", "CPT", "IPT","RFP"];
                     if (__$('touchscreenInput' + tstCurrentPage)) {
                         var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -1879,6 +1880,12 @@
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
                                             value_coded: ipt_concept_id
+                                        })
+                                    }
+                                    if (selected_drugs[i] == "RFP") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: rfp_concept_id
                                         })
                                     }
                                 }
@@ -2695,6 +2702,7 @@
             tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
+               <option value="RFP">RFP</option>
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3529,6 +3537,7 @@
                     tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
+               <option value="RFP">RFP</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
@@ -3620,6 +3629,20 @@
             }
 
             function controlNoneSelection() {
+                var  inputFrame =  document.getElementById("inputFrame" + tstCurrentPage);
+                inputFrame.style = "position: absolute; top: 125px;width: 96% !important; height: 345px !important;";
+                var helpText =  document.getElementById("helpText" + tstCurrentPage);
+                helpText.style =  "width: 99%;";
+                var currentMeds = document.createElement("span");
+                currentMeds.innerHTML  = "<b>Current Medication " + previousMedsDate + "<b/>: <br/>";
+                currentMeds.setAttribute("style","float: right; font-size:15px;")
+                if(previousMeds.length > 0){
+                    currentMeds.innerHTML += previousMeds.join("<br />");
+                }else{
+                    currentMeds.innerHTML += "None from the HIV program";
+                }
+                helpText.appendChild(currentMeds);
+
                 liOptions = document.getElementsByTagName("li");
                 for (var i = 0; i <= liOptions.length - 1; i++) {
                     tstValue = liOptions[i].getAttribute("tstvalue");
@@ -4382,6 +4405,71 @@
 
           }
 
+
+          function onlyUnique(value, index, self) { 
+            return self.indexOf(value) === index;
+          }
+
+          function getCurrentRegimen() {
+            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+            url +="drug_orders?patient_id=" + sessionStorage.patientID;
+            url += "&program_id=" + sessionStorage.programID + "&page_size=100000"
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var data = JSON.parse(this.responseText);
+                    var previousMedDates = [];
+                    var previousMedDate;
+
+                    for(var i = 0; i < data.length; i++){
+                        var  start_date  = moment(data[i].order.start_date).format("YYYY-MM-DD");
+                        if(start_date < moment(sessionStorage.sessionDate).format("YYYY-MM-DD")){
+                            previousMedDates.push(moment(start_date).format("YYYY-MM-DD"));
+                            previousMedDates = previousMedDates.filter(onlyUnique);
+                            previousMedDate =  moment(start_date).format("YYYY-MM-DD");
+                        }
+                    }
+
+                    for(var i = 0; i<  previousMedDates.length; i++){
+                        if(moment(previousMedDates[i]).format("YYYY-MM-DD") > moment(previousMedDate).format("YYYY-MM-DD")){
+                            previousMedDate  =  moment(previousMedDates[i]).format("YYYY-MM-DD");
+                            console.log(previousMedDate);
+                        }
+                    }
+
+                    if(previousMedDate)
+                        setPreviousMeds(previousMedDate, data);
+
+                }
+            };
+
+            xhttp.open("GET", url, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+          }
+                    
+          var previousMeds = [];
+          var previousMedsDate;
+
+          function  setPreviousMeds(previous_date, data){
+              
+            for(var i =  0;  i < data.length; i++){
+                var start_date = moment(data[i].order.start_date).format("YYYY-MM-DD");
+                //console.log(moment(data[i].order.start_date).format("YYYY-MM-DD") === moment(previous_date).format("YYYY-MM-DD"))
+                //console.log(start_date + "   --  " +  previous_date)
+                //console.log(moment(start_date, "YYYY-MM-DD") == moment(previous_date, 'YYYY-MM-DD'))
+                if(start_date != moment(previous_date).format("YYYY-MM-DD"))
+                    continue;
+
+                previousMeds.push(data[i].drug.name);
+                previousMeds = previousMeds.filter(onlyUnique);
+            }
+            previousMedsDate = "(" + moment(previous_date).format("DD/MMM/YYYY") + ")";
+          }
+            
+          getCurrentRegimen();
         </script>
 
     </div>
