@@ -1852,7 +1852,7 @@
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
                     }
-                    var medication_orders = ["ARV", "CPT", "IPT","RFP"];
+                    var medication_orders = ["ARV", "CPT", "IPT","Rifapentine(RFP)"];
                     if (__$('touchscreenInput' + tstCurrentPage)) {
                         var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -1882,7 +1882,7 @@
                                             value_coded: ipt_concept_id
                                         })
                                     }
-                                    if (selected_drugs[i] == "RFP") {
+                                    if (selected_drugs[i] == "Rifapentine(RFP)") {
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
                                             value_coded: rfp_concept_id
@@ -2094,7 +2094,7 @@
 
                 }
 
-                var medication_orders = ["ARV", "CPT", "IPT","RFP"];
+                var medication_orders = ["ARV", "CPT", "IPT","Rifapentine(RFP)"];
                 if (__$('touchscreenInput' + tstCurrentPage)) {
                     var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2105,7 +2105,7 @@
                             obs.observations.push({concept_id: prescribe_drugs_concept_id, value_coded: 1066})
                         }
                         else {
-                            for (var i = 0; i <= selected_drugs.length - 1; i++) {
+                            for (var i = 0; i <= selected_drugs.length; i++) {
                                 if (selected_drugs[i] == "ARVs") {
                                     obs.observations.push({
                                         concept_id: medication_orders_concept_id,
@@ -2124,7 +2124,7 @@
                                         value_coded: ipt_concept_id
                                     })
                                 }
-                                if (selected_drugs[i] == "RFP") {
+                                if (selected_drugs[i] == "Rifapentine(RFP)") {
                                     obs.observations.push({
                                         concept_id: medication_orders_concept_id,
                                         value_coded: rfp_concept_id
@@ -2709,7 +2709,7 @@
             tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <option value="RFP">RFP</option>
+               <option value="Rifapentine(RFP)">Rifapentine(RFP)</option>
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3544,7 +3544,7 @@
                     tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
-               <option value="RFP">RFP</option>
+               <option value="Rifapentine(RFP)">Rifapentine(RFP)</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
