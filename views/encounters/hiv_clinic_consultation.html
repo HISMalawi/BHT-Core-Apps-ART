@@ -237,7 +237,7 @@
             margin-top: -5px;
         }
 
-        #cpt-popup-div, #lab-popup-div {
+        #cpt-popup-div, #lab-popup-div, #ipt-rfp-popup-div{
             display: none;
             background-color: #F4F4F4;
             border: 2px solid #E0E0E0;
@@ -3541,7 +3541,7 @@
                     name="observations[][value_coded_or_text]"
                     tt_pageStyleClass="NoKeyboard" multiple="multiple"
                     tt_onUnLoad="removeAllergicToCPT();"
-                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
+                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();setIPT_RFPvalidation();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                <option value="Rifapentine(RFP)">Rifapentine(RFP)</option>
@@ -3641,7 +3641,7 @@
                 var helpText =  document.getElementById("helpText" + tstCurrentPage);
                 helpText.style =  "width: 99%;";
                 var currentMeds = document.createElement("span");
-                currentMeds.innerHTML  = "<b>Current Medication " + previousMedsDate + "<b/>: <br/>";
+                currentMeds.innerHTML  = "<b>Last Medication given " + previousMedsDate + "<b/>: <br/>";
                 currentMeds.setAttribute("style","float: right; font-size:15px;")
                 if(previousMeds.length > 0){
                     currentMeds.innerHTML += previousMeds.join("<br />");
@@ -3795,10 +3795,17 @@
             function controlCPTIPTOptions() {
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
+                var rfp_option_input = jQuery("[tstvalue='Rifapentine(RFP)']")[0];
+
                 var ipt_id = ipt_option_input.id;
                 var cpt_id = cpt_option_input.id;
+                var rfp_id = rfp_option_input.id;
+
+                
                 var ipt_input = document.getElementById('optionValue' + ipt_id);
                 var cpt_input = document.getElementById('optionValue' + cpt_id);
+                var rfp_input = document.getElementById('optionValue' + rfp_id);
+                
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
                 var allergicToSulphur = $('allergic_to_cotrimoxazole').value.toUpperCase();
@@ -3824,6 +3831,15 @@
                     img_input = ipt_option_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>Rifapentine(RFP) (TB SUSPECTED)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
                 }
 
                 if (tb_status == 'CONFIRMED TB ON TREATMENT') {
@@ -3836,6 +3852,16 @@
                     img_input = ipt_option_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
+
+                    rfp_input.innerHTML = "<span class='disabled_check'>Rifapentine(RFP) (CONFIRMED TB ON TREATMENT)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
                 }
 
                 if (tb_status == 'CONFIRMED TB NOT ON TREATMENT') {
@@ -3848,16 +3874,34 @@
                     img_input = ipt_option_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>Rifapentine(RFP) (CONFIRMED TB NOT ON TREATMENT)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
                 }
 
                 if (tb_status == 'TB SUSPECTED') {
                     //ipt_option_input.style.backgroundColor = '#CDBA96';
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (TB Suspected)</span>";
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (TB SUSPECTED)</span>";
                     ipt_option_input.onclick = null;
                     ipt_option_input.onmousedown = null;
                     ipt_option_input.onmouseup = null;
 
                     img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>Rifapentine(RFP) (TB SUSPECTED)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
                 }
@@ -3892,6 +3936,78 @@
             }
 
 
+
+
+            //will  move to a  new file  later.
+            function setIPT_RFPvalidation(){
+                var select_options = document.getElementById("tt_currentUnorderedListOptions");
+                var options  = select_options.children;
+                
+                for(var i = 0; i < options.length; i++){
+                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "Rifapentine(RFP)"){
+                        var onclick_values = "null; updateTouchscreenInputForSelect(__$('optionValue' + this.id), this); validateIPTRFP(this);";
+                        options[i].setAttribute("onmousedown", onclick_values);
+                        options[i].setAttribute("onclick", "");
+                    }
+                } 
+
+            }
+
+            function validateIPTRFP(e){
+                var messageDiv = document.getElementById("ipt-rfp-popup-div");
+                var messageCover =  document.getElementById("lab-order-cover");
+
+                var select_options = document.getElementById("tt_currentUnorderedListOptions");
+                var options  = select_options.children;
+                var ipt_option;
+                var rfp_option;
+                
+                for(var i = 0; i < options.length; i++){
+                    if(options[i].getAttribute("tstvalue") == "IPT"){
+                        ipt_option = options[i];
+                    }else if(options[i].getAttribute("tstvalue") == "Rifapentine(RFP)"){
+                        rfp_option = options[i];
+                    }
+                } 
+
+                if(ipt_option == undefined || rfp_option == undefined)
+                    return;
+
+                if(rfp_option.getAttribute("style").match(/lightblue/i)){
+                    if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                        messageCover.style = "display: inline;";
+                        messageDiv.style = "display: inline;";
+                    }
+                }
+            }
+
+            function  selectIPTRFP(e_name){
+                var messageDiv = document.getElementById("ipt-rfp-popup-div");
+                var messageCover =  document.getElementById("lab-order-cover");
+
+                var select_options = document.getElementById("tt_currentUnorderedListOptions");
+                var options  = select_options.children;
+                var ipt_option;
+                var rfp_option;
+                
+                for(var i = 0; i < options.length; i++){
+                    if(options[i].getAttribute("tstvalue") == "IPT"){
+                        ipt_option = options[i];
+                    }else if(options[i].getAttribute("tstvalue") == "Rifapentine(RFP)"){
+                        rfp_option = options[i];
+                    }
+                } 
+
+                if(e_name == "RFP"){
+                    updateTouchscreenInputForSelect(__$('optionValue' + ipt_option.id), this); 
+                }else{
+                    updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                }
+
+                messageDiv.style = "display: none;";
+                messageCover.style = "display: none;";
+            }
+            
         </script>
 
         <style type="text/css">
@@ -4478,5 +4594,44 @@
             
           getCurrentRegimen();
         </script>
+
+
+
+
+
+
+
+<div id="ipt-rfp-popup-div">
+    <div id="lab-popup-header">
+        <center id='weight_readings_header'>IPT / RFP conflict</center>
+    </div>
+
+    <br/>
+    <div>
+                <span style="font-size: 16pt;">
+                    <center>
+                        <br/>
+                            IPT and Rifapentine(RFP) can not be <br/>
+                            prescribed together. Please pick either one.
+                        <br/>
+                    </center>
+                </span>
+        <div style="padding-top: 65px;">
+            <span id="lab-order-yes" onclick="selectIPTRFP('RFP');" class="lab_order_button">prescribe (RFP)</span>
+            <span id="lab-order-no" onclick="selectIPTRFP('IPT');" class="lab_order_button"
+                  style="float: right; margin-right: 10px;">Prescribe IPT</span>
+        </div>
+    </div>
+</div>
+
+<!--div id="lab-order-cover"></div-->
+
+
+
+
+
+
+
+
 
     </div>
