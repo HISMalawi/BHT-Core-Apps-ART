@@ -1863,7 +1863,7 @@
                                 obs.observations.push({concept_id: prescribe_drugs_concept_id, value_coded: 1066})
                             }
                             else {
-                                for (var i = 0; i <= selected_drugs.length - 1; i++) {
+                                for (var i = 0; i <= selected_drugs.length; i++) {
                                     if (selected_drugs[i] == "ARVs") {
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
