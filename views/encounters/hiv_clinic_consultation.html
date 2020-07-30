@@ -3945,6 +3945,11 @@
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "Rifapentine(RFP)"){
+                        if(options[i].innerHTML.match(/TB /i)){
+                            options[i].setAttribute("onmousedown", "");
+                            options[i].setAttribute("onclick", "");
+                            continue;
+                        }
                         var onclick_values = "null; updateTouchscreenInputForSelect(__$('optionValue' + this.id), this); validateIPTRFP(this);";
                         options[i].setAttribute("onmousedown", onclick_values);
                         options[i].setAttribute("onclick", "");
@@ -3973,11 +3978,15 @@
                 if(ipt_option == undefined || rfp_option == undefined)
                     return;
 
-                if(rfp_option.getAttribute("style").match(/lightblue/i)){
-                    if(ipt_option.getAttribute("style").match(/lightblue/i)){
-                        messageCover.style = "display: inline;";
-                        messageDiv.style = "display: inline;";
+                try {
+                    if(rfp_option.getAttribute("style").match(/lightblue/i)){
+                        if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                            messageCover.style = "display: inline;";
+                            messageDiv.style = "display: inline;";
+                        }
                     }
+                }catch(e){
+                    return;
                 }
             }
 
@@ -4574,7 +4583,7 @@
           }
                     
           var previousMeds = [];
-          var previousMedsDate;
+          var previousMedsDate = "";
 
           function  setPreviousMeds(previous_date, data){
               
@@ -4589,7 +4598,10 @@
                 previousMeds.push(data[i].drug.name);
                 previousMeds = previousMeds.filter(onlyUnique);
             }
-            previousMedsDate = "(" + moment(previous_date).format("DD/MMM/YYYY") + ")";
+            
+            if(previous_date)
+                previousMedsDate = "(" + moment(previous_date).format("DD/MMM/YYYY") + ")";
+
           }
             
           getCurrentRegimen();
