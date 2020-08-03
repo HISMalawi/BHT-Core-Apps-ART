@@ -1,6 +1,6 @@
 var sideEffectsLeft = [
   ["Peripheral neuropathy", 821],
-  ["Jaundice", 215],["Lipodystrophy", 2148],
+  ["Jaundice / Heavy alcohol use", 215],["Lipodystrophy", 2148],
   ["Kidney Failure",  9242],
   ["Skin rash", 512]
 ];

@@ -364,7 +364,7 @@ function continueShowSelectedMeds() {
     tr.style = "background-color: lightgray;";
     thead.appendChild(tr);
 
-    var theads = ["Drug name", "Units", "AM", "Noon", "PM"];
+    var theads = ["Drug name", "Units", "AM", "Noon", "PM","Frequency"];
     for (var i = 0; i < theads.length; i++) {
         var th = document.createElement("th");
         th.innerHTML = theads[i];
@@ -383,6 +383,7 @@ function continueShowSelectedMeds() {
     var tbody = document.createElement("tbody");
     tbody.setAttribute("id", "selected-medication-tbody");
     table.appendChild(tbody);
+    var med_frequency = "Daily";
 
     if (givenRegimens[selectedRegimens]) {
         var rows = givenRegimens[selectedRegimens];
@@ -427,6 +428,17 @@ function continueShowSelectedMeds() {
             td.setAttribute("class", "numbers");
             tr.appendChild(td);
 
+            if(rows[i].drug_name.match(/Rifapentine/i)){
+                med_frequency = "Weekly";
+            }else{
+                med_frequency = "Daily";
+            }
+
+            var td = document.createElement("td");
+            td.innerHTML = med_frequency;
+            td.setAttribute("class", "med-frequency");
+            tr.appendChild(td);
+
 
         }
 
@@ -435,6 +447,13 @@ function continueShowSelectedMeds() {
     if(show_custom_regimens == true)
       medication_orders = {};
 
+    var three_hp = false;
+    for (var drugName in medication_orders) {
+        if(medication_orders[drugName]["drug_name"].match(/Rifapentine/i))
+            three_hp  = true;
+
+    }
+    
     for (var drugName in medication_orders) {
         var am_dose = medication_orders[drugName]["am"];
         var concept_id = medication_orders[drugName]["concept_id"];
@@ -484,6 +503,17 @@ function continueShowSelectedMeds() {
         var td = document.createElement("td");
         td.innerHTML = pm_dose;
         td.setAttribute("class", "numbers");
+        tr.appendChild(td);
+
+        if(three_hp && (drug_name.match(/Rifapentine/i) ||drug_name.match(/Isoniazid/i))){
+            med_frequency = "Weekly";
+        }else{
+            med_frequency = "Daily";
+        }
+
+        var td = document.createElement("td");
+        td.innerHTML = med_frequency;
+        td.setAttribute("class", "med-frequency");
         tr.appendChild(td);
     }
 
