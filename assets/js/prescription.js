@@ -989,6 +989,14 @@ function checkIFRegimenHasLPv() {
     var regimen = parseInt(selectedRegimens, 10);
     var w = parseFloat(sessionStorage.currentWeight);
     regimen_nine_or_eleven = (regimen == 11 || regimen == 9);
+
+
+    regimen_with_lpr = (regimen == 7 || regimen == 8 || regimen == 9 || regimen == 10 ||  regimen == 11);
+    if(regimen_with_lpr && prescribed_3hp){
+        build3HPalert();
+        return
+    }
+
     if (regimen_nine_or_eleven && (w >= 3 && w <= 25)) {
         buildPalletBox();
     } else {
@@ -2242,3 +2250,107 @@ function buildFastTrackMedicationTable(){
         tr.appendChild(td);
     }
 }
+
+function build3HPalert() {
+    var box = document.getElementById("confirmatory-test-popup-div");
+    var cover = document.getElementById("confirmatory-test-cover");
+
+    box.style = "display: inline;";
+    cover.style = "display: inline;";
+    box.innerHTML = null;
+
+    /* ################################### */
+    document.getElementById('confirmatory-test-cover').style = 'display: inline;';
+
+    var initiationBox = document.createElement('div');
+    initiationBox.setAttribute('class', 'initiationBox');
+    box.appendChild(initiationBox);
+
+    var initiationBoxRow = document.createElement('div');
+    initiationBoxRow.setAttribute('class', 'initiationBoxRow');
+    initiationBox.appendChild(initiationBoxRow);
+
+    var initiationBoxCell = document.createElement('div');
+    initiationBoxCell.setAttribute('class', 'initiationBoxCell');
+    var cssText = 'text-align: center; color: brown;';
+    cssText += 'font-size: 14pt;font-weight: bolder; border-color: black;';
+    cssText += 'border-width: 0px 0px 1px 0px;border-style: solid;';
+    initiationBoxCell.setAttribute('style', cssText);
+    initiationBoxCell.innerHTML = '3HP - LPV/r conflict';
+    initiationBoxRow.appendChild(initiationBoxCell);
+
+    var initiationBoxRow = document.createElement('div');
+    initiationBoxRow.setAttribute('class', 'initiationBoxRow');
+    initiationBox.appendChild(initiationBoxRow);
+
+    var initiationBoxCell = document.createElement('div');
+    var text = '<span style="color: black;">LPV/r based regimens <br /><b>cannot</b> be combined with 3HP</span> ';
+    initiationBoxCell.setAttribute('class', 'initiationBoxCell');
+    initiationBoxCell.innerHTML = text;
+
+    var cssText = 'text-align: center; margin-top: 5%;';
+    cssText += 'font-size: 25px;';
+    initiationBoxCell.setAttribute('style', cssText);
+    initiationBoxRow.appendChild(initiationBoxCell);
+
+
+    var buttonContainer = document.createElement('div');
+    buttonContainer.setAttribute('class', 'buttonContainer');
+    box.appendChild(buttonContainer);
+
+    var buttonContainerRow = document.createElement('div');
+    buttonContainerRow.setAttribute('class', 'buttonContainerRow');
+    buttonContainer.appendChild(buttonContainerRow);
+
+
+    var cells = ['Close'];
+
+    for (var i = 0; i < cells.length; i++) {
+        var buttonContainerCell = document.createElement('div');
+        buttonContainerCell.setAttribute('class', 'buttonContainerCell');
+        buttonContainerCell.setAttribute('style', 'width: 100px;');
+        buttonContainerCell.innerHTML = cells[i];
+        buttonContainerCell.setAttribute('id', 'buttonContainerCell-blue');
+
+        buttonContainerRow.appendChild(buttonContainerCell);
+
+        var drugType = cells[i].toLowerCase();
+        buttonContainerCell.setAttribute('onmousedown', `cancelDTG();`);
+
+        // if (i == 0) {
+        //     buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("pellets");');
+        // } else {
+        //     buttonContainerCell.setAttribute('onmousedown', 'prescribePelletsTabs("tabs");');
+        // }
+        buttonContainerRow.appendChild(buttonContainerCell);
+    }
+    /* ################################## */
+}
+
+function prescribed3HP(){
+    var order_date = new Date(sessionStorage.sessionDate);
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+    url += '/observations?person_id=' + sessionStorage.patientID;
+    url += '&date=' + moment(order_date).format('YYYY-MM-DD') + '&page_size=1';
+    url += '&concept_id=1282';
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+            var obj = JSON.parse(this.responseText);
+            for(var i = 0; i < obj.length; i++){
+                if(parseInt(obj[i].value_coded) === 9974)
+                    prescribed_3hp = true;
+                    
+            }
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send()
+
+}
+
+var prescribed_3hp = false;
+prescribed3HP();
