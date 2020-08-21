@@ -2284,7 +2284,7 @@ function build3HPalert() {
     initiationBox.appendChild(initiationBoxRow);
 
     var initiationBoxCell = document.createElement('div');
-    var text = '<span style="color: black;">LPV/r based regimens <br /><b>cannot</b> be combined with 3HP</span> ';
+    var text = '<span style="color: black;">Regimens containing LPV/r <br /><b>cannot</b> be prescribed together with 3HP</span> ';
     initiationBoxCell.setAttribute('class', 'initiationBoxCell');
     initiationBoxCell.innerHTML = text;
 

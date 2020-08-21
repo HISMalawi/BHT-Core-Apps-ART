@@ -3990,7 +3990,6 @@
                     //return;
                 }
 
-                console.log(rfp_option.getAttribute("style"));
                 if(rfp_option.getAttribute("style").match(/lightblue/i)){
                     checkIfClientWantstogetPregnant();
                 }
@@ -4014,8 +4013,25 @@
                             rfp_option = options[i];
                             updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
                             showMessage("3HP can not be given to a client<br />that is trying to get pregnant.");
+                            return;
                         }
                     } 
+                }
+
+                for(var i = 0; i < sideEffectConcepts.length; i++){
+                    if(sideEffectConcepts[i][1] == "Jaundice / Heavy alcohol use"){
+                        var select_options = document.getElementById("tt_currentUnorderedListOptions");
+                        var options  = select_options.children;
+                        var rfp_option;
+                    
+                        for(var i = 0; i < options.length; i++){
+                            if(options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                                rfp_option = options[i];
+                                updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                                showMessage("3HP can not be given to a client<br />with Jaundice / Heavy alcohol use.");
+                            }
+                        } 
+                    }
                 }
             }
 
