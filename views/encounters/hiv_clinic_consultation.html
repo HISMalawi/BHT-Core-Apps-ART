@@ -63,6 +63,9 @@
     <script type="text/javascript" src="/apps/ART/assets/js/consultation.history.js"></script>
     <link rel="stylesheet" href="/assets/css/provider.css" type="text/css">
     <script type="text/javascript" src="/assets/js/provider.js  "></script>
+
+    <script type="text/javascript" src="/apps/ART/assets/js/tb_therapy_question.js"></script>
+    
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
         var patientGender = sessionStorage.patientGender;
@@ -83,7 +86,6 @@
                 }
             });
         }
-
 
     </script>
 
@@ -1852,7 +1854,7 @@
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
                     }
-                    var medication_orders = ["ARV", "CPT", "IPT","3HP(RFP + INH)"];
+                    var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
                     if (__$('touchscreenInput' + tstCurrentPage)) {
                         var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -1882,7 +1884,7 @@
                                             value_coded: ipt_concept_id
                                         })
                                     }
-                                    if (selected_drugs[i] == "3HP(RFP + INH)") {
+                                    if (selected_drugs[i] == "3HP (RFP + INH)") {
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
                                             value_coded: rfp_concept_id
@@ -2004,6 +2006,29 @@
                     ]
                 };
 
+                if(checkIfEverCompletedTBtherapyAsked() == false){
+                    obs.observations.push(
+                        {
+                            concept_id: 1588,
+                            value_coded: 656, child: 
+                                {concept_id: 656, 
+                                    value_coded: yesNo_Hash["Previous TB treatment history"]["IPT?"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                                }
+                        },
+                        {
+                            concept_id: 1588,
+                            value_coded: 9974, child: 
+                                {concept_id: 9974, 
+                                    value_coded: yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                                }
+                        },
+                        {
+                            concept_id: 2456,
+                            value_coded: $("confirmatory_tb_therapy_location").value,
+                            value_text: $("confirmatory_tb_therapy_location").textContent
+                        }
+                    );
+                }
 
 
                 //other_side_effect = yesNo_Hash["MALAWI ART SIDE EFFECTS"]["Other"];
@@ -2094,7 +2119,7 @@
 
                 }
 
-                var medication_orders = ["ARV", "CPT", "IPT","3HP(RFP + INH)"];
+                var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
                 if (__$('touchscreenInput' + tstCurrentPage)) {
                     var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2124,7 +2149,7 @@
                                         value_coded: ipt_concept_id
                                     })
                                 }
-                                if (selected_drugs[i] == "3HP(RFP + INH)") {
+                                if (selected_drugs[i] == "3HP (RFP + INH)") {
                                     obs.observations.push({
                                         concept_id: medication_orders_concept_id,
                                         value_coded: rfp_concept_id
@@ -2709,7 +2734,7 @@
             tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <option value="3HP(RFP + INH)">3HP(RFP + INH)</option>
+               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3465,6 +3490,20 @@
                    id="routine_tb_screening"
                    helpText="TB associated symptoms" optional="true"/>
 
+
+            <input type="text" name="tb-treatment-completed"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
+                   tt_pageStyleClass="NoControls"
+                   condition="checkIfEverCompletedTBtherapyAsked() == false"
+                   id="routine_tb_therapy"
+                   helpText="Ever complete a full course of TB therapy" optional="true"/>
+
+           <select objectType="location"
+                ajaxURL="/locations?name=" allowFreeText="true"
+                condition="everCompleteTBtherapty() == true;" field_type="alpha"
+                helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
+                name="observations[][value_coded_or_text]"></select>
+                   
             <select allowFreeText="false" condition="true && __$('tb_treatment_question').value.toUpperCase() == 'NO'
                             && tbSymptomsHashSelects() == 'YES'" helpText="TB Status" id="tb_status"
                     name="observations[][value_coded_or_text]"
@@ -3544,7 +3583,7 @@
                     tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();setIPT_RFPvalidation();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
-               <option value="3HP(RFP + INH)">3HP(RFP + INH)</option>
+               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
@@ -3795,7 +3834,7 @@
             function controlCPTIPTOptions() {
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
-                var rfp_option_input = jQuery("[tstvalue='3HP(RFP + INH)']")[0];
+                var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
 
                 var ipt_id = ipt_option_input.id;
                 var cpt_id = cpt_option_input.id;
@@ -3832,7 +3871,7 @@
                     img_input.src = '';
                     img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP(RFP + INH) (TB SUSPECTED)</span>";
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TB SUSPECTED)</span>";
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -3853,7 +3892,7 @@
                     img_input.src = '';
                     img_input.alt = '';
 
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP(RFP + INH) (CONFIRMED TB ON TREATMENT)</span>";
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (CONFIRMED TB ON TREATMENT)</span>";
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -3875,7 +3914,7 @@
                     img_input.src = '';
                     img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP(RFP + INH) (CONFIRMED TB NOT ON TREATMENT)</span>";
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (CONFIRMED TB NOT ON TREATMENT)</span>";
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -3896,7 +3935,7 @@
                     img_input.src = '';
                     img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP(RFP + INH) (TB SUSPECTED)</span>";
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TB SUSPECTED)</span>";
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -3944,7 +3983,7 @@
                 var options  = select_options.children;
                 
                 for(var i = 0; i < options.length; i++){
-                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         if(options[i].innerHTML.match(/TB /i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
@@ -3970,7 +4009,7 @@
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
-                    }else if(options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                    }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         rfp_option = options[i];
                     }
                 } 
@@ -4009,7 +4048,7 @@
                     var rfp_option;
                 
                     for(var i = 0; i < options.length; i++){
-                        if(options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                        if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                             rfp_option = options[i];
                             updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
                             showMessage("3HP can not be given to a client<br />that is trying to get pregnant.");
@@ -4025,7 +4064,7 @@
                         var rfp_option;
                     
                         for(var i = 0; i < options.length; i++){
-                            if(options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                            if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                                 rfp_option = options[i];
                                 updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
                                 showMessage("3HP can not be given to a client<br />with Jaundice / Heavy alcohol use.");
@@ -4048,7 +4087,7 @@
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
-                    }else if(options[i].getAttribute("tstvalue") == "3HP(RFP + INH)"){
+                    }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         rfp_option = options[i];
                     }
                 } 
