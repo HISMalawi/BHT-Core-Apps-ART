@@ -17,6 +17,7 @@ function addTBtherapyYesNo(){
 
 
 function everCompleteTBtherapy(){
+  
   try {
     var three_hp = (yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"] == "Yes");
     var ipt =  (yesNo_Hash["Previous TB treatment history"]["IPT?"] == "Yes");
@@ -42,6 +43,7 @@ function showTBtherapyLocation(){
 
 var ever_completed_tb_therapy = false;
 var show_completed_tb_therapy_location = false;
+var ever_completed_tb_therapy_question_asked = false;
 
 
 function getTBtheraptObs() {
@@ -53,6 +55,8 @@ function getTBtheraptObs() {
       if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
           var tb_history_obs = JSON.parse(this.responseText);
           for (var i = 0; i < tb_history_obs.length; i++) {
+            ever_completed_tb_therapy_question_asked = true;
+
             var ob_children = tb_history_obs[i].children;
             for (var c = 0; c < ob_children.length; c++) {
              if(ob_children[c].value_coded == 1065)
@@ -70,3 +74,37 @@ function getTBtheraptObs() {
 }
 
 getTBtheraptObs();
+
+
+function three3HPsideEffectsFound(rfp_option_input, ipt_option_input) {
+  var main_side_effects = yesNo_Hash["MALAWI ART SIDE EFFECTS"];
+  var other_side_effects = yesNo_Hash["OTHER MALAWI ART SIDE EFFECTS"];
+  
+  side_effects_to_validate = [
+    "Jaundice", "Skin rash", "Vomiting",
+    "Dizziness","Nausea","Heavy alcohol use"
+  ];
+
+  side_effect_found = threeHPsideEffects(side_effects_to_validate, main_side_effects);
+
+  if(!side_effect_found && !(other_side_effects === undefined)){
+    side_effect_found = threeHPsideEffects(side_effects_to_validate, other_side_effects);
+  }
+
+  return side_effect_found;
+}
+
+
+function threeHPsideEffects(side_effects, main_side_effects){
+  for(var i = 0; i < side_effects.length; i++){
+    if(main_side_effects[side_effects[i]] === undefined)
+      continue;
+
+    if(main_side_effects[side_effects[i]] == "Yes"){
+      return true;
+    }
+  }
+
+  return false;
+}
+

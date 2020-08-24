@@ -1029,7 +1029,7 @@
 
             sideEffectsHash['Peripheral neuropathy'] = {yes: '', no: ''}
 
-            sideEffectsHash['Jaundice / Heavy alcohol use'] = {yes: '', no: ''}
+            sideEffectsHash['Jaundice'] = {yes: '', no: ''}
 
             sideEffectsHash['Lipodystrophy'] = {yes: '', no: ''}
 
@@ -1074,7 +1074,7 @@
 
             function advancedSideEffects() {
 
-                sideEffectsArray = JSON.parse('["Peripheral neuropathy","Jaundice / Heavy alcohol use","Lipodystrophy","Kidney Failure","Psychosis","Gynaecomastia","Anemia","Skin rash","Insomnia"]');
+                sideEffectsArray = JSON.parse('["Peripheral neuropathy","Jaundice","Lipodystrophy","Kidney Failure","Psychosis","Gynaecomastia","Anemia","Skin rash","Insomnia"]');
                 jQuery("#inputFrame" + tstCurrentPage).remove()
                 jQuery("#helpText" + tstCurrentPage).css({
                     marginLeft: "0%",
@@ -1084,7 +1084,7 @@
 
                 html = "<div id='divcontent'>";
                 html += "<div id='divScroller'>";
-                sideEffectsOptions = JSON.parse('["Peripheral neuropathy","Jaundice / Heavy alcohol use","Lipodystrophy","Kidney Failure","Psychosis","Gynaecomastia","Anemia","Skin rash","Insomnia"]');
+                sideEffectsOptions = JSON.parse('["Peripheral neuropathy","Jaundice","Lipodystrophy","Kidney Failure","Psychosis","Gynaecomastia","Anemia","Skin rash","Insomnia"]');
                 html += "<table cellspacing='1' cellpadding='2' width='95%' id='yes_no_table'>";
                 html += "<tbody>";
 
@@ -1915,7 +1915,7 @@
                         {
                             concept_id: malawi_art_side_effects_concept_id,
                             value_coded: jaundice_concept_id,
-                            child: {concept_id: jaundice_concept_id, value_coded: getSideEffectAnswer('Jaundice / Heavy alcohol use')}
+                            child: {concept_id: jaundice_concept_id, value_coded: getSideEffectAnswer('Jaundice')}
                         },
                         {
                             concept_id: malawi_art_side_effects_concept_id,
@@ -3494,13 +3494,13 @@
             <input type="text" name="tb-treatment-completed"
                    tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
                    tt_pageStyleClass="NoControls"
-                   condition="checkIfEverCompletedTBtherapyAsked() == false"
+                   condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
                    id="routine_tb_therapy"
                    helpText="Ever complete a full course of TB therapy" optional="true"/>
 
            <select objectType="location"
                 ajaxURL="/locations?name=" allowFreeText="true"
-                condition="showTBtherapyLocation() == true;" field_type="alpha"
+                condition="showTBtherapyLocation() == true && (ever_completed_tb_therapy_question_asked == false);" field_type="alpha"
                 helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
                 name="observations[][value_coded_or_text]"></select>
                    
@@ -3972,10 +3972,33 @@
                         img_input.src = '';
                         img_input.alt = '';
                     }
+                    
+                    var tpt_side_effect_found = three3HPsideEffectsFound(); 
+
+                    if(tpt_side_effect_found){ 
+                       //ipt_option_input.style.backgroundColor = '#CDBA96';
+                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications associated with TPT found)</span>";
+                        ipt_option_input.onclick = null;
+                        ipt_option_input.onmousedown = null;
+                        ipt_option_input.onmouseup = null;
+
+                        img_input = ipt_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                        
+                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications associated with TPT found)</span>";
+                        rfp_option_input.onclick = null;
+                        rfp_option_input.onmousedown = null;
+                        rfp_option_input.onmouseup = null;
+
+                        img_input = rfp_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                      }
+
                 }
 
 
-                
 
 
             }
@@ -4017,7 +4040,7 @@
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                        if(options[i].innerHTML.match(/TB /i)){
+                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/ TPT /i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;
@@ -4091,7 +4114,7 @@
                 }
 
                 for(var i = 0; i < sideEffectConcepts.length; i++){
-                    if(sideEffectConcepts[i][1] == "Jaundice / Heavy alcohol use"){
+                    if(sideEffectConcepts[i][1] == "Jaundice"){
                         var select_options = document.getElementById("tt_currentUnorderedListOptions");
                         var options  = select_options.children;
                         var rfp_option;
@@ -4100,7 +4123,7 @@
                             if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                                 rfp_option = options[i];
                                 updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
-                                showMessage("3HP can not be given to a client<br />with Jaundice / Heavy alcohol use.");
+                                showMessage("3HP can not be given to a client<br />with Jaundice.");
                             }
                         } 
                     }

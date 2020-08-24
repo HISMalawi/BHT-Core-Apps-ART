@@ -1,6 +1,6 @@
 var sideEffectsLeft = [
   ["Peripheral neuropathy", 821],
-  ["Jaundice / Heavy alcohol use", 215],["Lipodystrophy", 2148],
+  ["Jaundice", 215],["Lipodystrophy", 2148],
   ["Kidney Failure",  9242],
   ["Skin rash", 512]
 ];
@@ -22,7 +22,8 @@ var otherSideEffectsRight = [
   ["Nausea", 5978],
   ["Weight loss / Failure to thrive / malnutrition", 8260, 'checkForWeightLoss'],
   ["Lactic acidosis", 1458],
-  ["Cough", 107]
+  ["Cough", 107],
+  ["Heavy alcohol use", 1773]
 ];
 
 var iacLeft = [
