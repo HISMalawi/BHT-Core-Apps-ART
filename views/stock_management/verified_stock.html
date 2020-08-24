@@ -42,6 +42,12 @@
             "TMP/SMX (Cotrimoxazole 120mg tablet)",
             "NVP (Nevirapine 50 mg tablet)",
             "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)",
+            'ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)',
+            "Darunavir 600mg",
+            "Dolutegravir (50mg tablet)",
+            "RAL (Raltegravir 25mg)",
+            "RAL (Raltegravir 400mg)",
+            "RFP (Rifapentine 150mg)",
             "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)"];
 
         var formatted_drugs = ["EFV (Efavirenz 600mg tablet)",
@@ -68,7 +74,14 @@
             "TMP/SMX (Cotrimoxazole 120mg tablet)",
             "NVP (Nevirapine 50 mg tablet)",
             "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)",
-            "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)"];
+            "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)",
+            'ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)',
+            "Darunavir 600mg",
+            "Dolutegravir (50mg tablet)",
+            "RAL (Raltegravir 25mg)",
+            "RAL (Raltegravir 400mg)",
+            "RFP (Rifapentine 150mg)",
+            ];
 
         var drug_short_names = {
             "Cotrimoxazole (960mg)": "Cotrimoxazole 960mg 1000 tabs",
@@ -95,7 +108,13 @@
             "NVP (Nevirapine 200 mg tablet)": "NVP 200mg 60 tabs",
             "d4T/3TC (Stavudine Lamivudine 30/150 tablet)": "d4T/3TC 30 / 150mg 60 tabs",
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": "ABC / 3TC 60 / 30mg 60 tabs",
-            "Pyridoxine (50mg)": "Pyridoxine 50mg 1000 tabs"
+            "Pyridoxine (50mg)": "Pyridoxine 50mg 1000 tabs",
+            "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": "ABC / 3TC 120 / 60mg 60 tabs",
+            "RAL (Raltegravir 25mg)": "Raltegravir 25mg, 60 tablets",
+            "RAL (Raltegravir 400mg)": "Raltegravir 400mg, 60 tablets",
+            "RFP (Rifapentine 150mg)": "Rifapentine 150mg, 24 tablets",
+            "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
+            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets"
         };
 
         var selected = [];
@@ -140,7 +159,12 @@
             "NVP (Nevirapine 200 mg tablet)": "Nevirapine 200mg, tin of 60 tablets",
             "d4T/3TC (Stavudine Lamivudine 30/150 tablet)": "Stavudine / lamivudine 30 / 150mg, tin of 60 tablets",
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets",
-            "Pyridoxine (50mg)": "Pyridoxine 50mg tab, 1000 tablets"
+            "Pyridoxine (50mg)": "Pyridoxine 50mg tab, 1000 tablets",
+            "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": "ABC / 3TC 120 / 60mg 60 tabs",
+            "RAL (Raltegravir 25mg)": "Raltegravir 25mg, 60 tablets",
+            "RAL (Raltegravir 400mg)": "Raltegravir 400mg, 60 tablets",
+            "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
+            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets"
         };
 
         var drug_cms_packsizes = {
@@ -168,7 +192,12 @@
             "NVP (Nevirapine 200 mg tablet)": 60,
             "d4T/3TC (Stavudine Lamivudine 30/150 tablet)": 60,
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": 60,
-            "Pyridoxine (50mg)": 1000
+            "Pyridoxine (50mg)": 1000,
+            "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": 60,
+            "RAL (Raltegravir 25mg)": 60,
+            "RAL (Raltegravir 400mg)": 60,
+            "Darunavir 600mg": 60,
+            "Dolutegravir (50mg tablet)": 30
         };
 
         var drug_weights = {
@@ -196,7 +225,11 @@
             "4": ["Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets", "AZT/3TC (Zidovudine and Lamivudine 300/150mg)", "AZT / 3TC", "60 tabs", 60, 0, "300 / 150mg"],
             "15": ["Nevirapine 200mg, tin of 60 tablets", "NVP (Nevirapine 200 mg tablet)", "NVP", "60 tabs", 60, 0, "200mg"],
             "21": ["Isoniazid 300mg, tin of 1000 tablets", "INH or H (Isoniazid 300mg tablet)", "Isoniazid (H) ", "1000 tabs", 1000, 0, "300mg"],
-            "10": ["Efavirenz 600mg, tin of 30 tablets", "EFV (Efavirenz 600mg tablet)", "EFV", "30 tabs", 30, 0, "600mg"]
+            "26": ["ABC / 3TC 120 / 60mg 60 tabs", "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)", "ABC", "60 tabs", 60, 0, "600mg"],
+            "27": ["Raltegravir 25mg, 60 tablets", "RAL (Raltegravir 25mg)", "RAL", "60 tabs", 60, 0, "25mg"],
+            "28": ["Raltegravir 400mg, 60 tablets", "RAL (Raltegravir 400mg)", "RAL", "60 tabs", 60, 0, "400mg"],
+            "29": ["Darunavir 600mg, 60 tablets", "Darunavir 600mg", "DRV", "60 tabs", 60, 0, "600mg"],
+            "30": ["Dolutegravir 50mg 30 tablets", "Dolutegravir (50mg tablet)", "DTG", "30 tabs", 30, 0, "50mg"],
         };
 
         var unfinished_drugs = [];
