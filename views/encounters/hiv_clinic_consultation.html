@@ -3500,7 +3500,7 @@
 
            <select objectType="location"
                 ajaxURL="/locations?name=" allowFreeText="true"
-                condition="everCompleteTBtherapty() == true;" field_type="alpha"
+                condition="showTBtherapyLocation() == true;" field_type="alpha"
                 helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
                 name="observations[][value_coded_or_text]"></select>
                    
@@ -3944,6 +3944,39 @@
                     img_input.src = '';
                     img_input.alt = '';
                 }
+
+
+                /*if client have already finished a course of  TB  thereapy*/
+                if(checkIfEverCompletedTBtherapyAsked() == false){
+                    three_hp_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"].trim().toUpperCase() == "YES");
+                    ipt_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["IPT?"].trim().toUpperCase() == "YES");
+                    
+                    
+                    if (ipt_therapy_compleeted || three_hp_therapy_compleeted) {
+                        //ipt_option_input.style.backgroundColor = '#CDBA96';
+                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Already  completed TB therapy before)</span>";
+                        ipt_option_input.onclick = null;
+                        ipt_option_input.onmousedown = null;
+                        ipt_option_input.onmouseup = null;
+
+                        img_input = ipt_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                        
+                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Already  completed TB therapy before)</span>";
+                        rfp_option_input.onclick = null;
+                        rfp_option_input.onmousedown = null;
+                        rfp_option_input.onmouseup = null;
+
+                        img_input = rfp_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                    }
+                }
+
+
+                
+
 
             }
 
