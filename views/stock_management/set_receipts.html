@@ -51,8 +51,9 @@
             'ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)',
             "Darunavir 600mg",
             "Dolutegravir (50mg tablet)",
-            "RAL (Raltegravir 25mg)",
-            "RAL (Raltegravir 400mg)",
+            "Raltegravir 25mg",
+            "Raltegravir 400mg",
+            "Rifapentine 150mg",
             ];
 
         var drug_short_names = {
@@ -83,10 +84,11 @@
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": "ABC / 3TC 60 / 30mg 60 tabs",
             "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": "ABC / 3TC 120 / 60mg 60 tabs",
             "Pyridoxine (50mg)": "Pyridoxine 50mg 1000 tabs",
-            "RAL (Raltegravir 25mg)": "Raltegravir 25mg, 60 tablets",
-            "RAL (Raltegravir 400mg)": "Raltegravir 400mg, 60 tablets",
+            "Raltegravir 25mg": "Raltegravir 25mg, 60 tablets",
+            "Raltegravir 400mg": "Raltegravir 400mg, 60 tablets",
             "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
-            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets" 
+            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets", 
+            "Rifapentine 150mg": "Rifapentine 150mg 24 tablets", 
         };
 
         var drug_cms_names = {
@@ -116,10 +118,11 @@
             "AZT/3TC (Zidovudine and Lamivudine 300/150mg)": "Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets",
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets",
             "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": "ABC / 3TC 120 / 60mg 60 tabs",
-            "RAL (Raltegravir 25mg)": "Raltegravir 25mg, 60 tablets",
-            "RAL (Raltegravir 400mg)": "Raltegravir 400mg, 60 tablets",
+            "Raltegravir 25mg": "Raltegravir 25mg, 60 tablets",
+            "Raltegravir 400mg": "Raltegravir 400mg, 60 tablets",
             "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
-            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets"
+            "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets",
+            "Rifapentine 150mg": "Rifapentine 150mg 24 tablets",
         };
 
         var drug_cms_packsizes = {
@@ -148,10 +151,11 @@
             "AZT/3TC (Zidovudine and Lamivudine 300/150mg)": 60,
             "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)": 60,
             "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)": 60,
-            "RAL (Raltegravir 25mg)": 60,
-            "RAL (Raltegravir 400mg)": 60,
+            "Raltegravir 25mg": 60,
+            "Raltegravir 400mg": 60,
             "Darunavir 600mg": 60,
-            "Dolutegravir (50mg tablet)": 30
+            "Dolutegravir (50mg tablet)": 30,
+            "Rifapentine 150mg": 24
         };
 
         var delivery_date = JSON.parse(sessionStorage.receipts)["delivery_date"];
@@ -399,7 +403,9 @@
 
                     li.setAttribute("value", all_drugs[k]);
                     li.setAttribute("cms_name", drug_cms_names[all_drugs[k]]);
-
+                    console.log(drug_cms_names[all_drugs[k]])
+                    console.log(drug_cms_names)
+                    console.log(all_drugs[k])
                     li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                     li.className = (k % 2 == 0) ? "even" : "odd";
                     li.onmousedown = function () {
@@ -1540,6 +1546,7 @@
             var i = 0
             for (var drug_name in drugs_hash) {
                 var drug = drug_name.split("_")[0];
+                console.log(drug);
                 var date_of_expiry = drugs_hash[drug_name]["date_of_expiry"];
                 var tabs_per_tin = drugs_hash[drug_name]["tabs_per_tin"];
                 var total_tins = drugs_hash[drug_name]["total_tins"];
