@@ -3490,20 +3490,6 @@
                    id="routine_tb_screening"
                    helpText="TB associated symptoms" optional="true"/>
 
-
-            <input type="text" name="tb-treatment-completed"
-                   tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
-                   tt_pageStyleClass="NoControls"
-                   condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
-                   id="routine_tb_therapy"
-                   helpText="Ever complete a full course of TB therapy" optional="true"/>
-
-           <select objectType="location"
-                ajaxURL="/locations?name=" allowFreeText="true"
-                condition="showTBtherapyLocation() == true && (ever_completed_tb_therapy_question_asked == false);" field_type="alpha"
-                helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
-                name="observations[][value_coded_or_text]"></select>
-                   
             <select allowFreeText="false" condition="true && __$('tb_treatment_question').value.toUpperCase() == 'NO'
                             && tbSymptomsHashSelects() == 'YES'" helpText="TB Status" id="tb_status"
                     name="observations[][value_coded_or_text]"
@@ -3522,6 +3508,20 @@
                            id="routine_tb_screening"
                            helpText="Order Lab investigations?" optional = "true"/ -->
 
+
+            <input type="text" name="tb-treatment-completed"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
+                   tt_pageStyleClass="NoControls"
+                   condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
+                   id="routine_tb_therapy"
+                   helpText="Ever complete a full course of TB therapy" optional="true"/>
+
+           <select objectType="location"
+                ajaxURL="/locations?name=" allowFreeText="true"
+                condition="showTBtherapyLocation() == true && (ever_completed_tb_therapy_question_asked == false);" field_type="alpha"
+                helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
+                name="observations[][value_coded_or_text]"></select>
+                   
 
             <select allowFreeText="false" helpText="Allergic to Cotrimoxazole?" id="allergic_to_cotrimoxazole"
                     tt_onLoad="setNextButtonToGetInputValue('allergic_to_cpt');"
