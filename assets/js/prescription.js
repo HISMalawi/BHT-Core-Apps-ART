@@ -984,9 +984,8 @@ function continueValidateRegimenSelection() {
 var lpvDrugType;
 
 function checkIFRegimenHasLPv() {
-    lpvDrugType = false;
 
-    var regimen = parseInt(selectedRegimens, 10);
+    var regimen = parseInt(selectedRegimens);
     var w = parseFloat(sessionStorage.currentWeight);
     regimen_nine_or_eleven = (regimen == 11 || regimen == 9);
 
@@ -2331,7 +2330,7 @@ function prescribed3HP(){
     var order_date = new Date(sessionStorage.sessionDate);
     var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
     url += '/observations?person_id=' + sessionStorage.patientID;
-    url += '&date=' + moment(order_date).format('YYYY-MM-DD') + '&page_size=1';
+    url += '&date=' + moment(order_date).format('YYYY-MM-DD') + '&page_size=5';
     url += '&concept_id=1282';
 
     var xhttp = new XMLHttpRequest();
