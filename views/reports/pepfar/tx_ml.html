@@ -154,7 +154,8 @@ function initializeTable() {
       {"className": "dt-numbers", "targets": 4},
       {"className": "dt-numbers", "targets": 5},
       {"className": "dt-numbers", "targets": 6},
-      {"className": "dt-numbers", "targets": 7}
+      {"className": "dt-numbers", "targets": 7},
+      {"className": "dt-numbers", "targets": 8}
     ]
   });
 
@@ -200,7 +201,8 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Defaulted</th>
+        <th class="disaggregated-numbers">Defaulted<br />(new registeration)</th>
+        <th class="disaggregated-numbers">Defaulted<br/>(old registeration)</th>
         <th class="disaggregated-numbers">Died</th>
         <th class="disaggregated-numbers">Stopped</th>
         <th class="disaggregated-numbers">Transferred out</th>
@@ -279,7 +281,7 @@ function addTableBody() {
       table_body.appendChild(tr);
       var td_count = 0;
 
-      while (td_count < 4) {
+      while (td_count < 5) {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
@@ -291,7 +293,7 @@ function addTableBody() {
         if(td_count == 2)
           td.innerHTML = gender[s];
            
-        if(td_count > 2){
+        if(td_count > 3){
           td.innerHTML = 0;
           td.setAttribute('class','disaggregated-numbers');
         }   
@@ -378,14 +380,14 @@ function loadGroupData(data){
           if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
             var numbers = gender[sex];
             data_table.row.add([ counter++, age_group, sex, numbers[0],
-                numbers[1], numbers[2], numbers[3], numbers[4]]).draw();
+                numbers[1], numbers[2], numbers[3], numbers[4], numbers[5]]).draw();
             age_group_found = true;
 
           }
         }
       }
       if(!age_group_found){
-        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0,0,0 ]).draw();
+        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0,0,0,0 ]).draw();
       }else{
         age_group_found = false;
       }
