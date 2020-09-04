@@ -210,11 +210,11 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "MoH " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "MoH " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       }
     ],
     columnDefs: [
@@ -257,7 +257,7 @@ function initializeTable() {
     <div class='title-cell' id='title-cell-right'>
       <table style="width: 100%; text-align: left; margin-left: 10px;">
         <tr>
-          <th>Title:</th><td colspan="2" id="report-title">PEPFAR TX CURR MMD report<td>
+          <th>Title:</th><td colspan="2" id="report-title">MoH TX CURR MMD report<td>
         </tr>
         <tr>
           <th>Period:</th>
@@ -338,7 +338,7 @@ function initializeReport() {
   }
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
   url_path += '/arv_refill_periods?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
-  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
+  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
   url_path += "&min_age=" + min_age;
   url_path += "&max_age=" + max_age
 
@@ -624,7 +624,7 @@ var rowCounter = 1;
 function getClients(patient_ids) {
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
   url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
-  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
+  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
 
   var params = JSON.stringify({patient_ids: patient_ids});
   var tbody = document.getElementById("popupDataBody");
