@@ -113,6 +113,79 @@ th {
   text-align: right;
 }
 
+#popupBox {
+  position: absolute;
+  background-color: lightgray;
+  left: 0%;
+  top: 0%;
+  z-index: 991;
+  opacity: 1;
+  width: 92%;
+  margin-left: 25px;
+  height: 88%; 
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+#popupData th {
+  border-width: 1px;
+  border-style: solid;
+}
+
+#popupData th {
+  border-width: 1px;
+  border-style: solid;
+}
+
+#popupData {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.arv-tables {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pills-info {
+  text-align: right;
+  margin-right: 5px;
+  border-width: none !important;
+}
+
+.main-table-td {
+  border-style: solid;
+  border-width: 1px;
+}
+
+#popupData_length {
+  display: none;
+}
+
+#popupData_info {
+  font-size: 18px;
+}
+
+#popupData_paginate {
+  font-size: 20px;
+}
+
+.dt-arv-numbers  {
+  text-align: center;
+  width: 120px;
+}
+
+.dt-date {
+  text-align: center;
+  width: 100px;
+}
+
+#popupBTN {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
 </style>
 
 <script>
@@ -221,6 +294,25 @@ function initializeTable() {
 <!--img src="/apps/OPD/assets/images/formloader.gif" id="spinner" /-->
 <!--div id="percentage-counter">0%</div-->
 <div id="report-cover"></div>
+
+<div id="popupBox">
+  <table id="popupData">
+    <thead>
+      <tr>
+        <th>ARV#</th>
+        <th>DOB</th>
+        <th>Dispensed date</th>
+        <th>ARVs</th>
+      </tr>
+  </thead>
+    <tbody id= "popupDataBody">
+    </tbody>
+  </table>
+
+  <button class="button blue navButton" onmousedown="closeBox();" 
+    id="popupBTN"><span>Close</span></button>
+</div>
+
 
 
 <script>
@@ -379,8 +471,15 @@ function loadGroupData(data){
         for(var sex in gender){
           if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
             var numbers = gender[sex];
-            data_table.row.add([ counter++, age_group, sex, numbers[0],
-                numbers[1], numbers[2], numbers[3], numbers[4], numbers[5]]).draw();
+            var rcounter = counter++;
+            data_table.row.add([ rcounter, age_group, sex, 
+                addLink(rcounter, age_group, sex,  numbers[0], 1),
+                addLink(rcounter, age_group, sex,  numbers[1], 2),
+                addLink(rcounter, age_group, sex,  numbers[2], 3),
+                addLink(rcounter, age_group, sex,  numbers[3], 4),
+                addLink(rcounter, age_group, sex,  numbers[4], 5),
+                addLink(rcounter, age_group, sex,  numbers[5], 6)
+            ]).draw();
             age_group_found = true;
 
           }
@@ -397,8 +496,56 @@ function loadGroupData(data){
   document.getElementById('report-cover').style = "display: none;";
 }
 
+function addLink(num, age_group, gender, data, colNum){
+  if(data.length < 1)
+    return  0;
+
+  var  span = document.createElement("span");
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("onmousedown","drillDown('" + num + "','"  + colNum + "');");
+  a.innerHTML = data.length;
+  span.appendChild(a);
+
+  if(drill_down_data[num] == undefined)
+    drill_down_data[num] = {}
+
+  drill_down_data[num][colNum] = data;
+  return span.innerHTML;
+}
+
+function drillDown(rowNum,  colNum){
+  getClients(drill_down_data[rowNum][colNum]);
+}
+
+function getClients(patient_ids) {
+  var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
+  url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
+  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
+
+  var params = JSON.stringify({patient_ids: patient_ids});
+  var tbody = document.getElementById("popupDataBody");
+  var tbodyHTML = "<tr><td colspan='5'>Fetching data  please wait  ...</td></tr>";
+  tbody.innerHTML = tbodyHTML;
+  var table = document.getElementById("popupBox");
+  table.style = "display:inline;";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      renderDrillDownData(obj);
+      initializePopUpTable();
+    }
+  };
+  xhttp.open("POST", url_path, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send(params);
+}
 
 
+var   drill_down_data = {};
 
 
 
@@ -407,5 +554,136 @@ function loadGroupData(data){
 
 
 var global_counter = 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function renderDrillDownData(data){
+  var tbody = document.getElementById("popupDataBody");
+  tbody.innerHTML = null;
+  for(var patient_id in data){
+    var drugs_info = [];
+    var main_info = null;
+
+    var regimens = data[patient_id];
+    for(var regimen in  regimens){
+      var drug_ids  = regimens[regimen];
+      for(var drug_id in  drug_ids){
+        var drugs = data[patient_id][regimen][drug_id];
+        
+        for(var id in  drugs){
+          var inf = data[patient_id][regimen][drug_id][id];
+          drugs_info.push([
+            inf.drug_name,
+            inf.quantity,
+            inf.dose_per_day
+          ]);
+          main_info = {
+            arv_number: inf.arv_number,
+            dob: inf.birthdate,
+            start_date: inf.start_date
+          };
+        }
+
+      }
+    }
+
+    if(!main_info)
+      continue;
+      
+    var tr =  document.createElement("tr");
+    var td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.arv_number;
+    tr.appendChild(td);
+    
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.dob;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.start_date;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    tr.appendChild(td);
+    var t = document.createElement("table");
+    t.setAttribute("class","arv-tables")
+    td.appendChild(t);
+
+    for(var i = 0; i< drugs_info.length; i++){
+      var tTr = document.createElement("tr");
+      t.appendChild(tTr);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = drugs_info[i][0];
+      tTr.appendChild(tTd);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = "  (" + drugs_info[i][1] + ", ";
+      tTd.innerHTML  += drugs_info[i][2] + " a day)";
+      tTd.setAttribute("class","pills-info");
+      tTr.appendChild(tTd);
+      
+    }
+
+    tbody.appendChild(tr);
+  }
+
+}
+
+
+
+var popupTable;
+
+function initializePopUpTable() {
+
+  popupTable = $('#popupData').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: true,
+    scrollY: 380,
+    Processing: false,
+    ServerSide: false,
+    scroller: {
+      loadingIndicator: true
+    },
+    columnDefs: [
+      {"className": "dt-arv-numbers", "targets": 0},
+      {"className": "dt-date", "targets": 1},
+      {"className": "dt-date", "targets": 2}
+    ]
+  });
+
+}
+
+function closeBox(){
+  try  {
+    popupTable.destroy();
+  }catch(e){}
+  
+  document.getElementById("popupBox").style = "display: none;";
+}
 </script>
 
