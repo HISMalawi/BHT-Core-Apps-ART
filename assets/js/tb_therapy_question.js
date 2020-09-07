@@ -11,7 +11,7 @@ YesNoConceptsTBtherapy["No"] = 1066;
 
 function addTBtherapyYesNo(){
   var tar = document.getElementById("inputFrame" + tstCurrentPage);
-  var attr = '3HP (RFP + INH)?, 9974#IPT?, 656';
+  var attr = '3HP (3 months of RFP + INH)?, 9974#IPT (minimum 6 months of INH)?, 656';
   buildYesNoUI('Previous TB treatment history', attr, tar);
 }
 
@@ -19,8 +19,8 @@ function addTBtherapyYesNo(){
 function everCompleteTBtherapy(){
   
   try {
-    var three_hp = (yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"] == "Yes");
-    var ipt =  (yesNo_Hash["Previous TB treatment history"]["IPT?"] == "Yes");
+    var three_hp = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"] == "Yes");
+    var ipt =  (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"] == "Yes");
   }catch(e){
     show_completed_tb_therapy_location = true;
     return ever_completed_tb_therapy;

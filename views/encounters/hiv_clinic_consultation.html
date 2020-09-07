@@ -65,6 +65,7 @@
     <script type="text/javascript" src="/assets/js/provider.js  "></script>
 
     <script type="text/javascript" src="/apps/ART/assets/js/tb_therapy_question.js"></script>
+    <script type="text/javascript" src="/apps/ART/assets/js/other_side_effects_keyboard.js"></script>
     
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
@@ -3454,12 +3455,19 @@
                     </input>  -->
             <input type="text" name="other_side_effects"
                    id="other_side_effects"
-                   helpText="Other side effects" optional="false"
+                   helpText="Other Contraindications / Side effects (select either 'Yes' or 'No')" optional="false"
                    tt_onLoad="__$('keyboard').style.display = 'none';drugInducedSideEffects();otherSideEffectsYesNo();"
                    tt_pageStyleClass="NoControls"
                    condition="OtherSideEffects == true">
             </input>
 
+            <input id="other_side_effect_specify" name="other_side_effect_specify"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; buildKeyBoardForOtherSideEffects();"
+                   tt_onUnLoad="" 
+                   helpText="Other Contraindications / Side effects (specify)" 
+                   tt_pageStyleClass="NoControls" type="text"/>
+
+            
             <!-- input type="text" name="Medication induced?"
                       id="medication_induced"
                       helpText="Medication induced side effects?" optional = "false"
@@ -3514,7 +3522,7 @@
                    tt_pageStyleClass="NoControls"
                    condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
                    id="routine_tb_therapy"
-                   helpText="Ever complete a full course of TB therapy" optional="true"/>
+                   helpText="Ever completed a course of TB preventive therapy" optional="true"/>
 
            <select objectType="location"
                 ajaxURL="/locations?name=" allowFreeText="true"
@@ -3948,8 +3956,8 @@
 
                 /*if client have already finished a course of  TB  thereapy*/
                 if(checkIfEverCompletedTBtherapyAsked() == false){
-                    three_hp_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"].trim().toUpperCase() == "YES");
-                    ipt_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["IPT?"].trim().toUpperCase() == "YES");
+                    three_hp_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
+                    ipt_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
                     
                     
                     if (ipt_therapy_compleeted || three_hp_therapy_compleeted) {

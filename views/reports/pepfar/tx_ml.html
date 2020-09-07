@@ -521,7 +521,7 @@ function drillDown(rowNum,  colNum){
 function getClients(patient_ids) {
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
   url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
-  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
+  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
 
   var params = JSON.stringify({patient_ids: patient_ids});
   var tbody = document.getElementById("popupDataBody");

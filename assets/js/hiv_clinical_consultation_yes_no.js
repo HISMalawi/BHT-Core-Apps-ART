@@ -23,7 +23,8 @@ var otherSideEffectsRight = [
   ["Weight loss / Failure to thrive / malnutrition", 8260, 'checkForWeightLoss'],
   ["Lactic acidosis", 1458],
   ["Cough", 107],
-  ["Heavy alcohol use", 1773]
+  ["Heavy alcohol use", 1773],
+  ["Other (specify)", 7215]
 ];
 
 var iacLeft = [
