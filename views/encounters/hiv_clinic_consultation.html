@@ -2017,14 +2017,14 @@
                             concept_id: 1588,
                             value_coded: 656, child: 
                                 {concept_id: 656, 
-                                    value_coded: yesNo_Hash["Previous TB treatment history"]["IPT?"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                                    value_coded: yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
                                 }
                         },
                         {
                             concept_id: 1588,
                             value_coded: 9974, child: 
                                 {concept_id: 9974, 
-                                    value_coded: yesNo_Hash["Previous TB treatment history"]["3HP (RFP + INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
+                                    value_coded: yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
                                 }
                         },
                         {
@@ -2035,6 +2035,16 @@
                     );
                 }
 
+
+                if(other_specific_side_effects != "") {
+                    obs.observations.push(
+                        {
+                            concept_id: other_side_effect_concept_id,
+                            value_coded: 7215,
+                            child: {concept_id: 7215, value_text:  other_specific_side_effects}
+                        }
+                    );
+                }
 
                 //other_side_effect = yesNo_Hash["MALAWI ART SIDE EFFECTS"]["Other"];
                 //if (other_side_effect.toUpperCase() == "YES"){
