@@ -729,14 +729,18 @@
             }
 
             function addEvent(obj, evType, fn) {
-                if (obj.addEventListener) {
-                    obj.addEventListener(evType, fn, false);
-                    return true;
-                } else if (obj.attachEvent) {
-                    var r = obj.attachEvent("on" + evType, fn);
-                    return r;
-                } else {
-                    alert("Handler could not be attached");
+                try {
+                    if (obj.addEventListener) {
+                        obj.addEventListener(evType, fn, false);
+                        return true;
+                    } else if (obj.attachEvent) {
+                        var r = obj.attachEvent("on" + evType, fn);
+                        return r;
+                    } else {
+                        alert("Handler could not be attached");
+                    }
+                }catch(e){
+
                 }
             }
 
@@ -3462,10 +3466,11 @@
             </input>
 
             <input id="other_side_effect_specify" name="other_side_effect_specify"
-                   tt_onLoad="__$('keyboard').style.display = 'none'; buildKeyBoardForOtherSideEffects();"
-                   tt_onUnLoad="" 
-                   helpText="Other Contraindications / Side effects (specify)" 
-                   tt_pageStyleClass="NoControls" type="text"/>
+               tt_onLoad="__$('keyboard').style.display = 'none'; buildKeyBoardForOtherSideEffects();"
+               tt_onUnLoad="" 
+               condition="specifySideEffects() == true" optional="true" 
+               helpText="Other Contraindications / Side effects (specify)" 
+               tt_pageStyleClass="NoControls" type="text"/>
 
             
             <!-- input type="text" name="Medication induced?"
