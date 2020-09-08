@@ -127,7 +127,6 @@ function execUserInput(el){
                 if(str_location_focus.start == 0){
                     text_to_start_from.push(el.id);
                     text_to_start_from.push(user_inputs[i])
-                    str_location_focus.start += 1;
                     new_char_inserted = true;
                     continue;
                 }
@@ -141,8 +140,6 @@ function execUserInput(el){
                     }
                 }
 
-                console.log(new_char_inserted == false);
-                console.log(user_inputs[i] + "  ----------------- " +  text_to_start_from.join(""))
             }else if((i - 1) == textIndex){
                 if(!new_char_inserted)
                     text_to_start_from.push(el.id);
@@ -160,9 +157,6 @@ function execUserInput(el){
     }
 
     str_location_focus.start += 1;
-    //new_char_inserted = false;
-    //str_location_focus.end = text_to_start_from.length;
-    console.log(text_to_start_from.join(""));
     textarea.value = text_to_start_from.join("");
 }
 
