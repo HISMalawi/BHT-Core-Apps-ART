@@ -19,6 +19,9 @@ function buildKeyBoardForOtherSideEffects() {
   var textarea = document.createElement("textarea");
   textarea.setAttribute("id", "specify-other-side-effect");
   textarea.setAttribute("onfocus", "setStringFocus(this);");
+  if(other_specific_side_effects != "")
+    textarea.value = other_specific_side_effects;
+
   mainFrame.appendChild(textarea);
 
   var textareaStyle = "width: 97.5%; height: 150px;";
@@ -285,4 +288,26 @@ function getInputSelection(el) {
 
 function setStringFocus(e){
     str_location_focus = getInputSelection(e);
+}
+
+function emptyTextArea(el){
+    return el.value.replace(/^\s+|\s+$/g,"") == "" ? true : false
+}
+
+function disableNextBtn(){
+    var  btn = document.getElementById("nextButton");
+    btn.setAttribute("onmousedown","validateTextArea()");
+}
+
+var other_specific_side_effects = "";
+
+function validateTextArea(){
+    var el = document.getElementById("specify-other-side-effect");
+    
+    if(emptyTextArea(el)){
+        showMessage("Please specify side effect(s).")
+    }else{
+        other_specific_side_effects  = el.value;
+        gotoNextPage();
+    }
 }

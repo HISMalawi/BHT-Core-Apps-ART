@@ -3466,7 +3466,7 @@
             </input>
 
             <input id="other_side_effect_specify" name="other_side_effect_specify"
-               tt_onLoad="__$('keyboard').style.display = 'none'; buildKeyBoardForOtherSideEffects();"
+               tt_onLoad="disableNextBtn();__$('keyboard').style.display = 'none'; buildKeyBoardForOtherSideEffects();"
                tt_onUnLoad="" 
                condition="specifySideEffects() == true" optional="true" 
                helpText="Other Contraindications / Side effects (specify)" 
