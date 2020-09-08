@@ -1,4 +1,5 @@
 var str_location_focus;
+var cap_lock = true;
 
 function specifySideEffects() {
   try {
@@ -35,6 +36,7 @@ function buildKeyBoardForOtherSideEffects() {
   textareaStyle += "margin-top: 10px;display: table;";
   textareaStyle += "position: absolute; top: 220px";
   keyboardContainer.setAttribute("style", textareaStyle);
+  keyboardContainer.setAttribute("id","keyboard-keys");
   keyboardKeys(keyboardContainer);
   mainFrame.appendChild(keyboardContainer);
   textarea.focus(); 
@@ -44,9 +46,15 @@ function keyboardKeys(el){
     var rowStyle = "display: table-row; width: 100%;";
 
     var numbers = ["1","2","3","4","5","6","7","8","9","0","Delete"];
-    var qwerty1 = ["Q","W","E","R","T","Y","U","I","O","P","Enter"];
-    var qwerty2 = ["Cap","A","S","D","F","G","H","J","K","L","Clear"];
-    var qwerty3 = ["Z","X","C","V","B","N","M","<",">","/","."];
+    if(cap_lock){
+        var qwerty1 = ["Q","W","E","R","T","Y","U","I","O","P","Enter"];
+        var qwerty2 = ["Cap","A","S","D","F","G","H","J","K","L","Clear"];
+        var qwerty3 = ["Z","X","C","V","B","N","M","<",">","/","."];
+    }else{
+        var qwerty1 = ["q","w","e","r","t","y","u","i","o","p","Enter"];
+        var qwerty2 = ["Cap","a","s","d","f","g","h","j","k","l","Clear"];
+        var qwerty3 = ["z","x","c","v","b","n","m","<",">","/","."];
+    }
     var qwerty4 = ["Space"];
 
     var keys = [numbers, qwerty1, qwerty2, qwerty3];
@@ -142,6 +150,9 @@ function execUserInput(el){
         return clearTextArea(textarea);
     }else if(el.id == "Delete"){
         return deleteText(textarea);
+    }else if(el.id == "Cap"){
+        cap_lock = (cap_lock == true ? false  :  true);
+        return capLock();
     }
 
 
@@ -310,4 +321,10 @@ function validateTextArea(){
         other_specific_side_effects  = el.value;
         gotoNextPage();
     }
+}
+
+function capLock(){
+    var keyboard = document.getElementById("keyboard-keys");
+    keyboard.innerHTML = "";
+    keyboardKeys(keyboard); 
 }
