@@ -98,8 +98,49 @@ function insertKeys(el, keys) {
 
 var new_char_inserted = false;
 
+function clearTextArea(el){
+    el.value = "";
+    setStringFocus(el);
+}
+
+function deleteText(el){
+    var text_char = el.value.split("");
+    var valid_text = [];
+    var textarea_focus = str_location_focus; //getInputSelection(textarea);
+    if(textarea_focus == undefined){
+        textarea_focus = getInputSelection(textarea);
+        str_location_focus = textarea_focus;
+    }
+
+   if(text_char.length > 0 && str_location_focus.start == 0)
+      str_location_focus.start = 1; 
+
+    for(var i = 0; i < text_char.length; i++){
+        if((i + 1) == textarea_focus.start)
+            continue;
+            
+        valid_text.push(text_char[i]);
+    }
+
+    el.value = valid_text.join("");
+    if(el.value == ""){
+        setStringFocus(el);
+    }else{
+        if(str_location_focus.start > 0)
+            str_location_focus.start -= 1;
+
+    }
+
+}
+
 function execUserInput(el){
     var textarea = document.getElementById("specify-other-side-effect");
+    if(el.id == 'Clear'){
+        return clearTextArea(textarea);
+    }else if(el.id == "Delete"){
+        return deleteText(textarea);
+    }
+
 
     var textarea_focus = str_location_focus; //getInputSelection(textarea);
     if(textarea_focus == undefined){
@@ -118,14 +159,26 @@ function execUserInput(el){
 
 
     if(user_inputs.length < 1){
-        text_to_start_from.push(el.id);
+        if(el.id == "Space"){
+            text_to_start_from.push(" ");
+        }else if(el.id  == "Enter"){
+            text_to_start_from.push("\n");
+        }else{
+            text_to_start_from.push(el.id);
+        }
     }else{
         new_char_inserted = false;
         for(var i = 0; i < user_inputs.length; i++){
             
             if(i <= textIndex){
                 if(str_location_focus.start == 0){
-                    text_to_start_from.push(el.id);
+                    if(el.id == "Space"){
+                        text_to_start_from.push(" ");
+                    }else if(el.id  == "Enter"){
+                        text_to_start_from.push("\n");
+                    }else{
+                        text_to_start_from.push(el.id);
+                    }
                     text_to_start_from.push(user_inputs[i])
                     new_char_inserted = true;
                     continue;
@@ -135,20 +188,40 @@ function execUserInput(el){
 
                 if(user_inputs.length  == (i + 1)){
                     if(!new_char_inserted){
-                        text_to_start_from.push(el.id);
+                        if(el.id == "Space"){
+                            text_to_start_from.push(" ");
+                        }else if(el.id  == "Enter"){
+                            text_to_start_from.push("\n");
+                        }else{
+                            text_to_start_from.push(el.id);
+                        }
                         new_char_inserted = true;
                     }
                 }
 
             }else if((i - 1) == textIndex){
-                if(!new_char_inserted)
-                    text_to_start_from.push(el.id);
+                if(!new_char_inserted){
+                    if(el.id == "Space"){
+                        text_to_start_from.push(" ");
+                    }else if(el.id  == "Enter"){
+                        text_to_start_from.push("\n");
+                    }else{
+                        text_to_start_from.push(el.id);
+                    }
+                }
 
                 text_to_start_from.push(user_inputs[i]);
                 new_char_inserted = true;
             }else{
-                if(!new_char_inserted)
-                    text_to_start_from.push(el.id);
+                if(!new_char_inserted){
+                    if(el.id == "Space"){
+                        text_to_start_from.push(" ");
+                    }else if(el.id  == "Enter"){
+                        text_to_start_from.push("\n");
+                    }else{
+                        text_to_start_from.push(el.id);
+                    }
+                }
                     
                 text_to_start_from.push(user_inputs[i]);
                 new_char_inserted = true;
