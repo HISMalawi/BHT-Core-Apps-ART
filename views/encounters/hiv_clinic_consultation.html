@@ -3603,7 +3603,9 @@
                     name="observations[][value_coded_or_text]"
                     tt_pageStyleClass="NoKeyboard" multiple="multiple"
                     tt_onUnLoad="removeAllergicToCPT();"
-                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();setIPT_RFPvalidation();">
+                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); 
+                    controlCPTIPTOptions(); addChangeAllergicToCPTValue();
+                    setIPT_RFPvalidation();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
@@ -4074,6 +4076,7 @@
                     }
                 } 
 
+                setTimeout(function(){ autoSelectMedication(); }, 300);
             }
 
             function validateIPTRFP(e){

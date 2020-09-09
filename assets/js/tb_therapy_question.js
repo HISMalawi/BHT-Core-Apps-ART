@@ -138,3 +138,28 @@ function display3HPsideEffects(){
   return  side_effects_to_diaplay;
 
 }
+
+function autoSelectMedication(){
+  var select_options = document.getElementById("tt_currentUnorderedListOptions");
+  var options  = select_options.children;
+  var auto_select = true;
+                
+  for(var i = 0; i < options.length; i++){
+      if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
+        auto_select = false;
+      }
+  } 
+
+  if(auto_select){
+    for(var i = 0; i < options.length; i++){
+      if(!options[i].innerHTML.match(/lightblue/i))
+        updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
+
+      if(i == 2)
+        break;
+
+    }
+  }
+
+}
