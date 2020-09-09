@@ -140,6 +140,9 @@ function display3HPsideEffects(){
 }
 
 function autoSelectMedication(){
+  if(!activate_3HP_auto_select)
+    return;
+
   var select_options = document.getElementById("tt_currentUnorderedListOptions");
   var options  = select_options.children;
   var auto_select = true;
@@ -163,3 +166,29 @@ function autoSelectMedication(){
   }
 
 }
+
+var  activate_3HP_auto_select = true;
+
+function active3HPautoSelect() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/global_properties?property=activate.3hp.auto.select';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 ) {
+          if(this.status == 201 || this.status == 200) {
+            var obj = JSON.parse(this.responseText);
+            activate_3HP_auto_select = (obj['activate.3hp.auto.select'] == 'true' ? true : false);
+          }else if(this.status == 404) {
+            activate_3HP_auto_select = true;
+          }
+          
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+active3HPautoSelect();
