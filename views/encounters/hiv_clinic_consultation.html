@@ -3977,7 +3977,7 @@
                     
                     if (ipt_therapy_compleeted || three_hp_therapy_compleeted) {
                         //ipt_option_input.style.backgroundColor = '#CDBA96';
-                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Already  completed TB therapy before)</span>";
+                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (TPT completed)</span>";
                         ipt_option_input.onclick = null;
                         ipt_option_input.onmousedown = null;
                         ipt_option_input.onmouseup = null;
@@ -3986,7 +3986,7 @@
                         img_input.src = '';
                         img_input.alt = '';
                         
-                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Already  completed TB therapy before)</span>";
+                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TPT completed)</span>";
                         rfp_option_input.onclick = null;
                         rfp_option_input.onmousedown = null;
                         rfp_option_input.onmouseup = null;
@@ -4000,7 +4000,7 @@
 
                     if(tpt_side_effect_found){ 
                        //ipt_option_input.style.backgroundColor = '#CDBA96';
-                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications associated with TPT found)</span>";
+                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
                         ipt_option_input.onclick = null;
                         ipt_option_input.onmousedown = null;
                         ipt_option_input.onmouseup = null;
@@ -4009,7 +4009,7 @@
                         img_input.src = '';
                         img_input.alt = '';
                         
-                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications associated with TPT found)</span>";
+                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
                         rfp_option_input.onclick = null;
                         rfp_option_input.onmousedown = null;
                         rfp_option_input.onmouseup = null;
@@ -4063,7 +4063,7 @@
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/ TPT /i)){
+                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;

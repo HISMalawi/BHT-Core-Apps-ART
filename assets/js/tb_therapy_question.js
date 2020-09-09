@@ -108,3 +108,33 @@ function threeHPsideEffects(side_effects, main_side_effects){
   return false;
 }
 
+function display3HPsideEffects(){
+  var main_side_effects = yesNo_Hash["MALAWI ART SIDE EFFECTS"];
+  try {
+    var other_side_effects = yesNo_Hash["OTHER MALAWI ART SIDE EFFECTS"];
+  }catch(e){
+    var other_side_effects = {}
+  }
+  
+  var side_effects = [
+    "Jaundice", "Skin rash", "Vomiting",
+    "Dizziness","Nausea","Heavy alcohol use"
+  ];
+
+  var side_effects_to_diaplay = [];
+
+  for(var i = 0; i < side_effects.length; i++){
+    if(main_side_effects[side_effects[i]] == "Yes"){
+      side_effects_to_diaplay.push(side_effects[i]);
+    }
+
+    if(other_side_effects){
+      if(other_side_effects[side_effects[i]] == "Yes"){
+        side_effects_to_diaplay.push(side_effects[i]);
+      }
+    }
+
+  }
+  return  side_effects_to_diaplay;
+
+}
