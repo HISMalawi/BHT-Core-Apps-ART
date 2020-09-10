@@ -107,6 +107,9 @@
 th {
   text-align: left;
 }
+tfoot {
+  visibility: hidden;
+}
 
 </style>
 
@@ -137,11 +140,12 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title,
+        footer: true 
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": ARV refill periods report: " + date_title 
       }
     ]
   });
@@ -195,6 +199,13 @@ function initializeTable() {
     </thead>
     <tbody id="table-body">
     </tbody>
+    <tfoot>
+      <tr>
+        <td id="footer-content">
+
+        </td>
+      </tr>
+    </tfoot>
   </table>
 </div>
 
@@ -260,6 +271,10 @@ function addTableBody() {
 
   var table_body = document.getElementById('table-body');
   var row_count = 1;
+  document.getElementById('footer-content').innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   var gender = ['Female', 'Male'];
 
   for(var s = 0 ; s < gender.length; s++){

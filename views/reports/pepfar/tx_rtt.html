@@ -113,6 +113,9 @@ th {
   text-align: right;
 }
 
+footer {
+  visibility: hidden;
+}
 </style>
 
 <script>
@@ -127,7 +130,10 @@ function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
-
+  document.getElementById('footer-content').innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
@@ -142,11 +148,12 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title, 
+        footer: true
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT report: " + date_title
       }
     ],
     columnDefs: [
@@ -201,6 +208,11 @@ function initializeTable() {
     </thead>
     <tbody id="table-body">
     </tbody>
+    <tfoot>
+      <tr>
+        <td id="footer-content"></td>
+      </tr>
+    </tfoot>
   </table>
 </div>
 

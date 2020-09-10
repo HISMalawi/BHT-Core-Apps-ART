@@ -85,6 +85,9 @@
   text-align: left;
   padding-left: 5px;
 }
+tfoot {
+  visibility: hidden;
+}
 
 </style>
 
@@ -122,7 +125,16 @@ function buildDataTable(e) {
   table.appendChild(theader);
   var tr = document.createElement('tr');
   theader.appendChild(tr);
-
+  var tfoot = document.createElement('tfoot');
+  var tfoot_tr = document.createElement('tr');
+  var tfoot_td = document.createElement('td');
+  tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
+  tfoot_tr.appendChild(tfoot_td);
+  tfoot.appendChild(tfoot_tr);
+  table.appendChild(tfoot);
   var headers = ['ARV#','Gender','DOB','Prev.Reg','Curr.Reg','ARVs', 'Curr.reg dispensed'];
   
   for(var i = 0 ; i < headers.length ; i++){
@@ -217,11 +229,12 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period,
+        footer: true 
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: sessionStorage.currentLocation + ' client regimen history report: ' + period 
       }
     ],
     columnDefs: [
