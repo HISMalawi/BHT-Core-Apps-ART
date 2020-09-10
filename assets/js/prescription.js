@@ -383,15 +383,13 @@ function continueShowSelectedMeds() {
     var tbody = document.createElement("tbody");
     tbody.setAttribute("id", "selected-medication-tbody");
     table.appendChild(tbody);
-    var med_frequency = "Daily";
+    var med_frequency = "Daily (QOD)";
 
     if (givenRegimens[selectedRegimens]) {
         var rows = givenRegimens[selectedRegimens];
         for (var i = 0; i < rows.length; i++) {
             var tr = document.createElement("tr");
             tbody.appendChild(tr);
-
-            //console.log(rows[i])
 
             try {
               var category = rows[i].category;
@@ -428,14 +426,17 @@ function continueShowSelectedMeds() {
             td.setAttribute("class", "numbers");
             tr.appendChild(td);
 
-            if(rows[i].drug_name.match(/Rifapentine/i)){
-                med_frequency = "Weekly";
-            }else{
-                med_frequency = "Daily";
+            var frequency = rows[i].frequency;
+            if(!selectedRegimens.match(/Unknown/i)){
+                if(prescribed_3hp && rows[i].drug_name.match(/Rifapentine|Isoniazid/i)){
+                    frequency = "Weekly (QW)";
+                }else{
+                    frequency = "Daily (QOD)";
+                }
             }
 
             var td = document.createElement("td");
-            td.innerHTML = med_frequency;
+            td.innerHTML = (frequency == undefined ? med_frequency : frequency);
             td.setAttribute("class", "med-frequency");
             tr.appendChild(td);
 
@@ -447,13 +448,13 @@ function continueShowSelectedMeds() {
     if(show_custom_regimens == true)
       medication_orders = {};
 
-    var three_hp = false;
+    /*var three_hp = false;
     for (var drugName in medication_orders) {
         if(medication_orders[drugName]["drug_name"].match(/Rifapentine/i))
             three_hp  = true;
 
-    }
-    
+    }*/
+   
     for (var drugName in medication_orders) {
         var am_dose = medication_orders[drugName]["am"];
         var concept_id = medication_orders[drugName]["concept_id"];
@@ -505,10 +506,10 @@ function continueShowSelectedMeds() {
         td.setAttribute("class", "numbers");
         tr.appendChild(td);
 
-        if(three_hp && (drug_name.match(/Rifapentine/i) ||drug_name.match(/Isoniazid/i))){
-            med_frequency = "Weekly";
+        if(prescribed_3hp && (drug_name.match(/Rifapentine/i) ||drug_name.match(/Isoniazid/i))){
+            med_frequency = "Weekly (QW)";
         }else{
-            med_frequency = "Daily";
+            med_frequency = "Daily (QOD)";
         }
 
         var td = document.createElement("td");
@@ -1282,6 +1283,7 @@ function updateCustomList(e, element) {
                     noon: tempContainer[drug_id].noon,
                     pm: tempContainer[drug_id].pm,
                     units: tempContainer[drug_id].units,
+                    frequency: 'Daily (QOD)',
                     drug_id: drug_id
                 }
             }
@@ -1292,7 +1294,7 @@ function updateCustomList(e, element) {
 
         if (customRegimenIngredients[parseInt(element.getAttribute('tstvalue'))] == undefined) {
             customRegimenIngredients[parseInt(element.getAttribute('tstvalue'))] = {
-                name: element.getAttribute('drug_name'), drug_id: null,
+                name: element.getAttribute('drug_name'), drug_id: null, frequency: 'Daily (QOD)',
                 am: null, noon: null, pm: null, units: element.getAttribute('units')
             }
         }
@@ -1449,8 +1451,13 @@ function postRegimenOrders(encounter) {
         var drug_name = htn_drugs[i]["name"];
         var pm_dose = "1";
         var units = "tab(s)";
+        var frequency = medication_orders[drug_name]["frequency"];
+        if(!frequency)
+            frequency = "Daily (QOD)";
 
-        var drug_order = {drug_name: drug_name, drug_id: drug_id, units: units, am: am_dose, pm: pm_dose}
+
+        var drug_order = {drug_name: drug_name, drug_id: drug_id, 
+            frequency: frequency, units: units, am: am_dose, pm: pm_dose}
         drug_orders.push(drug_order)
     }
 
@@ -1460,16 +1467,28 @@ function postRegimenOrders(encounter) {
         var drug_name = medication_orders[drugName]["drug_name"];
         var pm_dose = medication_orders[drugName]["pm"];
         var units = medication_orders[drugName]["units"];
+        try {
+            var frequency = medication_orders[drug_name]["frequency"];
+            if(!frequency)
+                frequency = "Daily (QOD)";
 
-        var drug_order = {drug_name: drug_name, drug_id: drug_id, units: units, am: am_dose, pm: pm_dose}
-        drug_orders.push(drug_order)
+        }catch(e){
+            var frequency = "Daily (QOD)";
+        }
+
+        var drug_order = {drug_name: drug_name, drug_id: drug_id, 
+               frequency: frequency, units: units, am: am_dose, pm: pm_dose};
+        drug_orders.push(drug_order);
     }
 
 
     for (var i = 0; i < drug_orders.length; i++) {
         morning_tabs = parseFloat(drug_orders[i]["am"]);
         evening_tabs = parseFloat(drug_orders[i]["pm"]);
-        frequency = "ONCE A DAY (OD)";
+        frequency =    drug_orders[i]["frequency"];
+        if(!frequency)
+            frequency = "Daily (QOD)";
+
         equivalent_daily_dose = morning_tabs + evening_tabs;
         instructions = drug_orders[i].drug_name + ":- Morning: " + morning_tabs + " tab(s), Evening: " + evening_tabs + " tabs";
 
@@ -1482,8 +1501,13 @@ function postRegimenOrders(encounter) {
         }
 
         if (morning_tabs > 0 && evening_tabs > 0) {
-            frequency = "TWICE A DAY (BD)";
             dose = (morning_tabs + evening_tabs) / 2;
+        }
+
+        //Check if its  3HP perscription and if yes change frequency from Daily to Weekly for 
+        //Isoniazid or Rifapentine
+        if(!selectedRegimens.match(/Unknown/i) && prescribed_3hp && drug_orders[i].drug_name.match(/Isoniazid|Rifapentine/i)){
+            frequency = "Weekly (QW)"
         }
 
         drug_order = {
@@ -1883,7 +1907,8 @@ function buildCustomDosagePage() {
         ['Medication', null],
         ['Morning', '/assets/images/prescription/morning.png'],
         ['Noon', '/assets/images/prescription/noon.png'],
-        ['Evening', '/assets/images/prescription/evening.png']
+        ['Evening', '/assets/images/prescription/evening.png'],
+        ['Frequency', '/assets/images/prescription/frequency.png']
     ];
 
     for (var i = 0; i < ths.length; i++) {
@@ -1947,6 +1972,19 @@ function buildCustomDosagePage() {
         td.appendChild(input);
         //input.disabled = true;
         tr.appendChild(td);
+
+        var td = document.createElement('td');
+        td.setAttribute('class', 'custom-regimen-td');
+        var input = document.createElement('select');
+        input.innerHTML = "<option value='Daily (QOD)'>Daily</option>";
+        input.innerHTML += "<option value='Weekly (QW)'>Weekly</option>";
+        input.setAttribute('class', 'custom-med-frequency');
+        input.setAttribute('id', 'frequency-' + drug_id);
+        td.style = "width: 105px !important;"
+        td.appendChild(input);
+        tr.appendChild(td);
+
+
         table.appendChild(tr);
     }
 
@@ -2075,6 +2113,9 @@ function validateCustomPrescriptionDosageInputs() {
             var drug_id = parseInt(inputBoxes[i].id.split('-')[1]);
             var period = inputBoxes[i].id.split('-')[0];
             customRegimenIngredients[drug_id][period] = parseFloat(inputBoxes[i].value);
+
+            var medFrequency = document.getElementById("frequency-" + drug_id);
+            customRegimenIngredients[drug_id].frequency = medFrequency.value;
         }
     }
 
@@ -2107,8 +2148,10 @@ function setCustomRegimen() {
             am: customRegimenIngredients[drug_id].am,
             noon: customRegimenIngredients[drug_id].noon,
             pm: customRegimenIngredients[drug_id].pm,
+            frequency: customRegimenIngredients[drug_id].frequency,
             drug_id: drug_id
         });
+
     }
 }
 
