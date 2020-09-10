@@ -271,10 +271,10 @@ function initializeTable() {
           <th>Period:</th>
           <td id="reporting-period"><td>
         </tr>
-        <!--tr>
+        <tr>
           <th>Total clients:</th>
           <td id="total-clients">0<td>
-        </tr-->
+        </tr>
       </table>
     </div>
       </table>
@@ -324,6 +324,7 @@ function initializeReport() {
     min_age = ages[0];
     max_age = ages[1];
   }else{
+    var total_clients = parseInt(document.getElementById("total-clients").innerHTML);
     var gender = ["Female", "Male"];
     var counter = 1;
 
@@ -338,11 +339,14 @@ function initializeReport() {
           createLink(rowData[i][2], rowData[i][0], rowData[i][1], 1 ),
           createLink(rowData[i][3], rowData[i][0], rowData[i][1], 2 ),
           createLink(rowData[i][4], rowData[i][0], rowData[i][1], 3 )
-        ]).draw();    
+        ]).draw();   
+
+        total_clients += (rowData[i][2] + rowData[i][3] + rowData[i][4]); 
       }
     }
     document.getElementById('spinner').style = "display: none;";
     document.getElementById('report-cover').style = "display: none;";
+    document.getElementById("total-clients").innerHTML = total_clients;
     return;
   }
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
@@ -633,7 +637,7 @@ var rowCounter = 1;
 function getClients(patient_ids) {
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
   url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
-  url_path += "&end_date=" + end_date + "&program_id=1";
+  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
 
   var params = JSON.stringify({patient_ids: patient_ids});
   var tbody = document.getElementById("popupDataBody");

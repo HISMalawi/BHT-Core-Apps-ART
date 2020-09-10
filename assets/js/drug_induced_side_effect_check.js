@@ -99,7 +99,7 @@ function checkForPossibleConnection() {
 
   for(var i = 0 ; i < clicked.length ; i++){
     if(clicked[i].getAttribute('whichone').toUpperCase() == 'YES'){
-      if(clicked[i].getAttribute('question').toUpperCase() != 'OTHER')
+      if(!clicked[i].getAttribute('question').toUpperCase().match(/OTHER/i))
         sideEffectConcepts.push([clicked[i].getAttribute('value'), 
 					clicked[i].getAttribute('question'), 
 					clicked[i].getAttribute('value')

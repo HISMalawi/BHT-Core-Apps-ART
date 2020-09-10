@@ -423,3 +423,7 @@ body {
 .interval-buttons-strike {
   text-decoration: line-through;
 }
+
+.med-frequency {
+  text-align: center !important;
+}

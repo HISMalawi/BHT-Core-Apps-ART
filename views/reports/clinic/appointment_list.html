@@ -163,10 +163,15 @@ function loadClients(data) {
     var npid = data[i].arv_number;
     var person_id = data[i].person_id;
 
+    var contact_details = "District: "  + data[i].district;
+    contact_details += "<br />Village: "  + data[i].village;
+    contact_details += "<br />Land-mark: "  + data[i].land_mark;
+    contact_details += "<br />Cell phone: "  + data[i].cell_phone;
   /*  setDataTable.row.add([npid, given_name, family_name, gender, birthdate, '']).node().id = 'row-' + person_id;
     setDataTable.draw();
     addClassIMGcontainter(person_id); */
-    formatted_data.push([npid, given_name, family_name, gender, birthdate, '', addSelectButton(person_id)]);
+    formatted_data.push([npid, given_name, family_name, gender, 
+      birthdate, contact_details, addSelectButton(person_id)]);
   }
   
   jQuery('#clients').DataTable( {

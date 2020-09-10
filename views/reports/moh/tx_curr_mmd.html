@@ -33,7 +33,7 @@
   position: absolute;
   top: 15%;
   left: 40%;
-  display: none;
+  display: inline;
 }
 
 #percentage-counter {
@@ -112,9 +112,7 @@ th {
   margin-right: 15px;
   text-align: right;
 }
-footer {
-  visibility: hidden;
-}
+
 
 #popupBox {
   position: absolute;
@@ -128,11 +126,6 @@ footer {
   height: 88%; 
   margin-top: 10px;
   border-collapse: collapse;
-}
-
-#popupData th {
-  border-width: 1px;
-  border-style: solid;
 }
 
 #popupData th {
@@ -188,7 +181,6 @@ footer {
   bottom: 10px;
   right: 10px;
 }
-
 </style>
 
 <script>
@@ -203,10 +195,6 @@ function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
-  document.getElementById('footer-content').innerHTML =  `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
 
   data_table = $('#example').DataTable({
     fixedHeader: true,
@@ -222,21 +210,17 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX ML report: " + date_title,
-        footer: true 
+        title: "MoH " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX ML report: " 
+        title: "MoH " + sessionStorage.currentLocation + ": TX CURR MMD report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
       }
     ],
     columnDefs: [
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5},
-      {"className": "dt-numbers", "targets": 6},
-      {"className": "dt-numbers", "targets": 7},
-      {"className": "dt-numbers", "targets": 8}
+      {"className": "dt-numbers", "targets": 5}
     ]
   });
 
@@ -245,68 +229,6 @@ function initializeTable() {
 
 </script>
 
-
-
-
-
-<div class="title-table">
-  <div class='title-row'>
-    <div class='title-cell' id='title-cell-left'>
-      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
-    </div>
-    <div class='title-cell' id='title-cell-right'>
-      <table style="width: 100%; text-align: left; margin-left: 10px;">
-        <tr>
-          <th>Title:</th><td colspan="2" id="report-title">PEPFAR TX ML report<td>
-        </tr>
-        <tr>
-          <th>Period:</th>
-          <td id="reporting-period"><td>
-        </tr>
-        <!--tr>
-          <th>Total clients:</th>
-          <td id="total-clients">0<td>
-        </tr-->
-      </table>
-    </div>
-      </table>
-    </div>
-  </div>
-</div>
-  
-
-<div>
-  <table id="example" class="display" width="100%">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Age group</th>
-        <th>Gender</th>
-        <th class="disaggregated-numbers">Defaulted<br />(new registeration)</th>
-        <th class="disaggregated-numbers">Defaulted<br/>(old registeration)</th>
-        <th class="disaggregated-numbers">Died</th>
-        <th class="disaggregated-numbers">Stopped</th>
-        <th class="disaggregated-numbers">Transferred out</th>
-        <th class="disaggregated-numbers">Unknown</th>
-      </tr>
-    </thead>
-    <tbody id="table-body">
-    </tbody>
-    <tfoot>
-      <tr>
-        <td id="footer-content"></td>
-      </tr>
-    </tfoot>
-  </table>
-</div>
-
-<div id="buttons" class="buttonsDiv">
-  <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
-</div>
-
-<!--img src="/apps/OPD/assets/images/formloader.gif" id="spinner" /-->
-<!--div id="percentage-counter">0%</div-->
-<div id="report-cover"></div>
 
 <div id="popupBox">
   <table id="popupData">
@@ -327,28 +249,142 @@ function initializeTable() {
 </div>
 
 
+<div class="title-table">
+  <div class='title-row'>
+    <div class='title-cell' id='title-cell-left'>
+      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
+    </div>
+    <div class='title-cell' id='title-cell-right'>
+      <table style="width: 100%; text-align: left; margin-left: 10px;">
+        <tr>
+          <th>Title:</th><td colspan="2" id="report-title">MoH TX CURR MMD report<td>
+        </tr>
+        <tr>
+          <th>Period:</th>
+          <td id="reporting-period"><td>
+        </tr>
+        <tr>
+          <th>Total clients:</th>
+          <td id="total-clients">0<td>
+        </tr>
+      </table>
+    </div>
+      </table>
+    </div>
+  </div>
+</div>
+  
+
+<div>
+  <table id="example" class="display" width="100%">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Age group</th>
+        <th>Gender</th>
+        <th class="center-text" scope="col"># of clients on <3 months of ARVs</th>
+        <th class="center-text" scope="col"># of clients on 3 - 5 months of ARVs</th>
+        <th class="center-text" scope="col"># of clients on >= 6 months of ARVs</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+</div>
+
+<div id="buttons" class="buttonsDiv">
+  <button class="button blue navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
+</div>
+
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
+<!--div id="percentage-counter">0%</div-->
+<div id="report-cover"></div>
+
 
 <script>
 
 function initializeReport() {
-  var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
-  url += "/tx_ml?date=" + moment().format('YYYY-MM-DD');
-  url += "&start_date=" + start_date;
-  url += "&end_date=" + end_date;
-  url += '&program_id=' + sessionStorage.programID;
+  var min_age;
+  var max_age;
+  if(ageGroups.length > 0){
+    var ages = setMinMaxAges(ageGroups[0]);
+    min_age = ages[0];
+    max_age = ages[1];
+  }else{
+    var total_clients = parseInt(document.getElementById("total-clients").innerHTML);
+    var gender = ["Female", "Male"];
+    var counter = 1;
+
+    for(var g = 0; g < gender.length; g++){
+      for(var i = 0; i < rowData.length; i++){
+        if(gender[g] != rowData[i][1])
+          continue;
+
+        data_table.row.add([ 
+          counter++, rowData[i][0],
+          rowData[i][1], 
+          createLink(rowData[i][2], rowData[i][0], rowData[i][1], 1 ),
+          createLink(rowData[i][3], rowData[i][0], rowData[i][1], 2 ),
+          createLink(rowData[i][4], rowData[i][0], rowData[i][1], 3 )
+        ]).draw();   
+
+        total_clients += (rowData[i][2] + rowData[i][3] + rowData[i][4]); 
+      }
+    }
+    document.getElementById('spinner').style = "display: none;";
+    document.getElementById('report-cover').style = "display: none;";
+    document.getElementById("total-clients").innerHTML = total_clients;
+    return;
+  }
+  var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
+  url_path += '/arv_refill_periods?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
+  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
+  url_path += "&min_age=" + min_age;
+  url_path += "&max_age=" + max_age
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
-      //addNumbers(obj);
-      loadGroupData(obj);
+      addRow(obj);
     }
   };
-  xhttp.open("GET", url, true);
+  xhttp.open("GET", url_path, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send();
+}
+
+function createLink(num, age_group, gender, colNum){
+  var  span = document.createElement("span");
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("onmousedown","drillDown('" + age_group + "','" + gender + "','" + colNum + "');");
+  a.innerHTML = num;
+  span.appendChild(a);
+  return span.innerHTML;
+}
+
+function drillDown(group, sex,  colNum){
+  for(var gender in drill_down_data){
+    if(gender != sex)
+      continue;
+
+    var age_groups = drill_down_data[gender];
+    for(var age_group in age_groups){
+      if(age_group != group)
+        continue;
+
+      var colNums = age_groups[age_group];
+      for(var col in colNums){
+        if(colNum != col)
+          continue;
+
+        getClients(drill_down_data[gender][age_group][col]);
+      }
+    }
+  }
+
 }
 
 function addClass(id) {
@@ -370,8 +406,7 @@ function addTableBody() {
     '15-19 years', '20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years',
-    'Unknown'
+    '45-49 years', '50 plus years'
   ];
 
   var table_body = document.getElementById('table-body');
@@ -386,7 +421,7 @@ function addTableBody() {
       table_body.appendChild(tr);
       var td_count = 0;
 
-      while (td_count < 5) {
+      while (td_count < 4) {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
@@ -398,7 +433,7 @@ function addTableBody() {
         if(td_count == 2)
           td.innerHTML = gender[s];
            
-        if(td_count > 3){
+        if(td_count > 2){
           td.innerHTML = 0;
           td.setAttribute('class','disaggregated-numbers');
         }   
@@ -410,17 +445,12 @@ function addTableBody() {
   }
 }
 
-function ageGroups() {
-  return [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
-  ]
-}
+var ageGroups = [
+  '<1 year', '1-4 years','5-9 years',
+  '10-14 years', '15-19 years', '20-24 years',
+  '25-29 years', '30-34 years', '35-39 years',
+  '40-44 years', '45-49 years', '50 plus years'
+]
 
 //ageGroups();
 //addTableBody();
@@ -429,15 +459,14 @@ fetchData();
 
 function fetchData() {
   //var counter = document.getElementById('percentage-counter');
-  //counter.innerHTML = Math.round((global_counter / 13)*100) + "%";
 //      document.getElementById('report-cover').style = "display: none;";
       //document.getElementById('percentage-counter').style = "display: none;";
 
-  global_counter++;
   initializeReport();
 }
 
 function addNumbers(data) {
+  document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";
   var total_clients = document.getElementById('total-clients');
   var table_body = document.getElementById('table-body');
@@ -462,79 +491,140 @@ function addNumbers(data) {
   initializeTable();
 }
 
+function  setMinMaxAges(group){
+  if(group == '<1 year')
+    return [0, 0];
 
+  if(group == '1-4 years')
+    return [1, 4];
 
+  if(group == '5-9 years')
+    return [5, 9];
 
-function loadGroupData(data){
-  //this.loadXLdata();
-  //this.report_title = sessionStorage.location_name + " TX ML: " + moment(this.startDate).format('DD/MMM/YYYY')
-  //this.report_title += " - " + moment(this.endtDate).format('DD/MMM/YYYY')
-  var counter = 1;
-  var report_gender = ['F','M'];
-  var set_age_groups = ageGroups();
-  //this.dTable.fnClearTable();
+  if(group == '10-14 years')
+    return [10, 14];
 
+  if(group == '15-19 years')
+    return [15, 19];
 
-  for(var j = 0; j < report_gender.length; j++){
-    var age_group_found = false;
-    for(var i = 0; i < set_age_groups.length; i++){
+  if(group == '20-24 years')
+    return [20, 24];
 
-      for(var age_group in data){
-        var gender = data[age_group];  
-        for(var sex in gender){
-          if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
-            var numbers = gender[sex];
-            var rcounter = counter++;
-            data_table.row.add([ rcounter, age_group, sex, 
-                addLink(rcounter, age_group, sex,  numbers[0], 1),
-                addLink(rcounter, age_group, sex,  numbers[1], 2),
-                addLink(rcounter, age_group, sex,  numbers[2], 3),
-                addLink(rcounter, age_group, sex,  numbers[3], 4),
-                addLink(rcounter, age_group, sex,  numbers[4], 5),
-                addLink(rcounter, age_group, sex,  numbers[5], 6)
-            ]).draw();
-            age_group_found = true;
+  if(group == '25-29 years')
+    return [25, 29];
 
-          }
+  if(group == '30-34 years')
+    return [30, 34];
+
+  if(group == '35-39 years')
+    return [35, 39];
+
+  if(group == '40-44 years')
+    return [40, 44];
+
+  if(group == '45-49 years')
+    return [45, 49];
+
+  if(group == '50 plus years')
+    return [50, 10000];
+
+}
+
+var rowData = [];
+
+var column_3 = {};
+var column_4 = {};
+var column_5 = {};
+
+drill_down_data = {};
+
+function addRow(data){
+  var client_sex = ["Female", "Male"];
+
+  for(var i = 0; i < client_sex.length; i++){
+    var gender = client_sex[i];
+    if(column_3[gender] == undefined){
+      column_3[gender] = {};
+      column_3[gender][ageGroups[0]] = 0;
+    }else if(column_3[gender][ageGroups[0]] == undefined){
+      column_3[gender][ageGroups[0]] = 0;
+    }
+    
+    if(column_4[gender] == undefined){
+      column_4[gender] = {};
+      column_4[gender][ageGroups[0]] = 0;
+    }else if(column_4[gender][ageGroups[0]] == undefined){
+      column_4[gender][ageGroups[0]] = 0;
+    }
+
+    if(column_5[gender] == undefined){
+      column_5[gender] = {};
+      column_5[gender][ageGroups[0]] = 0;
+    }else if(column_5[gender][ageGroups[0]] == undefined){
+      column_5[gender][ageGroups[0]] = 0;
+    }
+        
+    for(var gender in data){
+      if(gender != client_sex[i])
+        continue;
+        
+      var patient_ids = data[gender];
+      for(var patinet_id in patient_ids){ 
+        var info =  data[gender][patinet_id];
+        var prescribed_days = info.prescribed_days;
+        
+        if(drill_down_data[gender]  == undefined)
+          drill_down_data[gender] = {}
+
+        if(drill_down_data[gender][ageGroups[0]]  == undefined)
+          drill_down_data[gender][ageGroups[0]] = {}
+
+        if(prescribed_days < 60){
+          column_3[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][1] == undefined)
+            drill_down_data[gender][ageGroups[0]][1] = [];
+
+          
+          drill_down_data[gender][ageGroups[0]][1].push(patinet_id);
+        }
+
+        if(prescribed_days >= 60 && prescribed_days <= 150){
+          column_4[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][2] == undefined)
+            drill_down_data[gender][ageGroups[0]][2] = [];
+
+          drill_down_data[gender][ageGroups[0]][2].push(patinet_id);
+        }
+
+        if(prescribed_days > 150){
+          column_5[gender][ageGroups[0]]  += 1
+          if(drill_down_data[gender][ageGroups[0]][3] == undefined)
+            drill_down_data[gender][ageGroups[0]][3] = [];
+
+          drill_down_data[gender][ageGroups[0]][3].push(patinet_id);
         }
       }
-      if(!age_group_found){
-        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,0,0,0,0,0 ]).draw();
-      }else{
-        age_group_found = false;
-      }
     }
+
+    var gender = client_sex[i];
+    rowData.push([ ageGroups[0], gender,  
+      column_3[gender][ageGroups[0]], 
+      column_4[gender][ageGroups[0]], 
+      column_5[gender][ageGroups[0]] 
+    ]);
+
   }
-
-  document.getElementById('report-cover').style = "display: none;";
+  ageGroups.shift();
+  initializeReport();
 }
 
-function addLink(num, age_group, gender, data, colNum){
-  if(data.length < 1)
-    return  0;
+var rowCounter = 1;
 
-  var  span = document.createElement("span");
-  var a = document.createElement("a");
-  a.setAttribute("href","#");
-  a.setAttribute("onmousedown","drillDown('" + num + "','"  + colNum + "');");
-  a.innerHTML = data.length;
-  span.appendChild(a);
-
-  if(drill_down_data[num] == undefined)
-    drill_down_data[num] = {}
-
-  drill_down_data[num][colNum] = data;
-  return span.innerHTML;
-}
-
-function drillDown(rowNum,  colNum){
-  getClients(drill_down_data[rowNum][colNum]);
-}
 
 function getClients(patient_ids) {
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
   url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
-  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
+  url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
 
   var params = JSON.stringify({patient_ids: patient_ids});
   var tbody = document.getElementById("popupDataBody");
@@ -556,38 +646,6 @@ function getClients(patient_ids) {
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send(params);
 }
-
-
-var   drill_down_data = {};
-
-
-
-
-
-
-
-var global_counter = 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function renderDrillDownData(data){
   var tbody = document.getElementById("popupDataBody");
