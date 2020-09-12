@@ -2211,7 +2211,7 @@
                 }
 
                 session_fpm_used = $('session_fpm_used').value;
-                if (extended_fpm_assessment == true && session_fpm_used == 'NONE') {
+                if (session_fpm_used == 'NONE') {
                     reason_for_not_using_fpm = $('reason_for_not_using_fpm').value;
                     var reasons_for_not_using = {};
                     reasons_for_not_using['Patient wants to get pregnant'] = 9186;
@@ -2824,7 +2824,9 @@
             <!-- Extended family assessment -->
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' && (!$('fpm_used').value.match(/DEPO-PROVERA/)) && extended_fpm_assessment == true"
+                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                        && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' 
+                            && (!$('fpm_used').value.match(/DEPO-PROVERA/))"
                     helpText="Main reason for not using family planning methods"
                     id="reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -2840,7 +2842,9 @@
 
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('reason_for_not_using_fpm').value.toLowerCase() == 'at risk of unplanned pregnancy'"
+                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                        && parseInt(sessionStorage.patientAge) <= 55 
+                            && $('reason_for_not_using_fpm').value.toLowerCase() == 'at risk of unplanned pregnancy'"
                     helpText="Specific reason for not using family planning methods"
                     id="specific_reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -4638,40 +4642,12 @@
                 return this;
             }
 
-
-            var extended_fpm_assessment = false;
-
-            function useExtendedFPMassessment() {
-                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-                url += '/global_properties?property=extended.family.planning'
-
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 ) {
-                        if(this.status == 201 || this.status == 200) {
-                            var obj = JSON.parse(this.responseText);
-                            extended_fpm_assessment = (obj['extended.family.planning'] == 'true' ? true : false);
-                            setTimeout(closeCover(), 2000);
-                        }else if(this.status == 404) {
-                            extended_fpm_assessment = false;
-                            setTimeout(closeCover(), 2000);
-                        }
-                        
-                    }
-                };
-                xhttp.open("GET", url, true);
-                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-                xhttp.setRequestHeader('Content-type', "application/json");
-                xhttp.send();
-            }
-
-
             function closeCover() {
               document.getElementById('regimen-change-cover').style = 'display: none;';
             }
 
             document.getElementById('regimen-change-cover').style = 'display: inline;';
-            useExtendedFPMassessment();
+            //useExtendedFPMassessment();
 
           function removeOrderBtn() {
             var root = document.getElementById('buttons');
