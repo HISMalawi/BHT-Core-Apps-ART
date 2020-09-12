@@ -62,7 +62,11 @@
                 </tr> 
             </thead>
             <tbody id="table-body"></tbody>
-            <tfoot></tfoot>
+            <tfoot>
+              <tr>
+                <td id="footer-content"></td>
+              </tr>
+            </tfoot>
         </table>
     </div>
 
@@ -78,7 +82,10 @@
 var data_table;
 
 function initTable(){
-
+  document.getElementById('footer-content').innerHTML= `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
@@ -93,11 +100,12 @@ function initTable(){
     buttons: [
       {
         extend: "csv",
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT client level data" + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")" 
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT client level data",
+        footer: true 
       },
       {
         extend: 'pdf',
-        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT client level data" + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")" 
+        title: "PEPFAR " + sessionStorage.currentLocation + ": TX RTT client level data" 
       }
     ],
     columnDefs: [

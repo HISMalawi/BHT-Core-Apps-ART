@@ -107,6 +107,9 @@
 th {
   text-align: left;
 }
+tfoot{
+  visibility: hidden;
+}
 
 </style>
 
@@ -137,11 +140,12 @@ function initializeTable() {
     buttons: [
       {
         extend: "csv",
-        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title,
+        footer: true 
       },
       {
         extend: 'pdf',
-        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: "MoH " + sessionStorage.currentLocation + ": IPT 6/more months coverage report: " + date_title 
       }
     ]
   });
@@ -193,6 +197,7 @@ function initializeTable() {
     </thead>
     <tbody id="table-body">
     </tbody>
+    <tfoot><tr><td id="footer-content"></td></tr></tfoot>
   </table>
 </div>
 
@@ -320,6 +325,10 @@ function addNumbers(data) {
   document.getElementById('report-cover').style = "display: none;";
   var total_clients = document.getElementById('total-clients');
   var table_body = document.getElementById('table-body');
+  document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   var rows = table_body.children;
   var total = 0;
 
