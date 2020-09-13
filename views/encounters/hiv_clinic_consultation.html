@@ -4647,7 +4647,6 @@
             }
 
             document.getElementById('regimen-change-cover').style = 'display: inline;';
-            //useExtendedFPMassessment();
 
           function removeOrderBtn() {
             var root = document.getElementById('buttons');
@@ -4748,6 +4747,36 @@
           }
             
           getCurrentRegimen();
+
+
+
+        var extended_fpm_assessment = false;
+
+        function useExtendedFPMassessment() {
+            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+            url += '/global_properties?property=extended.family.planning'
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 ) {
+                    if(this.status == 201 || this.status == 200) {
+                        var obj = JSON.parse(this.responseText);
+                        extended_fpm_assessment = (obj['extended.family.planning'] == 'true' ? true : false);
+                        setTimeout(closeCover(), 2000);
+                    }else if(this.status == 404) {
+                        extended_fpm_assessment = false;
+                        setTimeout(closeCover(), 2000);
+                    }
+                    
+                }
+            };
+            xhttp.open("GET", url, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+        }
+    
+        useExtendedFPMassessment();
         </script>
 
 
