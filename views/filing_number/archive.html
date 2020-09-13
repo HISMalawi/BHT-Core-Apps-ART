@@ -45,6 +45,14 @@
   width: 65px;
 }
 
+#spinner {
+  position: absolute;
+  top: 150px;
+  left: 40%;
+  display: none;
+}
+
+
 </style>
 
 <script>
@@ -73,6 +81,8 @@ function addLayOut() {
   var frame = document.getElementById('inputFrame' + tstCurrentPage);
   frame.style = 'height: 90%; width: 96%;';
   frame.innerHTML = null;
+  document.getElementById("keypad-cover").style = "display: inline;";
+  document.getElementById("spinner").style = "display: inline;";
 
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
   url += '/archiving_candidates?page=' + pageNum;
@@ -84,6 +94,8 @@ function addLayOut() {
       if ( (this.status == 201 || this.status == 200)) {
         var obj = JSON.parse(this.responseText);
         buildCubes(obj);
+        document.getElementById("spinner").style = "display: none;";
+        document.getElementById("keypad-cover").style = "display: none;";
       }
     }
   };
@@ -299,6 +311,7 @@ function renderState(num) {
 
 <div id="keypad-cover"></div>
 <div id="keypad-container"></div>
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
 
 <style>
   #keypad-cover {
