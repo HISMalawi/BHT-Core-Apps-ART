@@ -994,7 +994,8 @@ function checkIFRegimenHasLPv() {
     regimen_nine_or_eleven = (regimen == 11 || regimen == 9);
 
 
-    regimen_with_lpr = (regimen == 7 || regimen == 8 || regimen == 9 || regimen == 10 ||  regimen == 11);
+    regimen_with_lpr = (regimen == 7 || regimen == 8 || regimen == 9 
+        || regimen == 10 || regimen == 11 ||  regimen == 12);
     if(regimen_with_lpr && prescribed_3hp){
         build3HPalert();
         return
@@ -2407,7 +2408,7 @@ function prescriptionTPTCount(){
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
             var obj = JSON.parse(this.responseText);
-            tpt_prescription_count = obj.count;
+            tpt_prescription_count = (obj.count) + 1;
             tpt_prescription_count = (tpt_prescription_count > 3 ? 3 : tpt_prescription_count);
         }
     };

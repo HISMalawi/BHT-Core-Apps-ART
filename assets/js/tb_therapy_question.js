@@ -154,7 +154,7 @@ function autoSelectMedication(){
       }
   } 
 
-  if(auto_select){
+  if(auto_select == true){
     for(var i = 0; i < options.length; i++){
       if(!options[i].innerHTML.match(/lightblue/i))
         updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
@@ -163,6 +163,17 @@ function autoSelectMedication(){
         break;
 
     }
+  }else{
+    for(var i = 0; i < options.length; i++){
+      if(options[i].innerHTML.match(/lightblue/i))
+        updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
+
+      if(i == 3){
+        clearInput();
+        controlCPTIPTOptions();
+      }
+
+    } 
   }
 
 }
