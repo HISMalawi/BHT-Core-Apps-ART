@@ -3763,6 +3763,10 @@
                     }
                 }
 
+                if(sessionStorage.guardianOnly === "true")
+                    closeCover();
+
+                    
             }
 
 
@@ -4035,7 +4039,6 @@
             }
 
             function addChangeAllergicToCPTValue() {
-                console.log("wwwww")
                 if (allergic_to_suphur.match(/YES|NO/i)) {
                     jQuery("#changeCPTValueBtn").remove();
                     var button = document.createElement("button");
@@ -4751,6 +4754,7 @@
           }
             
           getCurrentRegimen();
+
         </script>
 
 
