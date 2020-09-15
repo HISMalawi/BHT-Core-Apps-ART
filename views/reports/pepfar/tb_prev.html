@@ -120,6 +120,11 @@ th {
 footer {
   visibility: hidden;
 }
+
+.dt-row-counters {
+  width: 12px;
+}
+
 </style>
 
 <script>
@@ -161,6 +166,7 @@ function initializeTable() {
       }
     ],
     columnDefs: [
+      {"className": "dt-row-counters", "targets": 0},
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
       {"className": "dt-numbers", "targets": 5}

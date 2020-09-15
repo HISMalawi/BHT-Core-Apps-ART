@@ -156,6 +156,17 @@ function autoSelectMedication(){
 
   if(auto_select == true){
     for(var i = 0; i < options.length; i++){
+      var reason_for_not_using_fpm = "";
+      try {
+          reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
+          if(reason_for_not_using_fpm == "Patient wants to get pregnant"){
+            activate_finish_btn = true;
+            return;
+          }
+
+      }catch(e){
+      }
+
       if(!options[i].innerHTML.match(/lightblue/i))
         updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
 
@@ -170,12 +181,13 @@ function autoSelectMedication(){
 
       if(i == 3){
         clearInput();
-        controlCPTIPTOptions();
+        validateMedicationToprescribe();
       }
 
     } 
   }
 
+  activate_finish_btn  = true;
 }
 
 var  activate_3HP_auto_select = true;
@@ -202,4 +214,9 @@ function active3HPautoSelect() {
   xhttp.send();
 }
 
+function diactivateFinishBTN(){
+  activate_finish_btn = false;
+}
+
 active3HPautoSelect();
+var activate_finish_btn = false;

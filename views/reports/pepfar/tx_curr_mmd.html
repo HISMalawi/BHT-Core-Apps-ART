@@ -184,6 +184,11 @@ th {
 footer {
   visibility: hidden;
 }
+
+.dt-row-counters {
+  width: 12px;
+}
+
 </style>
 
 <script>
@@ -207,7 +212,7 @@ function initializeTable() {
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 400,
+    scrollY: 380,
     Processing: true,
     ServerSide: true,
     scroller: {
@@ -226,6 +231,7 @@ function initializeTable() {
       }
     ],
     columnDefs: [
+      {"className": "dt-row-counters", "targets": 0},
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
       {"className": "dt-numbers", "targets": 5}

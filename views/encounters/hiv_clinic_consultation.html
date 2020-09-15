@@ -1740,6 +1740,16 @@
             }
 
             function submitHIVClinicConsultation() {
+                var currentInput = document.getElementById("touchscreenInput" + tstCurrentPage);
+                if(currentInput.value.length < 1){
+                    showMessage("Select one / more option(s) to continue.");
+                    return;
+                }
+
+                if(!sessionStorage.guardianOnly === "true" && !activate_finish_btn){
+                    return;
+                }
+
                 var currentTime = moment().format(' HH:mm:ss');
                 var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
                 encounter_datetime += currentTime;
@@ -2506,10 +2516,10 @@
             }
 
             function changeSubmitFunction() {
-                var nextButton = document.getElementById('nextButton');
+                /*var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
                     submitHIVClinicConsultation();
-                }
+                }*/
             }
 
 
@@ -2567,7 +2577,6 @@
 
             function setFunctionForSubmittingForm() {
                 var nextButton = document.getElementById('nextButton');
-                //nextButton.removeAttribute("onmousedown");
                 nextButton.setAttribute("onmousedown", "submitHIVClinicConsultation();")
             }
 
@@ -2750,7 +2759,7 @@
             controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+               <!--option value="3HP (RFP + INH)">3HP (RFP + INH)</option-->
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3529,14 +3538,6 @@
                 <option value="Confirmed TB NOT on treatment">Confirmed TB NOT on treatment</option>
             </select>
 
-            <!-- input type="text" name="lab-investigations-screen"
-                           tt_onLoad="__$('keyboard').style.display = 'none';addLabInvestigationsQuestions(); changeSubmitFunction(); "
-                           tt_pageStyleClass= "NoControls"
-                           condition=""
-                           id="routine_tb_screening"
-                           helpText="Order Lab investigations?" optional = "true"/ -->
-
-
             <input type="text" name="tb-treatment-completed"
                    tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
                    tt_pageStyleClass="NoControls"
@@ -3607,9 +3608,9 @@
             <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
                     name="observations[][value_coded_or_text]"
                     tt_pageStyleClass="NoKeyboard" multiple="multiple"
-                    tt_onUnLoad="removeAllergicToCPT();"
-                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); 
-                    controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
+                    tt_onUnLoad="removeAllergicToCPT(); diactivateFinishBTN();"
+                    tt_onLoad="controlNoneSelection(); controlCPTIPTOptions(); 
+                    addChangeAllergicToCPTValue();setFunctionForSubmittingForm();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
@@ -3771,7 +3772,6 @@
 
 
             function hideTBTreatmentPopupAndClearinput() {
-                //clearInput();
                 ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 if (ipt_option_input) {
                     ipt_option_input.click();
@@ -3865,6 +3865,11 @@
             }
 
             function controlCPTIPTOptions() {
+                validateMedicationToprescribe();
+                set3HPvalidation();
+            }
+
+            function validateMedicationToprescribe() {
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
                 var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
@@ -4034,8 +4039,6 @@
                     img_input.src = '';
                     img_input.alt = '';
                   }
-
-                set3HPvalidation();
             }
 
             function addChangeAllergicToCPTValue() {
@@ -4086,7 +4089,7 @@
                     }
                 } 
 
-                setTimeout(function(){ autoSelectMedication(); }, 100);
+                setTimeout(autoSelectMedication, 100);
             }
 
             function validateIPTRFP(e){
@@ -4194,7 +4197,7 @@
                 messageDiv.style = "display: none;";
                 messageCover.style = "display: none;";
             }
-            
+           
         </script>
 
         <style type="text/css">
@@ -4738,9 +4741,6 @@
               
             for(var i =  0;  i < data.length; i++){
                 var start_date = moment(data[i].order.start_date).format("YYYY-MM-DD");
-                //console.log(moment(data[i].order.start_date).format("YYYY-MM-DD") === moment(previous_date).format("YYYY-MM-DD"))
-                //console.log(start_date + "   --  " +  previous_date)
-                //console.log(moment(start_date, "YYYY-MM-DD") == moment(previous_date, 'YYYY-MM-DD'))
                 if(start_date != moment(previous_date).format("YYYY-MM-DD"))
                     continue;
 
