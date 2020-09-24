@@ -2236,7 +2236,7 @@ function getIndicators() {
 
     } else if (this.readyState === 4) {
       runningReport = true;
-      setTimeout(getIndicators, 60000);
+      setTimeout(getIndicators, 10000);
     }
   };
   xhttp.open("GET", url, true);
@@ -2251,7 +2251,7 @@ var runningReport = true;
 var reload_status = false;
 
 function checkIfReportReady() {
-  myVar = setTimeout(getIndicators, 60000);
+  myVar = setTimeout(getIndicators, 10000);
   if(runningReport == false)
     location.reload()
 
