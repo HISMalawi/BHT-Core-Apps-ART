@@ -168,6 +168,15 @@ td {
   text-align: right;
 }
 
+#consistency_check div{
+  color: red;
+  padding-left: 20px;
+}
+
+#incosistence_title {
+  text-align: center;
+}
+
 </style>
 
 <script>
@@ -207,6 +216,10 @@ function showDisaggregatedReport(){
 <div id="consistency_check">
   <div id="patients_consistency"></div>
   <div id="cum_patients_consistency"></div>
+
+  <div id="total_registered_disag"></div>
+  <div id="cum_total_registered_disag"></div>
+  
   <div id="gender_consistency"></div>
   <div id="cum_gender_consistency"></div>
   <div id="age_consistency"></div>
@@ -344,12 +357,12 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-style: 1px !important; padding-left: 5px; 
       text-align:left; border-bottom-style: none !important;">Male</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('males_initiated_on_art_first_time');"
-      id="males_initiated_on_art_first_time">&nbsp;</a></td>
+      class="gender1" id="males_initiated_on_art_first_time">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_males_initiated_on_art_first_time');"
-      id="cum_males_initiated_on_art_first_time">&nbsp;</a></td>
+      class="cum-gender" id="cum_males_initiated_on_art_first_time">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -362,12 +375,12 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-style: 1px !important; text-align: left; padding-left: 5px;
        border-top-style: none !important; border-bottom-style: none !important;">Female Non-pregnant</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('initial_non_pregnant_females_all_ages');"
-      id="initial_non_pregnant_females_all_ages">&nbsp;</a></td>
+      class="gender1" id="initial_non_pregnant_females_all_ages">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_initial_non_pregnant_females_all_ages');"
-      id="cum_initial_non_pregnant_females_all_ages">&nbsp;</a></td>
+      class="cum-gender" id="cum_initial_non_pregnant_females_all_ages">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -381,12 +394,12 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-style: 1px !important; text-align:left; padding-left: 5px;
        border-top-style: none !important; border-bottom-style: none !important;">Female pregnant</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('initial_pregnant_females_all_ages');"
-      id="initial_pregnant_females_all_ages">&nbsp;</a></td>
+      class="gender1" id="initial_pregnant_females_all_ages">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_initial_pregnant_females_all_ages');"
-      id="cum_initial_pregnant_females_all_ages">&nbsp;</a></td>
+      class="cum-gender" id="cum_initial_pregnant_females_all_ages">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -400,12 +413,12 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-style: 1px !important; text-align:left; padding-left: 5px;
        border-top-style: dotted !important; border-bottom-style: none !important">FT Init., Non-disagg.</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('unknown_gender');"
-      id="unknown_gender">&nbsp;</a></td>
+      class="gender1" id="unknown_gender">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_unknown_gender');"
-      id="cum_unknown_gender">&nbsp;</a></td>
+      class="cum-gender" id="cum_unknown_gender">&nbsp;</a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -470,12 +483,12 @@ function showDisaggregatedReport(){
       <b>M</b>&nbsp;&nbsp;Males (all ages)
     </td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('quarterly_all_males');"
-      id="quarterly_all_males"><!-- quarterly_all_males --></a></td>
+      class="age" id="quarterly_all_males"><!-- quarterly_all_males --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_all_males');"
-      id="cum_all_males"><!-- cummulative_all_males --></a></td>
+      class="cum-age" id="cum_all_males"><!-- cummulative_all_males --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -486,12 +499,12 @@ function showDisaggregatedReport(){
       <b>FNP</b>&nbsp;&nbsp;Non-pregnant Females (all ages)
     </td>
   <td style="font-weight: normal;"><a href="#" @click="drillDown('non_pregnant_females');"
-    id="non_pregnant_females"><!-- non_pregnant_females --></a></td>
+    class="age" id="non_pregnant_females"><!-- non_pregnant_females --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_non_pregnant_females');"
-      id="cum_non_pregnant_females"><!-- cum_non_pregnant_females --></a></td>
+      class="cum-age" id="cum_non_pregnant_females"><!-- cum_non_pregnant_females --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -502,12 +515,12 @@ function showDisaggregatedReport(){
       <b>FP</b>&nbsp;&nbsp;Pregnant Females (all ages)
     </td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('pregnant_females_all_ages');"
-      id="pregnant_females_all_ages"><!-- pregnant_females_all_ages --></a></td>
+      class="age" id="pregnant_females_all_ages"><!-- pregnant_females_all_ages --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_pregnant_females_all_ages');"
-      id="cum_pregnant_females_all_ages"><!-- cum_pregnant_females_all_ages --></a></td>
+      class="cum-age" id="cum_pregnant_females_all_ages"><!-- cum_pregnant_females_all_ages --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -577,12 +590,12 @@ function showDisaggregatedReport(){
     <td style="border-left-style: none; text-align: left; padding-left:10px;
       border-bottom-width:0px;">&nbsp;&nbsp;Pres. Sev. HIV disease age <12 m</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('presumed_severe_hiv_disease_in_infants');"
-      id="presumed_severe_hiv_disease_in_infants"><!-- presumed_severe_hiv_disease_in_infants --></a></td>
+      class="condition" id="presumed_severe_hiv_disease_in_infants"><!-- presumed_severe_hiv_disease_in_infants --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_presumed_severe_hiv_disease_in_infants');"
-      id="cum_presumed_severe_hiv_disease_in_infants"><!-- cum_presumed_severe_hiv_disease_in_infants --></a></td>
+      class="cum-condition" id="cum_presumed_severe_hiv_disease_in_infants"><!-- cum_presumed_severe_hiv_disease_in_infants --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -599,12 +612,12 @@ function showDisaggregatedReport(){
 
 
     <td style="border-top-width:0px; border-bottom-width:0px; font-weight: normal;"><a href="#" @click="drillDown('confirmed_hiv_infection_in_infants_pcr');"
-      id="confirmed_hiv_infection_in_infants_pcr"><!-- confirmed_hiv_infection_in_infants_pcr --></a></td>
+      class="condition" id="confirmed_hiv_infection_in_infants_pcr"><!-- confirmed_hiv_infection_in_infants_pcr --></a></td>
     <td style="border-top-width:0px; border-bottom-width:0px; font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_confirmed_hiv_infection_in_infants_pcr');"
-      id="cum_confirmed_hiv_infection_in_infants_pcr"><!-- cum_confirmed_hiv_infection_in_infants_pcr --></a></td>
+      class="cum-condition" id="cum_confirmed_hiv_infection_in_infants_pcr"><!-- cum_confirmed_hiv_infection_in_infants_pcr --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -618,12 +631,12 @@ function showDisaggregatedReport(){
       border-top-width:0px; border-style:dotted; text-align: left; padding-left:10px;
       border-bottom-width:0px;"><b>U5</b> Children 12-59mths</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('quarterly_children_12_59_months');"
-      id="quarterly_children_12_59_months"><!-- quarterly_children_12_59_months --></a></td>
+      class="condition" id="quarterly_children_12_59_months"><!-- quarterly_children_12_59_months --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_children_12_59_months');"
-      id="cum_children_12_59_months"><!-- cum_children_12_59_months --></a></td>
+      class="cum-condition" id="cum_children_12_59_months"><!-- cum_children_12_59_months --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -637,12 +650,12 @@ function showDisaggregatedReport(){
       border-top-width:0px; text-align: left; padding-left:10px;
       border-bottom-width:0px;"><b>Preg</b> Pregnant women</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('pregnant_women');"
-      id="pregnant_women"><!-- pregnant_women --></a></td>
+      class="condition" id="pregnant_women"><!-- pregnant_women --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_pregnant_women');"
-      id="cum_pregnant_women"><!-- cum_pregnant_women --></a></td>
+      class="cum-condition" id="cum_pregnant_women"><!-- cum_pregnant_women --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -657,12 +670,12 @@ function showDisaggregatedReport(){
       border-top-width:0px; text-align: left; padding-left:10px;
       border-bottom-width:0px;"><b>BF</b> Breastfeeding mothers</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('breastfeeding_mothers');"
-      id="breastfeeding_mothers"><!-- breastfeeding_mothers --></a></td>
+      class="condition" id="breastfeeding_mothers"><!-- breastfeeding_mothers --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_breastfeeding_mothers');"
-      id="cum_breastfeeding_mothers"><!-- cum_breastfeeding_mothers --></a></td>
+      class="cum-condition" id="cum_breastfeeding_mothers"><!-- cum_breastfeeding_mothers --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -677,12 +690,12 @@ function showDisaggregatedReport(){
       border-top-width:0px; text-align: left; padding-left:10px;
       border-bottom-width:0px;"><b>CD4</b> CD4 below threshold</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_two');"
-      id="who_stage_two"><!-- who_stage_two --></a></td>
+      class="condition" id="who_stage_two"><!-- who_stage_two --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_two');"
-      id="cum_who_stage_two"><!-- cum_who_stage_two --></a></td>
+      class="cum-condition" id="cum_who_stage_two"><!-- cum_who_stage_two --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -698,12 +711,12 @@ function showDisaggregatedReport(){
       border-top-width:0px; text-align: left; padding-left:10px;
       border-bottom-width:0px;"><b>Asy</b> Asymptomatic / mild</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('asymptomatic');"
-      id="asymptomatic"><!-- asymptomatic --></a></td>
+      class="condition" id="asymptomatic"><!-- asymptomatic --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_asymptomatic');"
-      id="cum_asymptomatic"><!-- cum_asymptomatic --></a></td>
+      class="cum-condition" id="cum_asymptomatic"><!-- cum_asymptomatic --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -718,12 +731,12 @@ function showDisaggregatedReport(){
       border-bottom-width:0px; text-align: left; padding-left:10px;
       border-top-width:0px;">WHO stage 3</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_three');"
-      id="who_stage_three"><!-- who_stage_three --></a></td>
+      class="condition" id="who_stage_three"><!-- who_stage_three --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_three');"
-      id="cum_who_stage_three"><!-- cum_who_stage_three --></a></td>
+      class="cum-condition" id="cum_who_stage_three"><!-- cum_who_stage_three --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -738,12 +751,12 @@ function showDisaggregatedReport(){
       border-bottom-style:none; text-align: left; padding-left:10px;
       border-top-width:0px;">WHO stage 4</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('who_stage_four');"
-      id="who_stage_four"><!-- who_stage_four --></a></td>
+      class="condition" id="who_stage_four"><!-- who_stage_four --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_who_stage_four');"
-      id="cum_who_stage_four"><!-- cum_who_stage_four --></a></td>
+      class="cum-condition" id="cum_who_stage_four"><!-- cum_who_stage_four --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -756,12 +769,12 @@ function showDisaggregatedReport(){
     <td style="border-left-style: none; text-align: left; padding-left:10px;
       border-top-style:none;">Unknown / reason outside guidelines</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('unknown_other_reason_outside_guidelines');"
-      id="unknown_other_reason_outside_guidelines"><!-- unknown_other_reason_outside_guidelines --></a></td>
+      class="condition" id="unknown_other_reason_outside_guidelines"><!-- unknown_other_reason_outside_guidelines --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_unknown_other_reason_outside_guidelines');"
-      id="cum_unknown_other_reason_outside_guidelines"><!-- cum_unknown_other_reason_outside_guidelines --></a></td>
+      class="cum-condition" id="cum_unknown_other_reason_outside_guidelines"><!-- cum_unknown_other_reason_outside_guidelines --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -777,12 +790,12 @@ function showDisaggregatedReport(){
       border-right-style: none !important;"><b>Nev/>2yrs</b></td>
     <td style="border-left-style: none; text-align: left; padding-left:10px;">Never TB / TB over 2 years ago</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('no_tb');"
-      id="no_tb"><!-- no_tb --></a></td>
+      class="reason" id="no_tb"><!-- no_tb --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_no_tb');"
-      id="cum_no_tb"></a><!-- cum_no_tb --></a></td>
+      class="cum-reason" id="cum_no_tb"></a><!-- cum_no_tb --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -793,12 +806,12 @@ function showDisaggregatedReport(){
       border-right-style: none !important;"><b>Last 2yrs</b></td>
     <td style=" text-align: left; padding-left:10px;border-left-style: none;">TB within the last 2 years</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('tb_within_the_last_two_years');"
-      id="tb_within_the_last_two_years"><!-- tb_within_the_last_two_years --></a></td>
+      class="reason" id="tb_within_the_last_two_years"><!-- tb_within_the_last_two_years --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_tb_within_the_last_two_years');"
-      id="cum_tb_within_the_last_two_years"><!-- cum_tb_within_the_last_two_years --></a></td>
+      class="cum-reason" id="cum_tb_within_the_last_two_years"><!-- cum_tb_within_the_last_two_years --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -809,12 +822,12 @@ function showDisaggregatedReport(){
       border-right-style: none !important;"><b>Curr</b></td>
     <td style="border-left-style: none; text-align: left; padding-left:10px;">Current episode of TB</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('current_episode_of_tb');"
-      id="current_episode_of_tb"><!-- current_episode_of_tb --></a></td>
+      class="reason" id="current_episode_of_tb"><!-- current_episode_of_tb --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td class="vertical-separator">&nbsp;</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('cum_current_episode_of_tb');"
-      id="cum_current_episode_of_tb"><!-- cum_current_episode_of_tb --></a></td>
+      class="cum-reason" id="cum_current_episode_of_tb"><!-- cum_current_episode_of_tb --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -856,7 +869,8 @@ function showDisaggregatedReport(){
   <tr>
     <td class="numbers">53.</td>
     <td style="text-align: left; padding-left: 10px;" colspan="6">Total alive and on ART</td>
-    <td style="font-weight: normal;"><a href="#" @click="drillDown('total_alive_and_on_art');" id="total_alive_and_on_art"></a></td>
+    <td style="font-weight: normal;"><a href="#" class="registered-on-art"
+      @click="drillDown('total_alive_and_on_art');" id="total_alive_and_on_art"></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -874,7 +888,7 @@ function showDisaggregatedReport(){
       border-right-style: none;border-bottom-style: none; border-left-style: none;" 
       colspan="4">Died within the 1st month after ART initiation</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_1st_month_of_art_initiation');"
-      id="died_within_the_1st_month_of_art_initiation"><!-- died_within_the_1st_month_of_art_initiation --></a></td>
+      class="dead" id="died_within_the_1st_month_of_art_initiation"><!-- died_within_the_1st_month_of_art_initiation --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -888,7 +902,7 @@ function showDisaggregatedReport(){
       border-right-style: none;border-bottom-style: none; border-left-style: none;" 
       colspan="4">Died within the 2nd month after ART initiation</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_2nd_month_of_art_initiation');"
-      id="died_within_the_2nd_month_of_art_initiation"><!-- died_within_the_2nd_month_of_art_initiation --></a></td>
+      class="dead" id="died_within_the_2nd_month_of_art_initiation"><!-- died_within_the_2nd_month_of_art_initiation --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -901,7 +915,7 @@ function showDisaggregatedReport(){
       border-right-style:none; border-bottom-style:none; border-left-style: none;" 
       colspan="4">Died within the 3rd month after ART initiation</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('died_within_the_3rd_month_of_art_initiation');"
-      id="died_within_the_3rd_month_of_art_initiation"><!-- died_within_the_3rd_month_of_art_initiation --></a></td>
+      class="dead" id="died_within_the_3rd_month_of_art_initiation"><!-- died_within_the_3rd_month_of_art_initiation --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -914,7 +928,7 @@ function showDisaggregatedReport(){
       border-right-style:none; border-left-style:none; border-top-style: none;" 
       colspan="4">Died after the end of the 3rd month after ART initiation</td>
     <td style="font-weight: normal;"><a href="#" @click="drillDown('died_after_the_3rd_month_of_art_initiation');"
-      id="died_after_the_3rd_month_of_art_initiation"><!-- died_after_the_3rd_month_of_art_initiation --></a></td>
+      class="dead" id="died_after_the_3rd_month_of_art_initiation"><!-- died_after_the_3rd_month_of_art_initiation --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -922,7 +936,7 @@ function showDisaggregatedReport(){
   <tr>
     <td class="numbers">58.</td>
     <td style="text-align: left; padding-left: 10px; border-bottom-style:none;" colspan="6">Died total</td>
-    <td style="font-weight: normal;"><a href="#" @click="drillDown('died_total');"
+    <td style="font-weight: normal;"><a href="#" class="registered-on-art" @click="drillDown('died_total');"
       id="died_total"><!-- died_total --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
@@ -932,7 +946,8 @@ function showDisaggregatedReport(){
     <td class="numbers">59.</td>
     <td style="text-align: left; padding-left: 10px;
       border-top-style:none; border-bottom-style:none;" colspan="6">Defaulted (more than 2 months overdue after expected to have run out of ARVs)</td>
-    <td style="font-weight: normal;"><a href="#" @click="drillDown('defaulted');" id="defaulted"><!-- defaulted --></a></td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('defaulted');" 
+      class="registered-on-art" id="defaulted"><!-- defaulted --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -941,7 +956,8 @@ function showDisaggregatedReport(){
     <td class="numbers">60.</td>
     <td style="text-align: left; padding-left: 10px;
       border-top-style:none; border-bottom-style:none;" colspan="6">Stopped taking ARVs (clinician or patient own decision, last known alive)</td>
-    <td style="font-weight: normal;"><a href="#" @click="drillDown('stopped_art');" id="stopped_art"><!-- stopped_art --></a></td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('stopped_art');" 
+      class="registered-on-art" id="stopped_art"><!-- stopped_art --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -949,7 +965,8 @@ function showDisaggregatedReport(){
   <tr>
     <td class="numbers">61.</td>
     <td style="text-align: left; padding-left: 10px;border-top-style:none;" colspan="6">Transferred Out</td>
-    <td style="font-weight: normal;"><a href="#" @click="drillDown('transfered_out');" id="transfered_out"><!-- transfered_out --></a></td>
+    <td style="font-weight: normal;"><a href="#" @click="drillDown('transfered_out');" 
+      class="registered-on-art" id="transfered_out"><!-- transfered_out --></a></td>
     <td style="font-weight: normal;">&nbsp;</td>
     <td style="font-weight: normal;">&nbsp;</td>
   </tr>
@@ -999,8 +1016,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">0</td>
-    <td><a href="#" @click="drillDown('zero_p');"  id="zero_p"><!-- zero_p --></a></td>
-    <td><a href="#" @click="drillDown('zero_a');" id="zero_a"><!-- zero_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('zero_p');"  id="zero_p"><!-- zero_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('zero_a');" id="zero_a"><!-- zero_a --></a></td>
   </tr>
   
   <tr>
@@ -1014,8 +1031,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">2</td>
-    <td><a href="#" @click="drillDown('two_p');" id="two_p"><!-- two_p --></a></td>
-    <td><a href="#" @click="drillDown('two_a');" id="two_a"><!-- two_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('two_p');" id="two_p"><!-- two_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('two_a');" id="two_a"><!-- two_a --></a></td>
   </tr>
   
   <tr>
@@ -1029,8 +1046,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">4</td>
-    <td><a href="#" @click="drillDown('four_p');" id="four_p"><!-- four_p --></a></td>
-    <td><a href="#" @click="drillDown('four_a');" id="four_a"><!-- four_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('four_p');" id="four_p"><!-- four_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('four_a');" id="four_a"><!-- four_a --></a></td>
   </tr>
   
   <tr>
@@ -1045,7 +1062,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">5</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('five_a');" id="five_a"><!-- five_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('five_a');" id="five_a"><!-- five_a --></a></td>
   </tr>
   
   <tr>
@@ -1060,7 +1077,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">6</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('six_a');" id="six_a"><!-- six_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('six_a');" id="six_a"><!-- six_a --></a></td>
   </tr>
   
   <tr>
@@ -1075,7 +1092,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">7</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('seven_a');" id="seven_a"><!-- seven_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('seven_a');" id="seven_a"><!-- seven_a --></a></td>
   </tr>
   
   <tr>
@@ -1090,7 +1107,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">8</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('eight_a');" id="eight_a"><!-- eight_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('eight_a');" id="eight_a"><!-- eight_a --></a></td>
   </tr>
   
   <tr>
@@ -1104,8 +1121,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">9</td>
-    <td><a href="#" @click="drillDown('nine_p');" id="nine_p"><!-- nine_p --></a></td>
-    <td><a href="#" @click="drillDown('nine_a');" id="nine_a"><!-- nine_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('nine_p');" id="nine_p"><!-- nine_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('nine_a');" id="nine_a"><!-- nine_a --></a></td>
   </tr>
   
   <tr>
@@ -1120,7 +1137,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">10</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('ten_a');" id="ten_a"><!-- ten_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('ten_a');" id="ten_a"><!-- ten_a --></a></td>
   </tr>
   
   <tr>
@@ -1134,8 +1151,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">11</td>
-    <td><a href="#" @click="drillDown('eleven_p');" id="eleven_p"><!-- eleven_p --></a></td>
-    <td><a href="#" @click="drillDown('eleven_a');" id="eleven_a"><!-- eleven_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('eleven_p');" id="eleven_p"><!-- eleven_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('eleven_a');" id="eleven_a"><!-- eleven_a --></a></td>
   </tr>
   
   <tr>
@@ -1150,7 +1167,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">12</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('twelve_a');" id="twelve_a"><!-- twelve_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('twelve_a');" id="twelve_a"><!-- twelve_a --></a></td>
   </tr>
   
   <tr>
@@ -1165,7 +1182,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">13</td>
     <td style="background-color:#D9D9D9;">&nbsp;</td>
-    <td><a href="#" @click="drillDown('thirteen_a');" id="thirteen_a"><!-- thirteen_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('thirteen_a');" id="thirteen_a"><!-- thirteen_a --></a></td>
   </tr>
   
   <tr>
@@ -1179,8 +1196,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">14</td>
-    <td><a href="#" @click="drillDown('fourteen_p');" id="fourteen_p"><!-- fourteen_p --></a></td>
-    <td><a href="#" @click="drillDown('fourteen_a');" id="fourteen_a"><!-- fourteen_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('fourteen_p');" id="fourteen_p"><!-- fourteen_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('fourteen_a');" id="fourteen_a"><!-- fourteen_a --></a></td>
   </tr>
   
   <tr>
@@ -1194,8 +1211,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">15</td>
-    <td><a href="#" @click="drillDown('fifteen_p');" id="fifteen_p"><!-- fifteen_p --></a></td>
-    <td><a href="#" @click="drillDown('fifteen_a');" id="fifteen_a"><!-- fifteen_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('fifteen_p');" id="fifteen_p"><!-- fifteen_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('fifteen_a');" id="fifteen_a"><!-- fifteen_a --></a></td>
   </tr>
   
   <tr>
@@ -1209,8 +1226,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">16</td>
-    <td><a href="#" @click="drillDown('sixteen_p');" id="sixteen_p"><!-- sixteen_p --></a></td>
-    <td><a href="#" @click="drillDown('sixteen_a');" id="sixteen_a"><!-- sixteen_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('sixteen_p');" id="sixteen_p"><!-- sixteen_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('sixteen_a');" id="sixteen_a"><!-- sixteen_a --></a></td>
   </tr>
   
   <tr>
@@ -1224,8 +1241,8 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">17</td>
-    <td><a href="#" @click="drillDown('seventeen_p');" id="seventeen_p"><!-- seventeen_p --></a></td>
-    <td><a href="#" @click="drillDown('seventeen_a');" id="seventeen_a"><!-- seventeen_a --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('seventeen_p');" id="seventeen_p"><!-- seventeen_p --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('seventeen_a');" id="seventeen_a"><!-- seventeen_a --></a></td>
   </tr>
   
   <tr>
@@ -1238,7 +1255,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-top-width:0px;
       text-align:left; padding-left:10px;">Other (paed./adult)</td>
     <td>&nbsp;</td>
-    <td><a href="#" @click="drillDown('unknown_regimen');" id="unknown_regimen"><!-- unknown_regimen --></a></td>
+    <td><a class="regimen" href="#" @click="drillDown('unknown_regimen');" id="unknown_regimen"><!-- unknown_regimen --></a></td>
   </tr>
   
   <tr class="horisonatl-separator">
@@ -1255,7 +1272,7 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">Pregnant</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_pregnant_women');"
-      id="total_pregnant_women"><!-- total_pregnant_women --></a></td>
+      class="preg_breastfeed" id="total_pregnant_women"><!-- total_pregnant_women --></a></td>
   </tr>
 
   <tr>
@@ -1268,7 +1285,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">Breastfeeding</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_breastfeeding_women');"
-      id="total_breastfeeding_women"><!-- total_breastfeeding_women --></a></td>
+      class="preg_breastfeed" id="total_breastfeeding_women"><!-- total_breastfeeding_women --></a></td>
   </tr>
 
   <tr>
@@ -1281,7 +1298,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;" colspan="2">All others (not circled)</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_other_patients');"
-      id="total_other_patients"><!-- total_other_patients --></a></td>
+      class="preg_breastfeed" id="total_other_patients"><!-- total_other_patients --></a></td>
   </tr>
 
   <tr class="horisonatl-separator">
@@ -1298,7 +1315,7 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">TB not suspected</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_not_suspected');"
-      id="tb_not_suspected"><!-- tb_not_suspected --></a></td>
+      class="tb_status" id="tb_not_suspected"><!-- tb_not_suspected --></a></td>
   </tr>
 
   <tr>
@@ -1311,7 +1328,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">TB suspected</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_suspected');"
-      id="tb_suspected"><!-- tb_suspected --></a></td>
+      class="tb_status" id="tb_suspected"><!-- tb_suspected --></a></td>
   </tr>
 
   <tr>
@@ -1324,7 +1341,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">TB conf., <b>not</b> on Rx</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_confirmed_currently_not_yet_on_tb_treatment');"
-      id="tb_confirmed_currently_not_yet_on_tb_treatment"><!-- tb_confirmed_currently_not_yet_on_tb_treatment --></a></td>
+      class="tb_status" id="tb_confirmed_currently_not_yet_on_tb_treatment"><!-- tb_confirmed_currently_not_yet_on_tb_treatment --></a></td>
   </tr>
 
   <tr>
@@ -1337,7 +1354,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">TB conf., <b>on</b> TB Rx</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('tb_confirmed_on_tb_treatment');"
-      id="tb_confirmed_on_tb_treatment"><!-- tb_confirmed_on_tb_treatment --></a></td>
+      class="tb_status" id="tb_confirmed_on_tb_treatment"><!-- tb_confirmed_on_tb_treatment --></a></td>
   </tr>
 
   <tr>
@@ -1350,7 +1367,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('unknown_tb_status');"
-      id="unknown_tb_status"><!-- unknown_tb_status --></a></td>
+      class="tb_status" id="unknown_tb_status"><!-- unknown_tb_status --></a></td>
   </tr>
 
   <tr class="horisonatl-separator">
@@ -1367,7 +1384,7 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">None</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_patients_without_side_effects');"
-      id="total_patients_without_side_effects"><!-- total_patients_without_side_effects --></a></td>
+      class="side_effects" id="total_patients_without_side_effects"><!-- total_patients_without_side_effects --></a></td>
   </tr>
 
   <tr>
@@ -1380,7 +1397,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">Any side effects</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('total_patients_with_side_effects');"
-      id="total_patients_with_side_effects"><!-- total_patients_with_side_effects --></a></td>
+      class="side_effects" id="total_patients_with_side_effects"><!-- total_patients_with_side_effects --></a></td>
   </tr>
 
   <tr>
@@ -1393,7 +1410,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('unknown_side_effects');"
-      id="unknown_side_effects"><!-- unknown_side_effects --></a></td>
+      class="side_effects" id="unknown_side_effects"><!-- unknown_side_effects --></a></td>
   </tr>
 
   <tr class="horisonatl-separator">
@@ -1410,7 +1427,7 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">0 – 3 doses missed</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_0_6_doses_missed_at_their_last_visit');"
-      id="patients_with_0_6_doses_missed_at_their_last_visit"><!-- patients_with_0_6_doses_missed_at_their_last_visit --></a></td>
+      class="adherence" id="patients_with_0_6_doses_missed_at_their_last_visit"><!-- patients_with_0_6_doses_missed_at_their_last_visit --></a></td>
   </tr>
 
   <tr>
@@ -1423,7 +1440,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">4+ doses missed</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_7_plus_doses_missed_at_their_last_visit');"
-      id="patients_with_7_plus_doses_missed_at_their_last_visit"><!-- patients_with_7_plus_doses_missed_at_their_last_visit --></a></td>
+      class="adherence" id="patients_with_7_plus_doses_missed_at_their_last_visit"><!-- patients_with_7_plus_doses_missed_at_their_last_visit --></a></td>
   </tr>
 
   <tr>
@@ -1436,7 +1453,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_unknown_adhrence');"
-      id="patients_with_unknown_adhrence"><!-- patients_with_unknown_adhrence --></a></td>
+      class="adherence" id="patients_with_unknown_adhrence"><!-- patients_with_unknown_adhrence --></a></td>
   </tr>
 
   <tr class="horisonatl-separator">
@@ -1586,8 +1603,8 @@ function showDisaggregatedReport(){
 <script type="text/javascript">
 
 function validateReport() {  
-  cum_total_registered = 1200;
-  return; 
+  //cum_total_registered = 1200;
+  //return; 
   /**############### Initializing numbers to be compared #################*/
   var total_registered = parseInt(document.getElementById("total_registered").innerHTML);
   var cum_total_registered = parseInt(document.getElementById("cum_total_registered").innerHTML);
@@ -1619,7 +1636,12 @@ function validateReport() {
   on_art = document.getElementsByClassName("on-art");
   cum_on_art = document.getElementsByClassName("cum-on-art")
   gender1 = document.getElementsByClassName("gender1");
+  initiated_on_art_first_time = parseInt(document.getElementById("initiated_on_art_first_time").innerHTML);
+  
   cum_gender = document.getElementsByClassName("cum-gender");
+  cum_initiated_on_art_first_time = parseInt(document.getElementById("cum_initiated_on_art_first_time").innerHTML);
+
+  
   age = document.getElementsByClassName("age");
   cum_age = document.getElementsByClassName("cum-age");
   reasons = document.getElementsByClassName("reason");
@@ -1651,6 +1673,7 @@ function validateReport() {
 
   }
 
+  /*
   if(total_on_art !== total_registered){
 
     patient_consistency_div = document.getElementById("patients_consistency");
@@ -1683,7 +1706,7 @@ function validateReport() {
 
     }
 
-  }
+  } */
 
   /***************************************************************/
 
@@ -1704,14 +1727,14 @@ function validateReport() {
 
   }
 
-  if(total_gender !== total_registered){
+  if(total_gender !== initiated_on_art_first_time){
 
     gender_class = document.getElementsByClassName("gender_class")
     gender_consistency_div = document.getElementById("gender_consistency");
     report_inconsistency += 1;
 
-    gender_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
-    gender_consistency_div.innerHTML += "the sum of (Newly registered in quarter) values from 30 through 32";
+    gender_consistency_div.innerHTML = report_inconsistency + ". Newly total initiated on  ART first time (Quarterly) is not equal to ";
+    gender_consistency_div.innerHTML += "the sum of CHECK: Total FT (Quarterly)";
 
     for(var i = 0; i < gender_class.length; i++){
 
@@ -1721,14 +1744,14 @@ function validateReport() {
 
   }
 
-  if(total_cum_gender !== cum_total_registered){
+  if(total_cum_gender !== cum_initiated_on_art_first_time){
 
     cum_gender_class = document.getElementsByClassName("cum_gender_class")
     cum_gender_consistency_div = document.getElementById("cum_gender_consistency");
     report_inconsistency += 1;
 
-    cum_gender_consistency_div.innerHTML = "26. Cumulative total registered is not equal to "
-    cum_gender_consistency_div.innerHTML += "the sum of (Cumulative ever registered) values from 30 through 32";
+    cum_gender_consistency_div.innerHTML = report_inconsistency + ". Newly total initiated on  ART first time (Cumulatively) is not equal to ";
+    cum_gender_consistency_div.innerHTML += "the sum of CHECK: Total FT (Cumulatively)";
 
     for(var i = 0; i < cum_gender_class.length; i++){
 
@@ -1738,7 +1761,60 @@ function validateReport() {
 
   }
 
-  /***************************************************************/
+ 
+ /***************************************************************/
+ re_initiated_on_art = parseInt(document.getElementById("re_initiated_on_art").innerHTML);
+ transfer_in = parseInt(document.getElementById("transfer_in").innerHTML);
+ initiated_on_art_first_time = parseInt(document.getElementById("initiated_on_art_first_time").innerHTML);
+ 
+
+  if((re_initiated_on_art + transfer_in + initiated_on_art_first_time) != total_registered){
+    //cum_gender_class = document.getElementsByClassName("cum_gender_class")
+    total_registered_disag_div = document.getElementById("total_registered_disag");
+    report_inconsistency += 1;
+
+    total_registered_disag_div.innerHTML = report_inconsistency + ". Newly registered in quarter is not equal to ";
+    total_registered_disag_div.innerHTML += "Quarterly CHECK: Total FT + Re  Patients re-initiated on ART + ";
+    total_registered_disag_div.innerHTML += " TI  Patients transferred in on ART";
+
+    /*for(var i = 0; i < cum_gender_class.length; i++){
+
+      cum_gender_class[i].style.border = "3px solid red"
+
+    }*/
+
+  }
+
+ cum_re_initiated_on_art = parseInt(document.getElementById("cum_re_initiated_on_art").innerHTML);
+ cum_transfer_in = parseInt(document.getElementById("cum_transfer_in").innerHTML);
+ cum_initiated_on_art_first_time = parseInt(document.getElementById("cum_initiated_on_art_first_time").innerHTML);
+ 
+
+console.log(cum_re_initiated_on_art + cum_transfer_in + cum_initiated_on_art_first_time);
+console.log(cum_total_registered);
+
+  if((cum_re_initiated_on_art + cum_transfer_in + cum_initiated_on_art_first_time) != cum_total_registered){
+    //cum_gender_class = document.getElementsByClassName("cum_gender_class")
+    total_registered_disag_div = document.getElementById("cum_total_registered_disag");
+    report_inconsistency += 1;
+
+    total_registered_disag_div.innerHTML = report_inconsistency + ". Cumulatively registered in quarter is not equal to ";
+    total_registered_disag_div.innerHTML += "Cumulatively CHECK: Total FT + Re  Patients re-initiated on ART + ";
+    total_registered_disag_div.innerHTML += " TI  Patients transferred in on ART";
+    /*for(var i = 0; i < cum_gender_class.length; i++){
+
+      cum_gender_class[i].style.border = "3px solid red"
+
+    }*/
+
+  }
+ /***************************************************************/
+
+
+
+
+
+ /***************************************************************/
 
   /************************block 3********************************/
   /* Compare the sum of Children below 24 m at ART initiation,   */
@@ -1765,8 +1841,9 @@ function validateReport() {
     age_consistency_div = document.getElementById("age_consistency");
     report_inconsistency += 1;
 
-    age_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
-    age_consistency_div.innerHTML += "the sum of (Newly registered in quarter) values from 33 through 35";
+    age_consistency_div.innerHTML = report_inconsistency + ". Newly total registered in quarter is not equal to ";
+    age_consistency_div.innerHTML += " M  Males (all ages) +  FNP  Non-pregnant Females (all ages) + ";
+    age_consistency_div.innerHTML += " FP  Pregnant Females (all ages) - Quarterly"
 
     for(var i = 0; i < age_class.length; i++){
 
@@ -1778,12 +1855,13 @@ function validateReport() {
 
   if(total_cum_age !== cum_total_registered){
 
-    age_class = document.getElementsByClassName("cum_age_class");
+    cum_age_class = document.getElementsByClassName("cum_age_class");
     cum_age_consistency_div = document.getElementById("cum_age_consistency");
     report_inconsistency += 1;
 
     cum_age_consistency_div.innerHTML = "26. Cumulative ever registered is not equal to ";
-    cum_age_consistency_div.innerHTML += "the sum of (Cumulative ever registered) values from 33 through 35";
+    age_consistency_div.innerHTML += " M  Males (all ages) +  FNP  Non-pregnant Females (all ages) + ";
+    age_consistency_div.innerHTML += " FP  Pregnant Females (all ages) - Cumulatively"
 
     for(var i = 0; i < cum_age_class.length; i++){
 
@@ -1818,8 +1896,8 @@ function validateReport() {
     reasons_consistency_div = document.getElementById("reasons_consistency");
     report_inconsistency += 1;
 
-    reasons_consistency_div.innerHTML = "26. Newly total registered in quarter is not equal to ";
-    reasons_consistency_div.innerHTML += "Reasons for starting ART.";
+    reasons_consistency_div.innerHTML = report_inconsistency + ". Newly total registered in quarter is not equal to ";
+    reasons_consistency_div.innerHTML += "Stage defining conditions at ART initiation (Quarterly).";
 
     for(var i = 0; i < reason_class.length; i++){
 
@@ -1835,8 +1913,8 @@ function validateReport() {
     cum_reasons_consistency = document.getElementById("cum_reasons_consistency");
     report_inconsistency += 1;
 
-    cum_reasons_consistency.innerHTML = "26. Cumulative total registered is not equal to "
-    cum_reasons_consistency.innerHTML += "Reason for starting ART.";
+    cum_reasons_consistency.innerHTML = report_inconsistency + ". Cumulative total registered is not equal to "
+    cum_reasons_consistency.innerHTML += "Stage defining conditions at ART initiation (Cumulatively).";
 
     for(var i = 0; i < cum_reason_class.length; i++){
 
@@ -1872,8 +1950,8 @@ function validateReport() {
     conditions_consistency_div = document.getElementById("conditions_consistency");
     report_inconsistency += 1;
 
-    conditions_consistency_div.innerHTML = "26. Newly total registered in quarter) is not equal to "
-    conditions_consistency_div.innerHTML += "Stage defining condition.";
+    conditions_consistency_div.innerHTML = report_inconsistency + ". Newly total registered in quarter is not equal to "
+    conditions_consistency_div.innerHTML += "New stage defining condition in quarter.";
 
     for(var i = 0; i < condition_class.length; i++){
 
@@ -1889,8 +1967,8 @@ function validateReport() {
     cum_conditions_consistency_div = document.getElementById("cum_conditions_consistency");
     report_inconsistency += 1;
 
-    cum_conditions_consistency_div.innerHTML = "26. Cumulative total registered is not equal to "
-    cum_conditions_consistency_div.innerHTML += "Stage defining conditions.";
+    cum_conditions_consistency_div.innerHTML = report_inconsistency + ". Cumulative total registered is not equal to "
+    cum_conditions_consistency_div.innerHTML += "Cumulative stage defining conditions.";
 
     for(var i = 0; i < cum_condition_class.length; i++){
 
@@ -1919,7 +1997,7 @@ function validateReport() {
     died_consistency_div = document.getElementById("died_consistency");
     report_inconsistency += 1;
 
-    died_consistency_div.innerHTML = "55. Died total is not equal to  ";
+    died_consistency_div.innerHTML = report_inconsistency + ". Died total is not equal to  ";
     died_consistency_div.innerHTML += "the sum of all dead patients.";
 
 
@@ -1951,7 +2029,7 @@ function validateReport() {
     total_consistency_div = document.getElementById("total_consistency");
     report_inconsistency += 1;
 
-    total_consistency_div.innerHTML = "26. Cumulative total registered is not equal to ";
+    total_consistency_div.innerHTML = report_inconsistency + ". Cumulative total registered is not equal to ";
     total_consistency_div.innerHTML += "(total alive patients + dead + defaulted + stopped taking art + transfered out).";
 
 
@@ -1982,8 +2060,8 @@ function validateReport() {
     regimen_consistency_div = document.getElementById("regimen_consistency");
     report_inconsistency += 1;
 
-    regimen_consistency_div.innerHTML = "50. Total alive and on ART  is not equal to "
-    regimen_consistency_div.innerHTML += "Secondary outcomes of those alive on ART.";
+    regimen_consistency_div.innerHTML = report_inconsistency  + ". Total alive and on ART  is not equal to "
+    regimen_consistency_div.innerHTML += "Total Regimens.";
 
 
     for(var i =0; i < regimen_class.length; i++){
@@ -2013,7 +2091,7 @@ function validateReport() {
     tb_status_consistency_div = document.getElementById("tb_status_consistency");
     report_inconsistency += 1;
 
-    tb_status_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    tb_status_consistency_div.innerHTML = report_inconsistency + ". Total alive and on ART is not equal to ";
     tb_status_consistency_div.innerHTML += "all patients with any form of TB status.";
 
 
@@ -2044,7 +2122,7 @@ function validateReport() {
     pregnant_consistency_div = document.getElementById("pregnant_consistency");
     report_inconsistency += 1;
 
-    pregnant_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    pregnant_consistency_div.innerHTML = report_inconsistency + ". Total alive and on ART is not equal to ";
     pregnant_consistency_div.innerHTML += "all patients with pregnant/breastfeeds during visit.";
 
     for(var i = 0; i < pregnant_class.length; i++){
@@ -2074,7 +2152,7 @@ function validateReport() {
     side_effect_consistency_div = document.getElementById("side_effect_consistency");
     report_inconsistency += 1;
 
-    side_effect_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    side_effect_consistency_div.innerHTML = report_inconsistency  + ". Total alive and on ART is not equal to ";
     side_effect_consistency_div.innerHTML += "total number of patients with/without Side effects.";
 
     for(var i = 0; i < side_effects_class.length; i++){
@@ -2104,7 +2182,7 @@ function validateReport() {
     adherence_consistency_div = document.getElementById("adherence_consistency");
     report_inconsistency += 1;
 
-    adherence_consistency_div.innerHTML = "50. Total alive and on ART is not equal to ";
+    adherence_consistency_div.innerHTML = report_inconsistency +  ". Total alive and on ART is not equal to ";
     adherence_consistency_div.innerHTML += "total number of patients adhering to drugs.";
 
     for(var i = 0; i < adherence_class.length; i++){
