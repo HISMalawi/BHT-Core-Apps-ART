@@ -1790,9 +1790,6 @@ function validateReport() {
  cum_initiated_on_art_first_time = parseInt(document.getElementById("cum_initiated_on_art_first_time").innerHTML);
  
 
-console.log(cum_re_initiated_on_art + cum_transfer_in + cum_initiated_on_art_first_time);
-console.log(cum_total_registered);
-
   if((cum_re_initiated_on_art + cum_transfer_in + cum_initiated_on_art_first_time) != cum_total_registered){
     //cum_gender_class = document.getElementsByClassName("cum_gender_class")
     total_registered_disag_div = document.getElementById("cum_total_registered_disag");
@@ -1951,7 +1948,7 @@ console.log(cum_total_registered);
     report_inconsistency += 1;
 
     conditions_consistency_div.innerHTML = report_inconsistency + ". Newly total registered in quarter is not equal to "
-    conditions_consistency_div.innerHTML += "New stage defining condition in quarter.";
+    conditions_consistency_div.innerHTML += "New reason for starting ART in quarter.";
 
     for(var i = 0; i < condition_class.length; i++){
 
@@ -1961,6 +1958,9 @@ console.log(cum_total_registered);
 
   }
 
+  console.log(cum_total_registered)
+  console.log(total_cum_conditions)
+
   if(total_cum_conditions !== cum_total_registered){
 
     cum_condition_class = document.getElementsByClassName("cum_condition_class");
@@ -1968,7 +1968,7 @@ console.log(cum_total_registered);
     report_inconsistency += 1;
 
     cum_conditions_consistency_div.innerHTML = report_inconsistency + ". Cumulative total registered is not equal to "
-    cum_conditions_consistency_div.innerHTML += "Cumulative stage defining conditions.";
+    cum_conditions_consistency_div.innerHTML += "Cumulative reason for starting ART.";
 
     for(var i = 0; i < cum_condition_class.length; i++){
 
