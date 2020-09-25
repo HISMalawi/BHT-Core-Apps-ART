@@ -237,7 +237,7 @@ function showDisaggregatedReport(){
   <div id="adherence_consistency"></div>
 </div>
 
-<div id="content">
+<div id="content" style="margin-bottom: 65px;">
 
 <!-- starts here ..........................................................................................................................-->
 
@@ -1946,7 +1946,6 @@ function validateReport() {
     condition_class = document.getElementsByClassName("condition_class");
     conditions_consistency_div = document.getElementById("conditions_consistency");
     report_inconsistency += 1;
-
     conditions_consistency_div.innerHTML = report_inconsistency + ". Newly total registered in quarter is not equal to "
     conditions_consistency_div.innerHTML += "New reason for starting ART in quarter.";
 
@@ -1957,9 +1956,6 @@ function validateReport() {
     }
 
   }
-
-  console.log(cum_total_registered)
-  console.log(total_cum_conditions)
 
   if(total_cum_conditions !== cum_total_registered){
 
