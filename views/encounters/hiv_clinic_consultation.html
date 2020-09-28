@@ -2022,7 +2022,7 @@
                 };
 
                 if(checkIfEverCompletedTBtherapyAsked() == false && ever_completed_tb_therapy_question_asked == false){
-                    obs.observations.push(
+                    /*obs.observations.push(
                         {
                             concept_id: 1588,
                             value_coded: 656, child: 
@@ -2042,9 +2042,32 @@
                             value_coded: $("confirmatory_tb_therapy_location").value,
                             value_text: $("confirmatory_tb_therapy_location").textContent
                         }
-                    );
+                        );*/
+                    var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
+
+                    obs.observations.push({
+                        concept_id: 1588,
+                        value_text: routine_tb_therapy
+                    });
+
+                    if(routine_tb_therapy == "Complete course of 3HP in the past (3 months RFP+INH)" 
+                        || routine_tb_therapy == "Complete course of IPT in the past (min. 6 months of INH)"){
+                            obs.observations.push({
+                                concept_id: 2456,
+                                value_coded: $("confirmatory_tb_therapy_location").value,
+                                value_text: $("confirmatory_tb_therapy_location").textContent
+                            });
+                        }
                 }
 
+                if(reason_for_no_selecting_3hp.length > 0){
+                    for(var j = 0; j < reason_for_no_selecting_3hp.length; j++){
+                        obs.observations.push({
+                            concept_id: 2431,
+                            value_text: reason_for_no_selecting_3hp[j]
+                        });
+                    }
+                }
 
                 if(other_specific_side_effects != "") {
                     obs.observations.push(
@@ -3538,12 +3561,21 @@
                 <option value="Confirmed TB NOT on treatment">Confirmed TB NOT on treatment</option>
             </select>
 
-            <input type="text" name="tb-treatment-completed"
-                   tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
-                   tt_pageStyleClass="NoControls"
-                   condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
-                   id="routine_tb_therapy"
-                   helpText="Ever completed a course of TB preventive therapy" optional="true"/>
+            <select allowFreeText="false" helpText="TB preventive therapy (TPT) history" 
+                name="tb-treatment-completed"
+                id="routine_tb_therapy"
+                tt_onLoad="set3HPdisplay();"
+                condition="checkIfEverCompletedTBtherapyAsked() == false && (ever_completed_tb_therapy_question_asked == false);"
+                name="observations[][value_coded_or_text]"
+                tt_pageStyleClass="NoKeyboard">
+                <option value='Currently on IPT'>Currently on IPT</option>
+                <option value="Currently on 3HP">Currently on 3HP</option>
+                <option value="Complete course of 3HP in the past (3 months RFP+INH)">Complete course of 3HP in the past (3 months RFP+INH)</option>
+                <option value="Complete course of IPT in the past (min. 6 months of INH)">Complete course of IPT in the past (min. 6 months of INH)</option>
+                <option value="Aborted course of 3HP or IPT in the past">Aborted course of 3HP or IPT in the past</option>
+                <option value='Never taken IPT or 3HP'>Never taken IPT or 3HP</option>
+            </select>
+
 
            <select objectType="location"
                 ajaxURL="/locations?name=" allowFreeText="true"
@@ -3613,7 +3645,7 @@
                     addChangeAllergicToCPTValue();setFunctionForSubmittingForm();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
-               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+                <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
@@ -3987,8 +4019,17 @@
                 /*if client have already finished a course of  TB  thereapy*/
                 if(checkIfEverCompletedTBtherapyAsked() == false || ever_completed_tb_therapy == true ){
                     try {
-                        three_hp_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
-                        ipt_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
+                        //three_hp_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
+                        //ipt_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
+                        var three_hp_therapy_completed = false; 
+                        var ipt_therapy_completed =  false; 
+
+                        var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
+                        if (routine_tb_therapy == "Complete course of 3HP in the past (3 months RFP+INH)"){
+                            three_hp_therapy_completed = true;
+                        }else if(routine_tb_therapy == "Complete course of IPT in the past (min. 6 months of INH)"){
+                            ipt_therapy_completed = true;
+                        }
                     }catch(e){
                         ipt_therapy_completed = ever_completed_tb_therapy;
                         three_hp_therapy_completed = ever_completed_tb_therapy;
@@ -4007,6 +4048,29 @@
                         img_input.alt = '';
                         
                         rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TPT completed)</span>";
+                        rfp_option_input.onclick = null;
+                        rfp_option_input.onmousedown = null;
+                        rfp_option_input.onmouseup = null;
+
+                        img_input = rfp_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                    }
+
+
+
+
+                    if(routine_tb_therapy.match(/Aborted/i)){
+                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Aborted a course of TPT)</span>";
+                        ipt_option_input.onclick = null;
+                        ipt_option_input.onmousedown = null;
+                        ipt_option_input.onmouseup = null;
+
+                        img_input = ipt_option_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
+                        
+                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Aborted a course of TPT)</span>";
                         rfp_option_input.onclick = null;
                         rfp_option_input.onmousedown = null;
                         rfp_option_input.onmouseup = null;
@@ -4127,10 +4191,12 @@
                 if(rfp_option.getAttribute("style").match(/lightblue/i)){
                     checkIfClientWantstogetPregnant();
                 }
+
+                validate3HPdeSelection();
             }
 
             function checkIfClientWantstogetPregnant(){
-                var reason_for_not_using_fpm = "";
+var reason_for_not_using_fpm = "";
                 try {
                     reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
                 }catch(e){
@@ -4758,6 +4824,125 @@
         </script>
 
 
+<style>
+#three-popup-div {
+    display: none;
+    border: 2px solid #E0E0E0;
+    border-radius: 15px;
+    padding: 5px;
+    position: absolute;
+    margin-top: 100px;
+    width: 600px;
+    margin-left: 18%;
+    z-index: 991;
+    top: -11%;
+    background-color: whitesmoke;
+}
+
+#no-tpt-reasons-table{
+    width: 100%;
+    padding: 5px;
+    display: table;
+    border-collapse: collapse;
+    border-spacing: 1em;
+}
+
+.no-tpt-reasons-row {
+    display: table-row;
+}
+
+.zebra-grey {
+    background-color: lightgrey;
+}
+
+.zebra-grey {
+    background-color: white;
+}
+
+.no-tpt-reason {
+    display: table-cell;
+    width: 10px;
+    padding-bottom: 3px;
+}
+
+.no-tpt-reasons {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 10px;
+    font-size: 20px;
+    padding-bottom: 3px;
+}
+
+#three-popup-header {
+    font-size: 22px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+}
+</style>
+
+<!-- #regimen-change-cover -->
+<div id="three-popup-div">
+    <div id="three-popup-header">
+        <center id='weight_readings_header'>Reasons for not prescribing TPT</center>
+    </div>
+
+    <br/>
+    <div id="no-tpt-reasons-table">
+        <div class="no-tpt-reasons-row zebra-grey" onmousedown="setReason(this,1);">
+            <div class="no-tpt-reason"><img id="img-reason-1" 
+                class="reason-checkboxes" src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]">
+            </div>
+            <div class="no-tpt-reasons">Patient declined</div>
+        </div>
+
+        <div class="no-tpt-reasons-row zebra-white" onmousedown="setReason(this,2);">
+            <div class="no-tpt-reason"><img id="img-reason-2" 
+                class="reason-checkboxes"  
+                src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]">
+            </div>
+            <div class="no-tpt-reasons">Side-effects (previous or current)</div>
+        </div>
+
+        <div class="no-tpt-reasons-row zebra-grey" onmousedown="setReason(this,3);">
+            <div class="no-tpt-reason"><img id="img-reason-3" 
+                class="reason-checkboxes"src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]">
+            </div>
+            <div class="no-tpt-reasons">Stock-out</div>
+        </div>
+
+        <div class="no-tpt-reasons-row zebra-white" onmousedown="setReason(this,4);">
+            <div class="no-tpt-reason"><img id="img-reason-4" 
+                src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]" 
+                class="reason-checkboxes">
+            </div>
+            <div class="no-tpt-reasons">Starting TB treatment</div>
+        </div>
+
+        <div class="no-tpt-reasons-row zebra-grey" onmousedown="setReason(this, 5);">
+            <div class="no-tpt-reason"><img id="img-reason-5" 
+                class="reason-checkboxes"src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]">
+            </div>
+            <div class="no-tpt-reasons">Other</div>
+        </div>
+
+    </div>
+
+    <div id="no-tpt-reasons-table">
+        <div class="no-tpt-reasons-row">
+            <div style="display: table-cell; text-align: center;">
+                <button class="button green navButton"
+                 style="width: 185px;
+                 margin-left: 35%;
+                 float: left;" onmousedown="closeReasons();"><span>Done</span></button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
 
 
 
@@ -4793,7 +4978,4 @@
 
 
 
-
-
-
-    </div>
+</div>

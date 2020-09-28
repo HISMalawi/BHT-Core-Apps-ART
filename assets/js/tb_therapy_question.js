@@ -19,8 +19,15 @@ function addTBtherapyYesNo(){
 function everCompleteTBtherapy(){
   
   try {
-    var three_hp = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"] == "Yes");
-    var ipt =  (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"] == "Yes");
+    var three_hp = false; //(yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"] == "Yes");
+    var ipt =  false; //(yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"] == "Yes");
+
+    var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
+    if (routine_tb_therapy == "Complete course of 3HP in the past (3 months RFP+INH)"){
+      three_hp = true;
+    }else if(routine_tb_therapy == "Complete course of IPT in the past (min. 6 months of INH)"){
+      ipt = true;
+    }
   }catch(e){
     show_completed_tb_therapy_location = true;
     return ever_completed_tb_therapy;
@@ -149,7 +156,8 @@ function autoSelectMedication(){
                 
   for(var i = 0; i < options.length; i++){
       if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i) 
+          || options[i].innerHTML.match(/Aborted/i)){
         auto_select = false;
       }
   } 
@@ -217,6 +225,121 @@ function active3HPautoSelect() {
 function diactivateFinishBTN(){
   activate_finish_btn = false;
 }
+
+function set3HPdisplay(){
+  var inputFrame = document.getElementById("inputFrame" + tstCurrentPage);
+  inputFrame.style = "width: 96%; height: 335px !Important;"
+}
+
+function validate3HPdeSelection(){
+  if(!activate_3HP_auto_select)
+    return;
+
+  var select_options = document.getElementById("tt_currentUnorderedListOptions");
+  var options  = select_options.children;
+  var auto_select = true;
+  var option3HP;
+
+  for(var i = 0; i < options.length; i++){
+    if(options[i].innerHTML.match(/RFP/i)){
+      option3HP = options[i];
+    }
+
+    if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)
+          || options[i].innerHTML.match(/Aborted/i)){
+        auto_select = false;
+      }
+  } 
+
+  var reason_for_not_using_fpm = "";
+  try {
+      reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
+  }catch(e){
+      reason_for_not_using_fpm = "";
+  }
+
+  if(reason_for_not_using_fpm == "Patient wants to get pregnant")
+    return;
+
+  reason_for_no_selecting_3hp = [];
+
+  if(auto_select && option3HP){
+    if(!option3HP.innerHTML.match(/lightblue/i)){
+      alertReasonForNo3HP();
+    }
+  }
+
+}
+
+function alertReasonForNo3HP(){
+  var cover = document.getElementById("regimen-change-cover");
+  var threeHP = document.getElementById("three-popup-div");
+
+  var checkboxes = document.getElementsByClassName("reason-checkboxes");
+  for(var i = 0; i < checkboxes.length; i++){
+    checkboxes[i].setAttribute("src","/public/touchscreentoolkit/lib/images/unticked.jpg");
+  }
+
+  cover.style = "display: inline;";
+  threeHP.style = "display: inline;";
+
+}
+
+var reason_for_no_selecting_3hp = [];
+
+function setReason(el, num){
+  var imgSelect = document.getElementById("img-reason-" + num);
+  if(imgSelect.getAttribute("src").match(/unticked/i)){
+    imgSelect.setAttribute("src", "/public/touchscreentoolkit/lib/images/ticked.jpg");
+    setReasonForNo3HP(num);
+  }else{
+    imgSelect.setAttribute("src", "/public/touchscreentoolkit/lib/images/unticked.jpg");
+    unselectReasonForNo3HP(num);
+  }
+}
+
+function closeReasons() {
+  if(reason_for_no_selecting_3hp.length < 1)
+    return;
+
+  var cover = document.getElementById("regimen-change-cover");
+  var threeHP = document.getElementById("three-popup-div");
+
+  cover.style = "display: none;";
+  threeHP.style = "display: none;";
+
+  
+}
+
+function setReasonForNo3HP(num){
+  var reasons3hp = {};
+  reasons3hp[1] = "Patient declined";
+  reasons3hp[2] = "Previous side-effects";
+  reasons3hp[3] = "Stock-out";
+  reasons3hp[4] = "Starting TB treatment";
+  reasons3hp[5] = "Other";
+  reason_for_no_selecting_3hp.push(reasons3hp[num])
+}
+
+function unselectReasonForNo3HP(num){
+  var reasons3hp = {};
+  reasons3hp[1] = "Patient declined";
+  reasons3hp[2] = "Previous side-effects";
+  reasons3hp[3] = "Stock-out";
+  reasons3hp[4] = "Starting TB treatment";
+  reasons3hp[5] = "Other";
+
+  var selected_reasons = reason_for_no_selecting_3hp;
+  reason_for_no_selecting_3hp = [];
+  for(var i = 0; i < selected_reasons.length; i++){
+    if(selected_reasons[i] ==  reasons3hp[num])
+      continue;
+
+      reason_for_no_selecting_3hp.push(selected_reasons[i]);
+  }
+}
+
 
 active3HPautoSelect();
 var activate_finish_btn = false;
