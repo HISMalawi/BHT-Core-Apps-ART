@@ -232,7 +232,7 @@ function loadClients(data) {
       family_name, gender, birthdate, outcome_date, contact_details]);
   }
  
-  var period = start_date + " - " + end_date;
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
    
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
@@ -250,12 +250,12 @@ function loadClients(data) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period,
+        title: 'MoH ' + sessionStorage.currentLocation + ' defaulter list report ' + period,
         footer: true,
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' MoH defaulterlist: ' + period 
+        title: sessionStorage.currentLocation + ' MoH defaulter list report ' + period 
       }
     ],
     columnDefs: [

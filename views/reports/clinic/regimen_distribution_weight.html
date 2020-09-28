@@ -122,8 +122,8 @@ var dataSet = [];
 var data_table;
 
 function initializeTable() {
-  var date_title = moment(start_date).format('DD/MMM/YYYY');
-  date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
+  var date_title = moment(start_date).format('DDMMMYYYY');
+  date_title += ' - ' + moment(end_date).format('DDMMMYYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
 
   data_table = $('#example').DataTable({
@@ -145,7 +145,7 @@ function initializeTable() {
       },
       {
         extend: 'pdf',
-        title: "MoH " + sessionStorage.currentLocation + ": Regimen Distribution (Weight) : " + date_title
+        title: "MoH " + sessionStorage.currentLocation + ": Regimen Distribution (Weight) : " + date_title,
       }
     ]
   });

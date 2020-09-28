@@ -193,7 +193,7 @@ function loadClients(info) {
     formatted_data.push([arv_num, gender, birthdate]);
   }
  
-  var period = start_date + " - " + end_date;
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
    
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
@@ -213,12 +213,12 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' Regimen Formulation: patient level:  ' + period,
+        title: 'Clinic ' + sessionStorage.currentLocation + ' Regimen Formulation: patient level report ' + period,
         footer: true
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + '  Regimen Formulation: patient level: ' + period 
+        title: 'Clinic ' + sessionStorage.currentLocation + ' Regimen Formulation: patient level report ' + period,
       }
     ],
     columnDefs: [
