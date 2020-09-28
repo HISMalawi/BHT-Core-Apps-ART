@@ -185,6 +185,7 @@ function buildDuplicates(object) {
             addDetails(full_name, tr);
             addDetails(gender, tr);
             addDetails(full_age, tr);
+            addDetails(object[i].outcome || 'N/A', tr);
             
             const btn = document.createElement('button');
             btn.innerHTML = '<span>Select</span>';
