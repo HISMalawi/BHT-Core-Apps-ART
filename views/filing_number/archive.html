@@ -45,6 +45,15 @@
   width: 65px;
 }
 
+#spinner {
+  position: absolute;
+  top: 150px;
+  left: 40%;
+  display: none;
+  z-index: 991;
+}
+
+
 </style>
 
 <script>
@@ -56,6 +65,12 @@ function changeNextBTN() {
   var nextButton = document.getElementById('nextButton');
   nextButton.setAttribute('onmousedown', 'getNextBatch();');
   nextButton.innerHTML = '<span>Next Batch</span>';
+
+  var archiveBTN = document.createElement("button");
+  archiveBTN.setAttribute("onmousedown","specifyArchive();");
+  archiveBTN.innerHTML = "<span>Specify</span>";
+  archiveBTN.setAttribute("class","button blue navButton");
+  document.getElementById("buttons").appendChild(archiveBTN);
 }
 
 function getNextBatch() {
@@ -67,6 +82,8 @@ function addLayOut() {
   var frame = document.getElementById('inputFrame' + tstCurrentPage);
   frame.style = 'height: 90%; width: 96%;';
   frame.innerHTML = null;
+  document.getElementById("keypad-cover").style = "display: inline;";
+  document.getElementById("spinner").style = "display: inline;";
 
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
   url += '/archiving_candidates?page=' + pageNum;
@@ -78,6 +95,8 @@ function addLayOut() {
       if ( (this.status == 201 || this.status == 200)) {
         var obj = JSON.parse(this.responseText);
         buildCubes(obj);
+        document.getElementById("spinner").style = "display: none;";
+        document.getElementById("keypad-cover").style = "display: none;";
       }
     }
   };
@@ -169,7 +188,8 @@ function addData(e, data) {
   td = document.createElement('td');
   th.innerHTML = 'LAD:';
   try{
-    td.innerHTML = moment(data.appointment_date).format('DD/MMM/YYYY');
+    var app_date = moment(data.appointment_date).format('DD/MMM/YYYY');
+    td.innerHTML = (app_date == 'Invalid date' ? 'N/A' : app_date);
   }catch(x){
     td.innerHTML = 'N/A';
   }
@@ -289,3 +309,176 @@ function renderState(num) {
 </div>
 </body>
 
+
+<div id="keypad-cover"></div>
+<div id="keypad-container"></div>
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
+
+<style>
+  #keypad-cover {
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 102%;
+    left: 0%;
+    top: 0%;
+    z-index: 990;
+    opacity: 0.65;
+    display: none;
+  }
+
+  #keypad-container {
+    display: none;
+    background-color: #F4F4F4;
+    border: 2px solid #E0E0E0;
+    border-radius: 15px;
+    height: 410px;
+    padding: 5px;
+    position: absolute;
+    margin-top: 25px;
+    width: 280px;
+    left: 39%;
+    z-index: 991;
+  }
+
+  #archive-number {
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    font-size: 2.3em;
+  }
+</style>
+
+
+<script>
+  function specifyArchive(){
+    document.getElementById("keypad-cover").style = "display: inline;";
+    var popUpBox = document.getElementById('keypad-container');
+    popUpBox.style = 'display: inline';
+    popUpBox.innerHTML = null;
+
+    var table = document.createElement('table');
+    table.style = 'width: 99%; height: 98%';
+    popUpBox.appendChild(table);
+
+    var tr = document.createElement('tr');
+    table.appendChild(tr);
+
+    var td = document.createElement('td');
+    td.style = 'vertical-align: top;';
+    tr.appendChild(td);
+
+    var inputBox = document.createElement('input');
+    inputBox.setAttribute('type', 'text');
+    inputBox.setAttribute('id', 'archive-number');
+    td.appendChild(inputBox);
+
+
+    var tr = document.createElement('tr');
+    table.appendChild(tr);
+
+    var td = document.createElement('td');
+    td.style = 'vertical-align: top; text-align: center;';
+    tr.appendChild(td);
+    createKeyPad(td);
+}
+
+function createKeyPad(e) {
+    var table = document.createElement('table');
+    table.setAttribute("class", "prescription-keypad");
+    /* ........................................ */
+    /* ........................................ */
+    var keypad_attributes = [];
+    keypad_attributes.push([1, 2, 3]);
+    keypad_attributes.push([4, 5, 6]);
+    keypad_attributes.push([7, 8, 9]);
+    keypad_attributes.push(["Del.", 0, "Find"]);
+    //keypad_attributes.push(["Clear","%","/"]);
+
+    for (var i = 0; i < keypad_attributes.length; i++) {
+        var tr = document.createElement("tr");
+        table.appendChild(tr);
+
+        for (var j = 0; j < keypad_attributes[i].length; j++) {
+            var td = document.createElement('td');
+            tr.appendChild(td);
+
+            var span = document.createElement('button');
+            if(keypad_attributes[i][j] == "Find"){
+              span.setAttribute("class", "button green navButton");
+            }else{
+              span.setAttribute("class", "button blue navButton");
+            }
+            span.setAttribute("onmousedown", "enterKeypadValue(this,'" + keypad_attributes[i][j] + "');");
+            span.innerHTML = "<span>" + keypad_attributes[i][j] + "</span>";
+            td.appendChild(span);
+        }
+    }
+
+    e.appendChild(table);
+
+}
+
+function enterKeypadValue(e, cell_id) {
+  var inputBox = document.getElementById('archive-number');
+
+  try {
+    if (e.innerHTML.match(/Del/i)) {
+      inputBox.value = inputBox.value.substring(0, inputBox.value.length - 1);
+    } else if (e.innerHTML.match(/Clear/i)) {
+      inputBox.value = null;
+      removeFromHash();
+    } else if (e.innerHTML.match(/Find/i)) {
+      getFilingNumber(inputBox.value);
+      document.getElementById("keypad-cover").style = "display: none;";
+      document.getElementById("keypad-container").style = "display: none;";
+    } else {
+      var inputBoxValue = e.innerHTML.replace("<span>","");
+      inputBox.value += inputBoxValue.replace("</span>","");
+    }
+  } catch (x) {
+  }
+
+}
+
+function getFilingNumber(filing_number){
+  var frame = document.getElementById('inputFrame' + tstCurrentPage);
+  frame.style = 'height: 90%; width: 96%;';
+  frame.innerHTML = null;
+
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/search/patients/by_identifier';
+  url += '?type_id=18&identifier=' + dormantPrefix + filing_number;
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 ) {
+      if ( (this.status == 201 || this.status == 200)) {
+        var obj = JSON.parse(this.responseText);
+        var data = []
+        for(var i = 0; i < obj.length; i++){
+          var person = obj[i].person;
+          data.push({
+            "patient_id": person.person_id,
+            "state": "N/A",
+            "start_date": "2010-03-01",
+            "end_date": "2010-03-01",
+            "identifier": filing_number,
+            "appointment_date": "",
+            "given_name": person.names[0].given_name,
+            "family_name": person.names[0].family_name
+          });
+        }
+        buildCubes(data);
+      }
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+
+}
+
+
+</script>

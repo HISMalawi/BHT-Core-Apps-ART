@@ -189,6 +189,10 @@ footer {
   right: 10px;
 }
 
+.dt-row-counters {
+  width: 12px;
+}
+
 </style>
 
 <script>
@@ -203,16 +207,16 @@ function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
-  document.getElementById('footer-content').innerHTML =  `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
+  document.getElementById('footer-content').innerHTML =  `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} \n 
+                  BHT-Core Version : ${sessionStorage.coreVersion} \n
+                  ART Version : ${sessionStorage.ARTVersion} \n
                   API Version ${sessionStorage.apiVersion}`;
 
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 400,
+    scrollY: 370,
     Processing: true,
     ServerSide: true,
     scroller: {
@@ -231,6 +235,7 @@ function initializeTable() {
       }
     ],
     columnDefs: [
+      {"className": "dt-row-counters", "targets": 0},
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
       {"className": "dt-numbers", "targets": 5},

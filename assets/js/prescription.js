@@ -659,6 +659,9 @@ function addIntervals() {
         td.setAttribute("interval", days);
         if (starterPackSelected && !intervals[i].match(/week/i)) {
             td.setAttribute("class", "interval-buttons interval-buttons-strike");
+        }else if (!intervals[i].match(/weeks/i) && prescribed_3hp && !selectedRegimens.match(/Unknown/i) 
+            && parseInt(intervals[i]) > tpt_prescription_count) {
+                td.setAttribute("class", "interval-buttons interval-buttons-strike");
         } else {
             td.setAttribute("onmousedown", "setNextInterval(this)");
             td.setAttribute("class", "interval-buttons");
@@ -991,7 +994,8 @@ function checkIFRegimenHasLPv() {
     regimen_nine_or_eleven = (regimen == 11 || regimen == 9);
 
 
-    regimen_with_lpr = (regimen == 7 || regimen == 8 || regimen == 9 || regimen == 10 ||  regimen == 11);
+    regimen_with_lpr = (regimen == 7 || regimen == 8 || regimen == 9 
+        || regimen == 10 || regimen == 11 ||  regimen == 12);
     if(regimen_with_lpr && prescribed_3hp){
         build3HPalert();
         return
@@ -2394,5 +2398,28 @@ function prescribed3HP(){
 
 }
 
+function prescriptionTPTCount(){
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+    url += '/tpt_prescription_count?patient_id=' + sessionStorage.patientID;
+    url += '&date=' + moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
+    url += '&program_id=' + sessionStorage.programID;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+            var obj = JSON.parse(this.responseText);
+            tpt_prescription_count = (obj.count) + 1;
+            tpt_prescription_count = (tpt_prescription_count > 3 ? 3 : tpt_prescription_count);
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send()
+}
+
 var prescribed_3hp = false;
+var tpt_prescription_count  = 0;
+
 prescribed3HP();
+prescriptionTPTCount();

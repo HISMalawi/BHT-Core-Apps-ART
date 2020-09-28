@@ -120,6 +120,11 @@ th {
 footer {
   visibility: hidden;
 }
+
+.dt-row-counters {
+  width: 12px;
+}
+
 </style>
 
 <script>
@@ -161,9 +166,11 @@ function initializeTable() {
       }
     ],
     columnDefs: [
+      {"className": "dt-row-counters", "targets": 0},
       {"className": "dt-numbers", "targets": 3},
       {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5}
+      {"className": "dt-numbers", "targets": 5},
+      {"className": "dt-numbers", "targets": 6}
     ]
   });
 
@@ -205,32 +212,12 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th>Initiated (Denominator)</th>
-        <th>Completed - New on ART</th>
-        <th>Completed - Previously on ART</th>
-        <!--th class="disaggregated-numbers">On ART</th>
-        <th class="disaggregated-numbers">Defaulted</th>
-        <th class="disaggregated-numbers">Died</th>
-        <th class="disaggregated-numbers">Stopped</th>
-        <th class="disaggregated-numbers">TO</th>
-        <th class="disaggregated-numbers">Unknown</th-->
+        <th>Started<br />New on ART</th>
+        <th>Started<br />Previously on ART</th>
+        <th>Completed<br />New on ART</th>
+        <th>Completed<br />Previously on ART</th>
       </tr>
     </thead>
-    <!--tfoot id="table-footer">
-      <tr>
-        <th class="disaggregated-numbers" style="text-align: left; font-weight: bold;">Totals</th>
-        <th class="disaggregated-numbers">&nbsp;</th>
-        <th class="disaggregated-numbers">&nbsp;</th>
-        <th class="disaggregated-numbers" id="new">&nbsp;</th>
-        <th class="disaggregated-numbers" id="old">&nbsp;</th>
-        <th class="disaggregated-numbers" id="art">&nbsp;</th>
-        <th class="disaggregated-numbers" id="defaulter">&nbsp;</th>
-        <th class="disaggregated-numbers" id="died">&nbsp;</th>
-        <th class="disaggregated-numbers" id="stopped">&nbsp;</th>
-        <th class="disaggregated-numbers" id="transfer_out">&nbsp;</th>
-        <th class="disaggregated-numbers" id="unknown">&nbsp;</th>
-      </tr>
-    </tfoot-->
     <tfoot>
       <tr>
         <td id="footer-content"></td>
@@ -262,7 +249,6 @@ function initializeReport() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
-      //addNumbers(obj);
       disaggregateData(obj);
     }
   };
@@ -291,7 +277,8 @@ function disaggregateData(data){
     if(reporting_data[group][sex] == undefined) {
       reporting_data[group][sex]  = {
         new: [], old: [], art: [], defaulter: [], died: [],
-        stopped: [], transfer_out: [], unknown: [], initiated: []
+        stopped: [], transfer_out: [], unknown: [], 
+        new_initiated: [], old_initiated: []
       };
     }
 
@@ -301,23 +288,11 @@ function disaggregateData(data){
     if(client_type == 'Previously on ART' &&  info.course_completed)
       reporting_data[group][sex].old.push(patient_id);
 
-    reporting_data[group][sex].initiated.push(patient_id);
-/*
-    if(outcome == 'On antiretrovirals'){
-      reporting_data[group][sex].art.push(patient_id);
-    }else if(outcome == "Patient transferred out"){
-      reporting_data[group][sex].transfer_out.push(patient_id);
-    }else if(outcome == "Defaulted"){
-      reporting_data[group][sex].defaulter.push(patient_id);
-    }else if(outcome.match(/Stop/i)){
-      reporting_data[group][sex].stopped.push(patient_id);
-    }else if(outcome.match(/died/i)){
-      reporting_data[group][sex].died.push(patient_id);
+    if(client_type == 'New on ART'){
+      reporting_data[group][sex].new_initiated.push(patient_id);
     }else{
-      reporting_data[group][sex].unknown.push(patient_id);
+      reporting_data[group][sex].old_initiated.push(patient_id);
     }
-*/
-
   }
   document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";
@@ -338,18 +313,14 @@ function renderResults(){
       }
 
       if(info == undefined){
-        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0,  0 ]).draw();
+        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0, 0,  0 ]).draw();
         continue;
       }else{
         data_table.row.add([ counter++, age_groups[i], genders[g], 
-          setDrillClients(age_groups[i], genders[g], info.initiated, 1),
-          setDrillClients(age_groups[i], genders[g], info.new, 2),
-          setDrillClients(age_groups[i], genders[g], info.old, 3)
-          /*setDrillClients(age_groups[i], genders[g], info.defaulter, 4),
-          setDrillClients(age_groups[i], genders[g], info.died, 5),
-          setDrillClients(age_groups[i], genders[g], info.stopped, 6),
-          setDrillClients(age_groups[i], genders[g], info.transfer_out, 7),
-          setDrillClients(age_groups[i], genders[g], info.unknown, 8) */
+          setDrillClients(age_groups[i], genders[g], info.new_initiated, 1),
+          setDrillClients(age_groups[i], genders[g], info.old_initiated, 2),
+          setDrillClients(age_groups[i], genders[g], info.new, 3),
+          setDrillClients(age_groups[i], genders[g], info.old, 4)
           ]).draw();
         delete info;
         info = undefined;
@@ -358,12 +329,11 @@ function renderResults(){
     }
   }
 
-  //addTotals();
 }
 
 var clients = {};
 
-function setDrillClients(age_group, sex, patient_ids, column_number, initiated){
+function setDrillClients(age_group, sex, patient_ids, column_number){
   if(patient_ids.length < 1)
     return 0;
 

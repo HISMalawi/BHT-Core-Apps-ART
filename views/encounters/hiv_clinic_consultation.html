@@ -941,18 +941,18 @@
             }
 
             function addFastTrackAssesmentButton() {
-                return;
+                /*return;
                 if (hivFirstVisit == 'true' || patientEverHadDrugs == 'false') {
                     html = '<button style="float: left;" onmousedown="fastTrackAssesmentPopup();" id="fastTrackAssesmentButton" class="button navButton green"><span>Fast Track Assesment</span></button>';
                     jQuery("#fastTrackAssesmentButton").remove();
                     buttonsDiv = jQuery(".buttonsDiv")[0];
                     buttonsDiv.innerHTML += html;
-                }
+                }*/
             }
 
             function removeFastTrackAssesmentButton() {
-                return;
-                jQuery("#fastTrackAssesmentButton").remove();
+                //return;
+                //jQuery("#fastTrackAssesmentButton").remove();
             }
 
             function setFastTrackVisit() {
@@ -1740,6 +1740,16 @@
             }
 
             function submitHIVClinicConsultation() {
+                var currentInput = document.getElementById("touchscreenInput" + tstCurrentPage);
+                if(currentInput.value.length < 1){
+                    showMessage("Select one / more option(s) to continue.");
+                    return;
+                }
+
+                if(!sessionStorage.guardianOnly === "true" && !activate_finish_btn){
+                    return;
+                }
+
                 var currentTime = moment().format(' HH:mm:ss');
                 var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
                 encounter_datetime += currentTime;
@@ -2011,7 +2021,7 @@
                     ]
                 };
 
-                if(checkIfEverCompletedTBtherapyAsked() == false){
+                if(checkIfEverCompletedTBtherapyAsked() == false && ever_completed_tb_therapy_question_asked == false){
                     obs.observations.push(
                         {
                             concept_id: 1588,
@@ -2211,7 +2221,7 @@
                 }
 
                 session_fpm_used = $('session_fpm_used').value;
-                if (extended_fpm_assessment == true && session_fpm_used == 'NONE') {
+                if (session_fpm_used == 'NONE') {
                     reason_for_not_using_fpm = $('reason_for_not_using_fpm').value;
                     var reasons_for_not_using = {};
                     reasons_for_not_using['Patient wants to get pregnant'] = 9186;
@@ -2506,15 +2516,15 @@
             }
 
             function changeSubmitFunction() {
-                var nextButton = document.getElementById('nextButton');
+                /*var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
                     submitHIVClinicConsultation();
-                }
+                }*/
             }
 
 
             function submitWhenOnTBTreatment() {
-                return
+                /*return
                 var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
                     value = $('touchscreenInput' + tstCurrentPage).value;
@@ -2534,7 +2544,7 @@
                             submitHIVClinicConsultation();
                         }
                     }
-                }
+                }*/
             }
 
             function submitWhenPatientHasTBSymptomsAndLabOrdersNotRequired() {
@@ -2567,7 +2577,6 @@
 
             function setFunctionForSubmittingForm() {
                 var nextButton = document.getElementById('nextButton');
-                //nextButton.removeAttribute("onmousedown");
                 nextButton.setAttribute("onmousedown", "submitHIVClinicConsultation();")
             }
 
@@ -2746,10 +2755,11 @@
             condition="sessionStorage.guardianOnly === 'true'"
             tt_pageStyleClass="NoKeyboard" multiple="multiple"
             tt_onUnLoad="removeAllergicToCPT();"
-            tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
+            tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); 
+            controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+               <!--option value="3HP (RFP + INH)">3HP (RFP + INH)</option-->
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -2824,7 +2834,9 @@
             <!-- Extended family assessment -->
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' && (!$('fpm_used').value.match(/DEPO-PROVERA/)) && extended_fpm_assessment == true"
+                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                        && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' 
+                            && (!$('fpm_used').value.match(/DEPO-PROVERA/))"
                     helpText="Main reason for not using family planning methods"
                     id="reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -2840,7 +2852,9 @@
 
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('reason_for_not_using_fpm').value.toLowerCase() == 'at risk of unplanned pregnancy'"
+                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                        && parseInt(sessionStorage.patientAge) <= 55 
+                            && $('reason_for_not_using_fpm').value.toLowerCase() == 'at risk of unplanned pregnancy'"
                     helpText="Specific reason for not using family planning methods"
                     id="specific_reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -3524,14 +3538,6 @@
                 <option value="Confirmed TB NOT on treatment">Confirmed TB NOT on treatment</option>
             </select>
 
-            <!-- input type="text" name="lab-investigations-screen"
-                           tt_onLoad="__$('keyboard').style.display = 'none';addLabInvestigationsQuestions(); changeSubmitFunction(); "
-                           tt_pageStyleClass= "NoControls"
-                           condition=""
-                           id="routine_tb_screening"
-                           helpText="Order Lab investigations?" optional = "true"/ -->
-
-
             <input type="text" name="tb-treatment-completed"
                    tt_onLoad="__$('keyboard').style.display = 'none'; addTBtherapyYesNo();"
                    tt_pageStyleClass="NoControls"
@@ -3602,10 +3608,9 @@
             <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
                     name="observations[][value_coded_or_text]"
                     tt_pageStyleClass="NoKeyboard" multiple="multiple"
-                    tt_onUnLoad="removeAllergicToCPT();"
-                    tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); 
-                    controlCPTIPTOptions(); addChangeAllergicToCPTValue();
-                    setIPT_RFPvalidation();">
+                    tt_onUnLoad="removeAllergicToCPT(); diactivateFinishBTN();"
+                    tt_onLoad="controlNoneSelection(); controlCPTIPTOptions(); 
+                    addChangeAllergicToCPTValue();setFunctionForSubmittingForm();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
@@ -3701,7 +3706,7 @@
 
             function controlNoneSelection() {
                 var  inputFrame =  document.getElementById("inputFrame" + tstCurrentPage);
-                inputFrame.style = "position: absolute; top: 125px;width: 96% !important; height: 345px !important;";
+                inputFrame.style = "position: absolute; top: 150px;width: 96% !important; height: 345px !important;";
                 var helpText =  document.getElementById("helpText" + tstCurrentPage);
                 helpText.style =  "width: 99%;";
                 var currentMeds = document.createElement("span");
@@ -3759,11 +3764,14 @@
                     }
                 }
 
+                if(sessionStorage.guardianOnly === "true")
+                    closeCover();
+
+                    
             }
 
 
             function hideTBTreatmentPopupAndClearinput() {
-                //clearInput();
                 ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 if (ipt_option_input) {
                     ipt_option_input.click();
@@ -3857,6 +3865,11 @@
             }
 
             function controlCPTIPTOptions() {
+                validateMedicationToprescribe();
+                set3HPvalidation();
+            }
+
+            function validateMedicationToprescribe() {
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
                 var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
@@ -3972,12 +3985,17 @@
 
 
                 /*if client have already finished a course of  TB  thereapy*/
-                if(checkIfEverCompletedTBtherapyAsked() == false){
-                    three_hp_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
-                    ipt_therapy_compleeted  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
+                if(checkIfEverCompletedTBtherapyAsked() == false || ever_completed_tb_therapy == true ){
+                    try {
+                        three_hp_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
+                        ipt_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
+                    }catch(e){
+                        ipt_therapy_completed = ever_completed_tb_therapy;
+                        three_hp_therapy_completed = ever_completed_tb_therapy;
+                    }
                     
                     
-                    if (ipt_therapy_compleeted || three_hp_therapy_compleeted) {
+                    if (ipt_therapy_completed || three_hp_therapy_completed) {
                         //ipt_option_input.style.backgroundColor = '#CDBA96';
                         ipt_input.innerHTML = "<span class='disabled_check'>IPT (TPT completed)</span>";
                         ipt_option_input.onclick = null;
@@ -3997,35 +4015,30 @@
                         img_input.src = '';
                         img_input.alt = '';
                     }
+                } 
+
+                var tpt_side_effect_found = three3HPsideEffectsFound(); 
+
+                if(tpt_side_effect_found){ 
+                   //ipt_option_input.style.backgroundColor = '#CDBA96';
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
                     
-                    var tpt_side_effect_found = three3HPsideEffectsFound(); 
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
 
-                    if(tpt_side_effect_found){ 
-                       //ipt_option_input.style.backgroundColor = '#CDBA96';
-                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
-                        ipt_option_input.onclick = null;
-                        ipt_option_input.onmousedown = null;
-                        ipt_option_input.onmouseup = null;
-
-                        img_input = ipt_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                        
-                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
-                        rfp_option_input.onclick = null;
-                        rfp_option_input.onmousedown = null;
-                        rfp_option_input.onmouseup = null;
-
-                        img_input = rfp_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                      }
-
-                }
-
-
-
-
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                  }
             }
 
             function addChangeAllergicToCPTValue() {
@@ -4059,7 +4072,7 @@
 
 
             //will  move to a  new file  later.
-            function setIPT_RFPvalidation(){
+            function set3HPvalidation(){
                 var select_options = document.getElementById("tt_currentUnorderedListOptions");
                 var options  = select_options.children;
                 
@@ -4076,7 +4089,7 @@
                     }
                 } 
 
-                setTimeout(function(){ autoSelectMedication(); }, 300);
+                setTimeout(autoSelectMedication, 100);
             }
 
             function validateIPTRFP(e){
@@ -4184,7 +4197,7 @@
                 messageDiv.style = "display: none;";
                 messageCover.style = "display: none;";
             }
-            
+           
         </script>
 
         <style type="text/css">
@@ -4638,40 +4651,12 @@
                 return this;
             }
 
-
-            var extended_fpm_assessment = false;
-
-            function useExtendedFPMassessment() {
-                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-                url += '/global_properties?property=extended.family.planning'
-
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 ) {
-                        if(this.status == 201 || this.status == 200) {
-                            var obj = JSON.parse(this.responseText);
-                            extended_fpm_assessment = (obj['extended.family.planning'] == 'true' ? true : false);
-                            setTimeout(closeCover(), 2000);
-                        }else if(this.status == 404) {
-                            extended_fpm_assessment = false;
-                            setTimeout(closeCover(), 2000);
-                        }
-                        
-                    }
-                };
-                xhttp.open("GET", url, true);
-                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-                xhttp.setRequestHeader('Content-type', "application/json");
-                xhttp.send();
-            }
-
-
             function closeCover() {
               document.getElementById('regimen-change-cover').style = 'display: none;';
             }
 
             document.getElementById('regimen-change-cover').style = 'display: inline;';
-            useExtendedFPMassessment();
+            //useExtendedFPMassessment();
 
           function removeOrderBtn() {
             var root = document.getElementById('buttons');
@@ -4756,9 +4741,6 @@
               
             for(var i =  0;  i < data.length; i++){
                 var start_date = moment(data[i].order.start_date).format("YYYY-MM-DD");
-                //console.log(moment(data[i].order.start_date).format("YYYY-MM-DD") === moment(previous_date).format("YYYY-MM-DD"))
-                //console.log(start_date + "   --  " +  previous_date)
-                //console.log(moment(start_date, "YYYY-MM-DD") == moment(previous_date, 'YYYY-MM-DD'))
                 if(start_date != moment(previous_date).format("YYYY-MM-DD"))
                     continue;
 
@@ -4772,6 +4754,7 @@
           }
             
           getCurrentRegimen();
+
         </script>
 
 

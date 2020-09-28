@@ -77,9 +77,9 @@ function reportGrouping(group) {
     return [
       ['Cohort / disaggregated','','/apps/ART/views/cohort_tool/revised_cohort_menu.html', 'link'],
       ['Survival analysis','','/apps/ART/views/cohort_tool/revised_cohort_menu.html?type=survival_analysis', 'link'],
-      ["Viral load", "","#",'link']
-      ["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link'],
-      ["Regimen distribution (Weight)","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_distribution_weight",'link'],
+      //["Viral load", "","#",'link'],
+      //["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link'],
+      //["Regimen distribution (Weight)","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_distribution_weight",'link'],
       ["TX CURR MMD","","/apps/ART/views/reports/moh/report_dates.html?report=tx_curr_mmd",'link']
     ];
   }else if(group == 'Clinic'){
@@ -102,7 +102,7 @@ function reportGrouping(group) {
         ["Regimen switch","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_switch",'link'],
         ["TX CURR MMD","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_curr_mmd",'link'],
         ["TX ML","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_ml",'link'],
-        ["TX RTT","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_rtt",'link']
+        ["TX RTT","","/apps/ART/views/reports/pepfar/report_dates.html?report=tx_rtt",'link'],
         ["TB PREV","","/apps/ART/views/reports/pepfar/report_dates.html?report=tb_prev",'link']
       ];
   }else{
