@@ -67,6 +67,8 @@
     <script type="text/javascript" src="/apps/ART/assets/js/tb_therapy_question.js"></script>
     <script type="text/javascript" src="/apps/ART/assets/js/other_side_effects_keyboard.js"></script>
     
+    <script type="text/javascript" src="/apps/ART/assets/js/tpt_keyboard.js"></script>
+    
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
         var patientGender = sessionStorage.patientGender;
@@ -1740,6 +1742,88 @@
             }
 
             function submitHIVClinicConsultation() {
+                if(previous_dispensed_Isoniazid > 0 || previous_dispensed_Rifapentine > 0){
+                    var routine_tb_therapy = document.getElementById("routine_tb_therapy").value; 
+                    if(!routine_tb_therapy.match(/Currently on/i)){
+                        createHIVClinicConsultation();
+                        return;
+                    }
+
+                    createDispensationEncounter();
+                    return;
+                }
+                createHIVClinicConsultation();
+            }
+
+            function createDispensationEncounter(){
+                var currentTime = moment().format(' HH:mm:ss');
+                var encounter_datetime = moment(TPT_start_date).format('YYYY-MM-DD');
+                encounter_datetime += currentTime;
+
+                var encounter = {
+                    encounter_type_id: 25,
+                    patient_id: sessionStorage.patientID,
+                    encounter_datetime: encounter_datetime
+                };
+
+
+                submitParameters(encounter, "/encounters", "postTPTClinicConsultationObs");
+            }
+
+            function postTPTClinicConsultationObs(encounter){
+                if (!encounter.encounter_id) {
+                   encounter_id = encounter[0].encounter_id;
+                } else {
+                    encounter_id = encounter.encounter_id;
+                }
+                var drug_orders_params = {encounter_id: encounter_id, drug_orders: []}
+                var start_date = new Date(moment(TPT_start_date).format('YYYY-MM-DD'));
+                var start_date_formated = moment(TPT_start_date).format('YYYY-MM-DD')
+
+                var duration = 30;
+                var auto_expire_date = start_date.setDate(start_date.getDate() + duration);
+                var auto_expire_date_formated = moment(new Date(auto_expire_date)).format('YYYY-MM-DD');
+
+                var routine_tb_therapy = document.getElementById("routine_tb_therapy").value; 
+                drug_orders_params.drug_orders.push({
+                    drug_name: "INH or H (Isoniazid 150mg tablet)", 
+                    drug_inventory_id: 965,
+                    frequency: "Weekly (QW)", 
+                    units: "tab(s)",
+                    dose: 6,
+                    am: 0, pm: 6, 
+                    equivalent_daily_dose: 6,
+                    start_date: start_date_formated,
+                    auto_expire_date: auto_expire_date_formated,
+                    instructions: "Estimated order: to Accommodate TPT Transfer INs",
+                    quantity: previous_dispensed_Isoniazid
+                });
+                if(routine_tb_therapy == "Currently on 3HP"){
+                    drug_orders_params.drug_orders.push({
+                        drug_name: "Rifapentine (150mg)", 
+                        drug_inventory_id: 1056,
+                        frequency: "Weekly (QW)", 
+                        units: "tab(s)",
+                        dose: 6,
+                        am: 0, pm: 6, 
+                        equivalent_daily_dose: 6,
+                        start_date: start_date_formated,
+                        auto_expire_date: auto_expire_date_formated,
+                        instructions: "Estimated order: to Accommodate TPT Transfer INs",
+                        quantity: previous_dispensed_Rifapentine
+                    });
+                }
+
+                submitParameters(drug_orders_params, "/drug_orders", "redirectToHIVClinicConsultation");
+            }
+           
+            
+            function redirectToHIVClinicConsultation(orders){
+                createHIVClinicConsultation();
+            }
+
+
+            function createHIVClinicConsultation() {
                 var currentInput = document.getElementById("touchscreenInput" + tstCurrentPage);
                 if(currentInput.value.length < 1){
                     showMessage("Select one / more option(s) to continue.");
@@ -2022,27 +2106,6 @@
                 };
 
                 if(checkIfEverCompletedTBtherapyAsked() == false && ever_completed_tb_therapy_question_asked == false){
-                    /*obs.observations.push(
-                        {
-                            concept_id: 1588,
-                            value_coded: 656, child: 
-                                {concept_id: 656, 
-                                    value_coded: yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
-                                }
-                        },
-                        {
-                            concept_id: 1588,
-                            value_coded: 9974, child: 
-                                {concept_id: 9974, 
-                                    value_coded: yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES" ? 1065 : 1066
-                                }
-                        },
-                        {
-                            concept_id: 2456,
-                            value_coded: $("confirmatory_tb_therapy_location").value,
-                            value_text: $("confirmatory_tb_therapy_location").textContent
-                        }
-                        );*/
                     var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
 
                     obs.observations.push({
@@ -3576,13 +3639,20 @@
                 <option value='Never taken IPT or 3HP'>Never taken IPT or 3HP</option>
             </select>
 
-
-           <select objectType="location"
+           <!--select objectType="location"
                 ajaxURL="/locations?name=" allowFreeText="true"
                 condition="showTBtherapyLocation() == true && (ever_completed_tb_therapy_question_asked == false);" field_type="alpha"
                 helpText="Location of TB therapy completion" id="confirmatory_tb_therapy_location"
-                name="observations[][value_coded_or_text]"></select>
+                name="observations[][value_coded_or_text]"></select-->
                    
+            <input type="text" name="past_tpt_dispensation"
+               tt_onLoad="__$('keyboard').style.display = 'none'; addTPTkeyboard();"
+               tt_pageStyleClass="NoControls"
+                condition="enterPastTPTdispensation() == true && (ever_completed_tb_therapy_question_asked == false);" 
+                field_type="alpha"
+               id="past_tpt_dispensation"
+               helpText="Number of TPT pills already dispensed" optional="true"/>
+
 
             <select allowFreeText="false" helpText="Allergic to Cotrimoxazole?" id="allergic_to_cotrimoxazole"
                     tt_onLoad="setNextButtonToGetInputValue('allergic_to_cpt');"
@@ -4015,6 +4085,21 @@
                     img_input.alt = '';
                 }
 
+                if(ever_completed_tb_therapy == false) {
+                    if(pastTPTdispensation["Isoniazid"] != undefined && 
+                        pastTPTdispensation["Rifapentine"] == undefined){
+                            if(pastTPTdispensation["Isoniazid"] >= 168)
+                                ever_completed_tb_therapy  = true;    
+                    }
+                    
+                    if(pastTPTdispensation["Rifapentine"] != undefined && pastTPTdispensation["Isoniazid"] != undefined) {
+                        if(pastTPTdispensation["Isoniazid"] >= 36 && pastTPTdispensation["Rifapentine"] >= 72)
+                            ever_completed_tb_therapy = true;
+
+                    }
+                        
+                    
+                }
 
                 /*if client have already finished a course of  TB  thereapy*/
                 if(checkIfEverCompletedTBtherapyAsked() == false || ever_completed_tb_therapy == true ){
@@ -4035,8 +4120,7 @@
                         three_hp_therapy_completed = ever_completed_tb_therapy;
                     }
                     
-                    
-                    if (ipt_therapy_completed || three_hp_therapy_completed) {
+                    if (ipt_therapy_completed || three_hp_therapy_completed || ever_completed_tb_therapy) {
                         //ipt_option_input.style.backgroundColor = '#CDBA96';
                         ipt_input.innerHTML = "<span class='disabled_check'>IPT (TPT completed)</span>";
                         ipt_option_input.onclick = null;
@@ -4057,28 +4141,6 @@
                         img_input.alt = '';
                     }
 
-
-
-
-                    if(routine_tb_therapy.match(/Aborted/i)){
-                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (Aborted a course of TPT)</span>";
-                        ipt_option_input.onclick = null;
-                        ipt_option_input.onmousedown = null;
-                        ipt_option_input.onmouseup = null;
-
-                        img_input = ipt_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                        
-                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Aborted a course of TPT)</span>";
-                        rfp_option_input.onclick = null;
-                        rfp_option_input.onmousedown = null;
-                        rfp_option_input.onmouseup = null;
-
-                        img_input = rfp_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                    }
                 } 
 
                 var tpt_side_effect_found = three3HPsideEffectsFound(); 
@@ -4979,3 +5041,46 @@ var reason_for_not_using_fpm = "";
 
 
 </div>
+
+<style>
+#tpt-main-table {
+    height: 90%;
+    width: 100%;
+    /*background-color: yellow;*/
+}
+
+#tpt-main-table td{
+    vertical-align: top;
+}
+
+.keypads {
+    width: 100%;
+    height: 100%;
+}
+
+.tpt-keypad {
+    vertical-align: top;
+    width: 50%;
+    border-style: solid;
+    padding: 5%;
+}
+
+.tpt-numbers {
+    height: 30px;
+}
+
+.tpt-numbers input{
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid silver;
+    width: 99.5%;
+    font-family: "Nimbus Sans L","Arial Narrow",sans-serif;
+    font-size: 2.2em;
+    background: none;
+    padding-left: 5px;
+    text-align: center;
+}
+
+
+</style>

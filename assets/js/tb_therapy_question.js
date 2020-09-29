@@ -43,11 +43,6 @@ function everCompleteTBtherapy(){
   return false;
 }
 
-function showTBtherapyLocation(){
-  everCompleteTBtherapy();
-  return show_completed_tb_therapy_location;
-}
-
 var ever_completed_tb_therapy = false;
 var show_completed_tb_therapy_location = false;
 var ever_completed_tb_therapy_question_asked = false;
@@ -64,12 +59,13 @@ function getTBtheraptObs() {
           for (var i = 0; i < tb_history_obs.length; i++) {
             ever_completed_tb_therapy_question_asked = true;
 
-            var ob_children = tb_history_obs[i].children;
-            for (var c = 0; c < ob_children.length; c++) {
-             if(ob_children[c].value_coded == 1065)
-               ever_completed_tb_therapy = true;
+            try {
+              if(tb_history_obs[i].value_text.match(/Complete/i))
+                ever_completed_tb_therapy = true;
 
-          }
+            }catch(e){
+              continue;
+            }
         }
       }
   };
@@ -156,8 +152,7 @@ function autoSelectMedication(){
                 
   for(var i = 0; i < options.length; i++){
       if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i) 
-          || options[i].innerHTML.match(/Aborted/i)){
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
         auto_select = false;
       }
   } 
@@ -246,8 +241,7 @@ function validate3HPdeSelection(){
     }
 
     if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)
-          || options[i].innerHTML.match(/Aborted/i)){
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
         auto_select = false;
       }
   } 
@@ -340,6 +334,92 @@ function unselectReasonForNo3HP(num){
   }
 }
 
+function transferInClient() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/observations?page=0&page_size=3&person_id='; 
+  url += sessionStorage.patientID + '&concept_id=7937';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 ) {
+          if(this.status == 201 || this.status == 200) {
+            var obs = JSON.parse(this.responseText);
+            for(var i = 0; i < obs.length; i++){
+              if(obs[i].value_coded == 1065){
+                transfer_in_client = true;
+              }
+            }
+          }
+          
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function addTPTkeyboard(){
+
+}
+
+function enterPastTPTdispensation(){
+  if(!transfer_in_client)
+    return false;
+
+  var routine_tb_therapy = document.getElementById("routine_tb_therapy").value; 
+  if(routine_tb_therapy.match(/Currently on/i))
+    return true;
+
+  return false;
+}
 
 active3HPautoSelect();
 var activate_finish_btn = false;
+
+var transfer_in_client = false;
+transferInClient();
+
+
+
+
+var pastTPTdispensation = {}
+
+function pastDispensationTPT(){
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/drug_orders?patient_id=" + sessionStorage.patientID;
+  url  += "&program_id=1&page_size=100000";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 ) {
+          if(this.status == 201 || this.status == 200) {
+            var orders = JSON.parse(this.responseText);
+            for(var i = 0; i < orders.length; i++){
+              var name = orders[i].drug.name;
+
+              if(name.match(/Isoniazid/i) || name.match(/Rifapentine/i)){
+                if(name.match(/Rifapentine/i)){
+                  if(pastTPTdispensation["Rifapentine"] == undefined)
+                    pastTPTdispensation["Rifapentine"] =  0;
+
+                  pastTPTdispensation["Rifapentine"] += orders[i].quantity;
+                }else{
+                  if(pastTPTdispensation["Isoniazid"] == undefined)
+                    pastTPTdispensation["Isoniazid"] =  0;
+
+                  pastTPTdispensation["Isoniazid"] += orders[i].quantity;
+                }
+              }
+            }
+          }
+          
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+pastDispensationTPT();
