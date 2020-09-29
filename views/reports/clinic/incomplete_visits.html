@@ -219,7 +219,7 @@ function loadClients(visits) {
       family_name, gender, birthdate, dates_html.join("<br  />")] );
   }
  
-  var period = start_date + " - " + end_date;
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
    
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
@@ -237,7 +237,7 @@ function loadClients(visits) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' Incomplete  visits: ' + period,
+        title: 'Clinic' + sessionStorage.currentLocation + ' Incomplete  visits: ' + period,
         footer: true  
       },
       {

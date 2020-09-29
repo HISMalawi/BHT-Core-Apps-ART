@@ -208,7 +208,7 @@ function loadClients(data) {
       family_name, gender, birthdate] );
   }
  
-  var period = start_date + " - " + end_date;
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
    
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
@@ -226,12 +226,12 @@ function loadClients(data) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' Pregnant Patients: ' + period,
+        title: 'Clinic ' + sessionStorage.currentLocation + ' Pregnant Patients: ' + period,
         footer: true 
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' Pregnant Patients: ' + period 
+        title: 'Clinic ' + sessionStorage.currentLocation + ' Pregnant Patients: ' + period,
       }
     ],
     columnDefs: [
