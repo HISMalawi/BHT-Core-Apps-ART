@@ -19,8 +19,15 @@ function addTBtherapyYesNo(){
 function everCompleteTBtherapy(){
   
   try {
-    var three_hp = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"] == "Yes");
-    var ipt =  (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"] == "Yes");
+    var three_hp = false; //(yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"] == "Yes");
+    var ipt =  false; //(yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"] == "Yes");
+
+    var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
+    if (routine_tb_therapy == "Complete course of 3HP in the past (3 months RFP+INH)"){
+      three_hp = true;
+    }else if(routine_tb_therapy == "Complete course of IPT in the past (min. 6 months of INH)"){
+      ipt = true;
+    }
   }catch(e){
     show_completed_tb_therapy_location = true;
     return ever_completed_tb_therapy;
@@ -34,11 +41,6 @@ function everCompleteTBtherapy(){
 
   show_completed_tb_therapy_location = false;
   return false;
-}
-
-function showTBtherapyLocation(){
-  everCompleteTBtherapy();
-  return show_completed_tb_therapy_location;
 }
 
 var ever_completed_tb_therapy = false;
@@ -57,12 +59,13 @@ function getTBtheraptObs() {
           for (var i = 0; i < tb_history_obs.length; i++) {
             ever_completed_tb_therapy_question_asked = true;
 
-            var ob_children = tb_history_obs[i].children;
-            for (var c = 0; c < ob_children.length; c++) {
-             if(ob_children[c].value_coded == 1065)
-               ever_completed_tb_therapy = true;
+            try {
+              if(tb_history_obs[i].value_text.match(/Complete/i))
+                ever_completed_tb_therapy = true;
 
-          }
+            }catch(e){
+              continue;
+            }
         }
       }
   };
@@ -218,5 +221,205 @@ function diactivateFinishBTN(){
   activate_finish_btn = false;
 }
 
+function set3HPdisplay(){
+  var inputFrame = document.getElementById("inputFrame" + tstCurrentPage);
+  inputFrame.style = "width: 96%; height: 335px !Important;"
+}
+
+function validate3HPdeSelection(){
+  if(!activate_3HP_auto_select)
+    return;
+
+  var select_options = document.getElementById("tt_currentUnorderedListOptions");
+  var options  = select_options.children;
+  var auto_select = true;
+  var option3HP;
+
+  for(var i = 0; i < options.length; i++){
+    if(options[i].innerHTML.match(/RFP/i)){
+      option3HP = options[i];
+    }
+
+    if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
+        auto_select = false;
+      }
+  } 
+
+  var reason_for_not_using_fpm = "";
+  try {
+      reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
+  }catch(e){
+      reason_for_not_using_fpm = "";
+  }
+
+  if(reason_for_not_using_fpm == "Patient wants to get pregnant")
+    return;
+
+  reason_for_no_selecting_3hp = [];
+
+  if(auto_select && option3HP){
+    if(!option3HP.innerHTML.match(/lightblue/i)){
+      alertReasonForNo3HP();
+    }
+  }
+
+}
+
+function alertReasonForNo3HP(){
+  var cover = document.getElementById("regimen-change-cover");
+  var threeHP = document.getElementById("three-popup-div");
+
+  var checkboxes = document.getElementsByClassName("reason-checkboxes");
+  for(var i = 0; i < checkboxes.length; i++){
+    checkboxes[i].setAttribute("src","/public/touchscreentoolkit/lib/images/unticked.jpg");
+  }
+
+  cover.style = "display: inline;";
+  threeHP.style = "display: inline;";
+
+}
+
+var reason_for_no_selecting_3hp = [];
+
+function setReason(el, num){
+  var imgSelect = document.getElementById("img-reason-" + num);
+  if(imgSelect.getAttribute("src").match(/unticked/i)){
+    imgSelect.setAttribute("src", "/public/touchscreentoolkit/lib/images/ticked.jpg");
+    setReasonForNo3HP(num);
+  }else{
+    imgSelect.setAttribute("src", "/public/touchscreentoolkit/lib/images/unticked.jpg");
+    unselectReasonForNo3HP(num);
+  }
+}
+
+function closeReasons() {
+  if(reason_for_no_selecting_3hp.length < 1)
+    return;
+
+  var cover = document.getElementById("regimen-change-cover");
+  var threeHP = document.getElementById("three-popup-div");
+
+  cover.style = "display: none;";
+  threeHP.style = "display: none;";
+
+  
+}
+
+function setReasonForNo3HP(num){
+  var reasons3hp = {};
+  reasons3hp[1] = "Patient declined";
+  reasons3hp[2] = "Previous side-effects";
+  reasons3hp[3] = "Stock-out";
+  reasons3hp[4] = "Starting TB treatment";
+  reasons3hp[5] = "Other";
+  reason_for_no_selecting_3hp.push(reasons3hp[num])
+}
+
+function unselectReasonForNo3HP(num){
+  var reasons3hp = {};
+  reasons3hp[1] = "Patient declined";
+  reasons3hp[2] = "Previous side-effects";
+  reasons3hp[3] = "Stock-out";
+  reasons3hp[4] = "Starting TB treatment";
+  reasons3hp[5] = "Other";
+
+  var selected_reasons = reason_for_no_selecting_3hp;
+  reason_for_no_selecting_3hp = [];
+  for(var i = 0; i < selected_reasons.length; i++){
+    if(selected_reasons[i] ==  reasons3hp[num])
+      continue;
+
+      reason_for_no_selecting_3hp.push(selected_reasons[i]);
+  }
+}
+
+function transferInClient() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/observations?page=0&page_size=3&person_id='; 
+  url += sessionStorage.patientID + '&concept_id=7937';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 ) {
+          if(this.status == 201 || this.status == 200) {
+            var obs = JSON.parse(this.responseText);
+            for(var i = 0; i < obs.length; i++){
+              if(obs[i].value_coded == 1065){
+                transfer_in_client = true;
+              }
+            }
+          }
+          
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function addTPTkeyboard(){
+
+}
+
+function enterPastTPTdispensation(){
+  if(!transfer_in_client)
+    return false;
+
+  var routine_tb_therapy = document.getElementById("routine_tb_therapy").value; 
+  if(routine_tb_therapy.match(/Currently on/i))
+    return true;
+
+  return false;
+}
+
 active3HPautoSelect();
 var activate_finish_btn = false;
+
+var transfer_in_client = false;
+transferInClient();
+
+
+
+
+var pastTPTdispensation = {}
+
+function pastDispensationTPT(){
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/drug_orders?patient_id=" + sessionStorage.patientID;
+  url  += "&program_id=1&page_size=100000";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 ) {
+          if(this.status == 201 || this.status == 200) {
+            var orders = JSON.parse(this.responseText);
+            for(var i = 0; i < orders.length; i++){
+              var name = orders[i].drug.name;
+
+              if(name.match(/Isoniazid/i) || name.match(/Rifapentine/i)){
+                if(name.match(/Rifapentine/i)){
+                  if(pastTPTdispensation["Rifapentine"] == undefined)
+                    pastTPTdispensation["Rifapentine"] =  0;
+
+                  pastTPTdispensation["Rifapentine"] += orders[i].quantity;
+                }else{
+                  if(pastTPTdispensation["Isoniazid"] == undefined)
+                    pastTPTdispensation["Isoniazid"] =  0;
+
+                  pastTPTdispensation["Isoniazid"] += orders[i].quantity;
+                }
+              }
+            }
+          }
+          
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+pastDispensationTPT();

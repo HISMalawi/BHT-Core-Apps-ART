@@ -4,7 +4,12 @@ var cap_lock = true;
 function specifySideEffects() {
   try {
     var specify_se = yesNo_Hash["OTHER MALAWI ART SIDE EFFECTS"]["Other (specify)"];
+    var main_specify_se = yesNo_Hash["MALAWI ART SIDE EFFECTS"]["Other"];
+    var main_show_se = (main_specify_se == "Yes"  ? true : false)
     var show_se = (specify_se == "Yes"  ? true : false)
+    if(!main_show_se)
+        return false;
+
     return show_se;  
   }catch(e){
     return false;
