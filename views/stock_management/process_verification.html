@@ -539,7 +539,7 @@
                 var previous_stock_data = JSON.parse(this.responseText);
                 var rightData = "<table id='stock'>";
                 rightData += "<thead>";
-                rightData += "<th>Date of Delivery</th>";
+                rightData += "<th>Expiry Date</th>";
                 rightData += "<th>Available tins</th>";
                 rightData += "<th>&nbsp;</th>";
                 rightData += "</thead>";
@@ -553,7 +553,7 @@
                     var pharmacy_batch_item_id = previous_stock_data[key]["id"];
                     var current_quantity_id = "current-quantity-" + pharmacy_batch_item_id;
                     rightData += "<tr>";
-                    rightData += "<td>" + delivery_date + "</td>";
+                    rightData += "<td>" + expiry_date + "</td>";
 
                     var verifiedQuantity;
                     try {
