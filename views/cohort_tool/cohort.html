@@ -177,6 +177,25 @@ td {
   text-align: center;
 }
 
+.granules {
+  width: 100%;
+  margin: 10px;
+}
+
+.granules span{
+  font-size: 10px;
+}
+
+.granules td {
+  border-style: none;
+  text-align: center;
+}
+
+.granules-right-td {
+  border-right-style: dotted !important;
+  border-right-width: 1px;
+}
+
 </style>
 
 <script>
@@ -244,7 +263,7 @@ function showDisaggregatedReport(){
 <table>
   <tr id="version-row">
     <td class="numbers">&nbsp;</td>
-    <td colspan="4" id="version">Version 24</td>
+    <td colspan="4" id="version">Version 25</td>
   </tr>
   <tr>
     <td class="numbers">1.</td>
@@ -312,7 +331,7 @@ function showDisaggregatedReport(){
     
   <tr class="section-description">
     <td class="numbers">&nbsp;</td>
-    <td style="font-weight: bold;" colspan="2">ART Clinic</td>
+    <td style="font-weight: bold;text-align: center;" colspan="2">ART Clinic</td>
     <td colspan="3" style="text-align: center; font-weight: bold;">Newly registered in quarter</td>
     <td class="vertical-separator">&nbsp;</td>
     <td colspan="3" style="text-align: center; font-weight: bold;">Cumulative ever registered</td>
@@ -320,12 +339,12 @@ function showDisaggregatedReport(){
 
   <tr class="section-description">
     <td class="numbers">&nbsp;</td>
-    <td style="font-weight: bold;" colspan="2">Patients registration details</td>
-    <td style="font-weight: normal; text-align:center;">E-Mastercard</td>
+    <td style="font-weight: bold;text-align: center;" colspan="2">Patients registration details</td>
+    <td style="font-weight: normal; text-align:center;">PoC</td>
     <td style="font-weight: normal; text-align:center;">Clinic own*</td>
     <td style="font-weight: normal; text-align:center;">Checked data</td>
     <td class="vertical-separator">&nbsp;</td>
-    <td style="font-weight: normal; text-align:center;">E-Mastercard</td>
+    <td style="font-weight: normal; text-align:center;">PoC</td>
     <td style="font-weight: normal; text-align:center;">Clinic own*</td>
     <td style="font-weight: normal; text-align:center;">Checked data</td>
   </tr>
@@ -861,7 +880,7 @@ function showDisaggregatedReport(){
   <tr class="horisonatl-separator">
     <td class="numbers">&nbsp;</td>
     <td colspan="6" style="text-align: left;">&nbsp;</td>
-    <td style="text-align: center;">E-Mastercard</td>
+    <td style="text-align: center;">PoC</td>
     <td style="text-align: center;">Clinic own**</td>
     <td style="text-align: center;">Checked data</td>
   </tr>
@@ -1121,7 +1140,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">9</td>
-    <td><a class="regimen" href="#" @click="drillDown('nine_p');" id="nine_p"><!-- nine_p --></a></td>
+    <td>
+      <table class="granules">
+        <tr>
+          <td class="granules-right-td"><span>Tabs</span></td>
+          <td><span>Granules</span></td>
+        </tr>
+        <tr>
+          <td class="granules-right-td"><a class="regimen" href="#" @click="drillDown('nine_p');" id="nine_p"></a></td>
+          <td><a class="regimen" href="#" @click="drillDown('nine_p_granules');" id="nine_p_granules">0</a></td>
+        </tr>
+      </table>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('nine_a');" id="nine_a"><!-- nine_a --></a></td>
   </tr>
   
@@ -1151,7 +1181,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">11</td>
-    <td><a class="regimen" href="#" @click="drillDown('eleven_p');" id="eleven_p"><!-- eleven_p --></a></td>
+    <td>
+      <table class="granules">
+        <tr>
+          <td class="granules-right-td"><span>Tabs</span></td>
+          <td><span>Granules</span></td>
+        </tr>
+        <tr>
+          <td class="granules-right-td"><a class="regimen" href="#" @click="drillDown('eleven_p');" id="eleven_p"></a></td>
+          <td><a class="regimen" href="#" @click="drillDown('eleven_p_granules');" id="eleven_p_granules">0</a></td>
+        </tr>
+      </table>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('eleven_a');" id="eleven_a"><!-- eleven_a --></a></td>
   </tr>
   
