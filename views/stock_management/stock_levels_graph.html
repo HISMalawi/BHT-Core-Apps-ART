@@ -60,11 +60,11 @@
         <form>
             <input type="text" name="adults_medication"
                    tt_onLoad="__$('keyboard').style.display = 'none'; plotGraph('Paeds');"
-                   tt_pageStyleClass="NoControls" helpText="Stock levels" optional="true"/>
+                   tt_pageStyleClass="NoControls" helpText="Stock levels (Consumption rate calculated over a 3 month period)" optional="true"/>
 
             <input type="text" name="pediatric_medication"
                    tt_onLoad="__$('keyboard').style.display = 'none'; plotGraph('Adults'); changeNextBTN();"
-                   tt_pageStyleClass="NoControls" helpText="Stock levels" optional="true"/>
+                   tt_pageStyleClass="NoControls" helpText="Stock levels (Consumption rate calculated over a 3 month period)" optional="true"/>
 
         </form>
 
@@ -153,7 +153,6 @@
                         expiry_stock: 0,
                         active: active
                     };
-                    console.log(data_list[drugName]);
                     getPaedsDrugsData();
                 }
             };
@@ -361,7 +360,6 @@
 
         for (var key in data_list) {
             var val = parseFloat(data_list[key]["month_of_stock"]);
-            console.log(val);
             var col = (val <= 2) ? 'red' : (val > 4 ? 'yellow' : 'green');
             correctedWeights.push({y: val, color: col});
         }

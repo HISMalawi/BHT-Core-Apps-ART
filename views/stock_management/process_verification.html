@@ -229,7 +229,7 @@
     }
 
     .drug-label {
-        min-width: 25%;
+        width: 33%;
         text-align: left;
         padding-left: 2%;
         overflow-X: hidden;
@@ -534,13 +534,14 @@
         selected_pack_size = packSize;
 
         var xhttp = new XMLHttpRequest();
+        var vfq = 0;
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
                 var previous_stock_data = JSON.parse(this.responseText);
                 var rightData = "<table id='stock'>";
                 rightData += "<thead>";
-                rightData += "<th>Date of Delivery</th>";
-                rightData += "<th>Available tins</th>";
+                rightData += "<th>Expiry Date</th>";
+                rightData += "<th id='total-tins'>Available tins</th>";
                 rightData += "<th>&nbsp;</th>";
                 rightData += "</thead>";
                 rightData += "<tbody>";
@@ -553,7 +554,7 @@
                     var pharmacy_batch_item_id = previous_stock_data[key]["id"];
                     var current_quantity_id = "current-quantity-" + pharmacy_batch_item_id;
                     rightData += "<tr>";
-                    rightData += "<td>" + delivery_date + "</td>";
+                    rightData += "<td>" + expiry_date + "</td>";
 
                     var verifiedQuantity;
                     try {
@@ -569,13 +570,14 @@
                         current_quantity = Math.trunc(parseFloat(current_quantity));
                         rightData += "<td id='" + current_quantity_id + "'>" + current_quantity + "</td>";
                     }
-
+                    vfq += current_quantity;
                     rightData += "<td expiry_date='" + expiry_date + "' pharmacy_batch_item_id='" + pharmacy_batch_item_id + "' onclick='enterTins(this)'><span class='update-stock-button'>Update stock</span></td>";
                     rightData += "</tr>";
                 }
                 rightData += "</tbody>";
                 rightData += "</table>";
                 jQuery(".right-div").html(rightData);
+                jQuery('#total-tins').html ('<th id="total-tins">Available tins (' + vfq + ') </th>'); 
             }
         };
 
