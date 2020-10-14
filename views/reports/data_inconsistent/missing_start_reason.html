@@ -141,11 +141,12 @@ function initializeTable() {
         bLengthChange: false,
         columnDefs: [{ 
           targets: 0, type: 'natural',
-          className: "arv-numbers", "targets": [ 0 ],
-          className: "action-btns", "targets": [ 3 ],
-          className: "action-btns", "targets": [ 4 ],
-          className: "action-btns", "targets": [ 5 ]
-        }],
+        },
+          {className: "arv-numbers", "targets": [ 0 ]},
+          {className: "action-btns", "targets": [ 3 ]},
+          {className: "action-btns", "targets": [ 4 ]},
+          {className: "action-btns", "targets": [ 5 ]}
+        ],
         scroller: {
           loadingIndicator: true
         }
