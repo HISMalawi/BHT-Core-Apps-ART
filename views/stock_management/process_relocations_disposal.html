@@ -24,6 +24,7 @@
             var relocation_date = JSON.parse(sessionStorage.relocation_or_disposal)["relocation_date"];
             var disposal_date = JSON.parse(sessionStorage.relocation_or_disposal)["disposal_date"];
 
+            var tt_cancel_destination = '/';
             var formatted_drugs = ["EFV (Efavirenz 600mg tablet)",
                 "NVP (Nevirapine syrup 1.5mL/dose in 25mL bottle)",
                 "NVP (Nevirapine 200 mg tablet)",
@@ -2553,7 +2554,7 @@
                 }
 
                 .drug-value {
-                    min-width: 20%;
+                    width: 25%;
                     cursor: pointer;
                 }
 
@@ -2633,6 +2634,7 @@
                     border-top: 1px solid gray;
                     background-color: #d3d3d3;
                     border-radius: 3px;
+                    width: 25%;
                 }
 
                 #popupkeyboard {

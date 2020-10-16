@@ -114,6 +114,10 @@ var dataSet = [];
 var data_table;
 
 function initializeTable() {
+document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
@@ -129,11 +133,12 @@ function initializeTable() {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")" 
+        title: 'MoH ' + sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter,
+        footer: true  
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: 'MoH' + sessionStorage.currentLocation + ': cohort survival analysis report (' + sub_group + ') ' + quarter 
 
       }
     ]
@@ -192,6 +197,11 @@ function initializeTable() {
     </thead>
     <tbody id="table-body">
     </tbody>
+    <tfoot>
+      <tr>
+        <td id="footer-content"></td>
+      </tr>
+    </tfoot>
   </table>
 </div>
 

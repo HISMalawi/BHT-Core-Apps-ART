@@ -144,12 +144,11 @@ td {
   left: -40px;
 }
 
-
-
 #spinner {
     position: absolute;
     top: 150px;
     left: 40%;
+    z-index: 991;
   }
 
 #report-cover {
@@ -993,15 +992,15 @@ function showDisaggregatedReport(){
   <tr class="horisonatl-separator">
     <td class="numbers">&nbsp;</td>
     <td>&nbsp;</td>
-    <td colspan="6" style="font-style: italic; text-align: center;">Check completeness of ‘Clinic own data’</td>
+    <td colspan="6" style="font-style: italic; text-align: left;">Check completeness of ‘Clinic own data’</td>
     <td><img src="../../assets/images/sum-arrow.png" class="sum-arrows"/></td>
     <td><img src="../../assets/images/sum-arrow.png" class="sum-arrows"/></td>
   </tr>
   
   <tr class="horisonatl-separator">
     <td class="numbers">62.</td>
-    <td colspan="2">&nbsp;</td>
-    <td colspan="5" style="text-align: center; border-style:dotted;
+    <td colspan="1">&nbsp;</td>
+    <td colspan="6" style="text-align: center; border-style:dotted;
      border-width:1px 1px 0px 1px; text-align: left; padding-left:10px;">Total adv. outcomes = Died total + Defaulted + Stopped + TO</td>
     <td style="border-style:solid; border-width:1px;"><span class="postfixes">A</span></td>
     <td style="border-style:solid; border-width:1px;"><span class="postfixes">B</span></td>
@@ -1009,12 +1008,12 @@ function showDisaggregatedReport(){
   
   <tr class="horisonatl-separator">
     <td class="numbers">63.</td>
-    <td colspan="2">&nbsp;</td>
-    <td colspan="5" style="text-align: center; border-style:dotted;
+    <td colspan="1">&nbsp;</td>
+    <td colspan="6" style="text-align: center; border-style:dotted;
      border-width:0px 0px 1px 1px; text-align: left; padding-left:10px;">Calculate completeness %&nbsp;&nbsp;
-     A / B x 100 (Use difference if greater than 100%)</td>
+     <span style="font-style: oblique;font-size: 12px;">A / B x 100 (Use difference if greater than 100%)</span><span></td>
     <td style="border-style:dotted; border-bottom-width:1px;">&nbsp;</td>
-    <td style="border-style:solid; border-width:1px;"><span style="left: 40px;" class="postfixes">%</span></td>
+    <td style="border-style:solid; border-width:1px;"><span style="position: unset;" class="postfixes">%</span></td>
   </tr>
   
   <tr class="horisonatl-separator">
@@ -1056,10 +1055,10 @@ function showDisaggregatedReport(){
   
   <tr>
     <td class="numbers">66.</td>
-    <td colspan="2" style="text-align:left; padding-left: 10px;
+    <td colspan="1" style="text-align:left; padding-left: 10px;
      border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
-      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">Count regimen for <u>all patients registered</u></td>
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="4">Count regimen for <u>all patients registered</u></td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px;">Regimen</td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
@@ -1071,10 +1070,10 @@ function showDisaggregatedReport(){
   
   <tr>
     <td class="numbers">67.</td>
-    <td colspan="2" style="text-align:left; padding-left: 10px;
+    <td colspan="1" style="text-align:left; padding-left: 10px;
      border-bottom-width: 0px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
-      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="3">at this site, including those who currently</td>
+      text-align:left; border-left-width:0px; border-top-width:0px;" colspan="4">at this site, including those who currently</td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px;">Regimen</td>
     <td style="border-right-width:0px; border-bottom-width: 0px;
@@ -1086,10 +1085,10 @@ function showDisaggregatedReport(){
   
   <tr>
     <td class="numbers">68.</td>
-    <td colspan="2" style="text-align:left; padding-left: 10px; border-style:dotted;
+    <td colspan="1" style="text-align:left; padding-left: 10px; border-style:dotted;
      border-bottom-width: 1px; border-right-width: 0px; border-top-width:0px;">&nbsp;</td>
     <td style="border-right-width:0px; border-bottom-width: 1px; border-style:dotted;
-      border-left-width:0px; border-top-width:0px; text-align:left;" colspan="3">get supplies from another site</td>
+      border-left-width:0px; border-top-width:0px; text-align:left;" colspan="4">get supplies from another site</td>
     <td style="border-right-width:0px; border-bottom-width: 1px; border-style:dotted;
       border-left-width:0px; border-top-width:0px;">Regimen</td>
     <td style="border-right-width:0px; border-bottom-width: 1px; border-style: dotted;
