@@ -47,7 +47,33 @@ function renderChart() {
               enabled: true
           },
           plotOptions: {
-              area: {
+
+            series:{
+              marker: {
+                enabled: true,
+                symbol: 'circle',
+                radius: 5
+              },
+              allowPointSelect: true,
+              point: {
+                  events:{
+                      select: function(e) { 
+                        //console.log(e.target.series.yData)
+                        try {
+                          let valueDescription = e.target.accessibility.valueDescription;
+                          showClients(e.target.series.name, 
+                          e.target.accessibility.valueDescription);
+                        }catch(x){
+                          let show_message = `Something went wrong. 
+                          Please try changing the date parameters or <b>Zooming in</b>.`;
+                          showMessage(show_message);
+                        }
+                      }
+                  }                        
+              }
+          },
+
+            area: {
                   fillColor: {
                       linearGradient: {
                           x1: 0,
@@ -85,6 +111,16 @@ function renderChart() {
 
 }
 
+function showClients(series_name, str){
+  let num = str.split(".")[0];
+  let date_and_value = str.split(".")[1];
+  let point_value = date_and_value.split(",")[3];
+  let set_date_attr = date_and_value.split(",");
+  let set_date = moment(set_date_attr[0] 
+      +  set_date_attr[1] + set_date_attr[2]).format("YYYY-MM-DD"); 
+  let setURL = "./patient_report_drill_down.html"
+  location = setURL += "?date=" + set_date + "&series_name=" + series_name;
+}
 
 var url = window.location.href;
 url = new URL(url);
