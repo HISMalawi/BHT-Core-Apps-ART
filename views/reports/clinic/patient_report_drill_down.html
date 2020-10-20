@@ -13,6 +13,17 @@
     
     .text-left {
       text-align: left;
+      width: 25%;
+    }
+
+    .action-btns {
+      width: 120px;
+      text-align: center;
+    }
+
+    #clients td {
+      border-style: solid;
+      border-width: 1px;
     }
   </style>
 
@@ -35,11 +46,11 @@
       <table id="clients">
         <thead>
           <th class="text-left">ARV#</th>
-          <th class="text-left">Patient<br />first name</th>
-          <th class="text-left">Patient<br />last name</th>
+          <th class="text-left">First name (patient)</th>
+          <th class="text-left">Last name (patient)</th>
           <th class="text-center">Birthdate</th>
           <th class="text-center">Gender</th>
-          <th class="text-center">&nbsp;</th>
+          <th class="action-btns" style="width: 120px; text-align: center;">&nbsp;</th>
         </thead>
       </table>`;
       inputFrame.innerHTML = tableHTML;
@@ -80,7 +91,7 @@
           {"className": "text-left", "targets": 2},
           {"className": "text-center", "targets": 3},
           {"className": "text-center", "targets": 4},
-          {"className": "text-center", "targets": 5}
+          {"className": "action-btns", "targets": 5}
         ]
       } );
       fetchData();
@@ -152,7 +163,7 @@
     }
 
     function actionBTN(patient_id){
-      return `<button class="button blue navButton" 
+      return `<button class="button view-btn blue navButton" 
       onmousedown="javascript:location='/views/patient_dashboard.html?patient_id=${patient_id}';">
         <span>View</span></button>`;
     }

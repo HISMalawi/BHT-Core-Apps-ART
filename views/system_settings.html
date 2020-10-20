@@ -67,14 +67,13 @@ function reportGrouping(group) {
       ["Activate Fast Track",'', "global_property/global_property_yes_no.html?value=enable_fast_track",'link'],
       ["Is this a military site?",'',"global_property/global_property_yes_no.html?value=military_site",'link'],
       ["DDE Properties",'',"global_property/global_property_yes_no.html?value=dde_enabled",'link'],
-      ["Drug management", '',"drug management",'function'],
       ["Set Hypertension Thresholds", '',"global_property/htn_threshold.html",'link'],
       ["Set Hypertension Screen Age	", '',"global_property/htn_age.html",'link'],
-      ["Data management", '/assets/images/clean.jpg',"data management",'function'],
+      //["Data management", '/assets/images/clean.jpg',"data management",'function'],
       ["View system configurations", '',"global_property/system_configurations.html",'link'],
       ["Activate 3HP auto select",'',"global_property/global_property_yes_no.html?value=activate_3hp_auto_select",'link']
     ];
-  }else if(group == 'drug management'){
+  /*}else if(group == 'drug management'){
     return [
       ['Print drug barcode','','#', 'link'],
       ["Receipts", "","#",'link'],
@@ -82,14 +81,14 @@ function reportGrouping(group) {
       ["Stock report", "","#",'link'],
       ["Stock report (Quick view)", "","stock_management/quick_view.html",'link'],
       ["Reallocate","","#",'link']
-    ];
+    ];*/
   }else if(group == 'Clinic'){
     return [
       ['Appointments','','/apps/ART/views/reports/clinic/appointments.html', 'link'],
       ["Defaulter list","","/apps/ART/views/reports/clinic/report_dates.html?report=defaulter_list",'link'],
       ["Incomplete visits","","#",'link']
     ];
-  }else if(group == 'data management'){
+  /*}else if(group == 'data management'){
     sessionStorage.mergeClientParametersLeft = '';
     sessionStorage.mergeClientParametersRight = '';
     return [
@@ -105,7 +104,7 @@ function reportGrouping(group) {
       ['Male patients with female observations','','/apps/ART/views/reports/data_inconsistent/report_dates.html?report=male_with_female_obs', 'link'],
       ['DOB > Date enrolled','', '/apps/ART/views/reports/data_inconsistent/report_dates.html?report=dob_more_than_start_date','link'],                 
     ];
-  }else{
+  }else{*/
   }  
 }	
 //['Male patients with female observations','','/apps/ART/views/reports/data_inconsistent/male_with_female_obs.html', 'link']
