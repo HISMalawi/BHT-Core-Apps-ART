@@ -337,18 +337,187 @@ function assignNum(age, gender, num) {
 }
 
 function assignTD(tds, num, gender) {
-  tds[3].innerHTML = num.tx_new;
-  tds[4].innerHTML = num.tx_curr;
-  tds[5].innerHTML = num.tx_given_ipt;
-  tds[6].innerHTML = num.tx_screened_for_tb;
+  tds[3].innerHTML = createLink(num.tx_new);
+  tds[4].innerHTML =  createLink(num.tx_curr);
 
   tds[5].setAttribute("column-name", "ipt-" + gender.toLocaleLowerCase());
   tds[5].setAttribute("column-age", "ipt-" + age);
 
+  tds[5].innerHTML =  createLink(num.tx_given_ipt);
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
+  tds[6].innerHTML =  createLink(num.tx_screened_for_tb);
 }
 
+function createLink(num){
+  var  span = document.createElement("span");
+  var a = document.createElement("a");
+  a.setAttribute("href","#");
+  a.setAttribute("onmousedown",`drillDown('${num}');`);
+  a.innerHTML = num;
+  span.appendChild(a);
+  return span.innerHTML;
+}
+
+function drillDown(group, sex,  colNum){
+  for(var gender in drill_down_data){
+    if(gender != sex)
+      continue;
+
+    var age_groups = drill_down_data[gender];
+    for(var age_group in age_groups){
+      if(age_group != group)
+        continue;
+
+      var colNums = age_groups[age_group];
+      for(var col in colNums){
+        if(colNum != col)
+          continue;
+
+        getClients(drill_down_data[gender][age_group][col]);
+      }
+    }
+  }
+
+}
+var rowCounter = 1;
+
+
+function getClients(patient_ids) {
+  var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
+  url_path += '/tx_mmd_client_level_data?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
+  url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
+
+  var params = JSON.stringify({patient_ids: patient_ids});
+  var tbody = document.getElementById("popupDataBody");
+  var tbodyHTML = "<tr><td colspan='5'>Fetching data  please wait  ...</td></tr>";
+  tbody.innerHTML = tbodyHTML;
+  var table = document.getElementById("popupBox");
+  table.style = "display:inline;";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      renderDrillDownData(obj);
+      initializePopUpTable();
+    }
+  };
+  xhttp.open("POST", url_path, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send(params);
+}
+
+function renderDrillDownData(data){
+  var tbody = document.getElementById("popupDataBody");
+  tbody.innerHTML = null;
+  for(var patient_id in data){
+    var drugs_info = [];
+    var main_info = null;
+
+    var regimens = data[patient_id];
+    for(var regimen in  regimens){
+      var drug_ids  = regimens[regimen];
+      for(var drug_id in  drug_ids){
+        var drugs = data[patient_id][regimen][drug_id];
+        
+        for(var id in  drugs){
+          var inf = data[patient_id][regimen][drug_id][id];
+          drugs_info.push([
+            inf.drug_name,
+            inf.quantity,
+            inf.dose_per_day
+          ]);
+          main_info = {
+            arv_number: inf.arv_number,
+            dob: inf.birthdate,
+            start_date: inf.start_date
+          };
+        }
+
+      }
+    }
+
+    if(!main_info)
+      continue;
+      
+    var tr =  document.createElement("tr");
+    var td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.arv_number;
+    tr.appendChild(td);
+    
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.dob;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    td.innerHTML = main_info.start_date;
+    tr.appendChild(td);
+
+    td =  document.createElement("td");
+    td.setAttribute("class","main-table-td");
+    tr.appendChild(td);
+    var t = document.createElement("table");
+    t.setAttribute("class","arv-tables")
+    td.appendChild(t);
+
+    for(var i = 0; i< drugs_info.length; i++){
+      var tTr = document.createElement("tr");
+      t.appendChild(tTr);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = drugs_info[i][0];
+      tTr.appendChild(tTd);
+      
+      var tTd = document.createElement("td");
+      tTd.innerHTML  = "  (" + drugs_info[i][1] + ", ";
+      tTd.innerHTML  += drugs_info[i][2] + " a day)";
+      tTd.setAttribute("class","pills-info");
+      tTr.appendChild(tTd);
+      
+    }
+
+    tbody.appendChild(tr);
+  }
+
+}
+
+
+
+var popupTable;
+
+function initializePopUpTable() {
+
+  popupTable = $('#popupData').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: true,
+    scrollY: 380,
+    Processing: false,
+    ServerSide: false,
+    scroller: {
+      loadingIndicator: true
+    },
+    columnDefs: [
+      {"className": "dt-arv-numbers", "targets": 0},
+      {"className": "dt-date", "targets": 1},
+      {"className": "dt-date", "targets": 2}
+    ]
+  });
+
+}
+
+function closeBox(){
+  try  {
+    popupTable.destroy();
+  }catch(e){}
+  
+  document.getElementById("popupBox").style = "display: none;";
+}
 function addTableBody() {
   var columns = [
     '0-5 months', '6-11 months','12-23 months',
