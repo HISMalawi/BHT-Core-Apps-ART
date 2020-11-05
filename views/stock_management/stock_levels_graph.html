@@ -9,6 +9,7 @@
 <script type="text/javascript" src="/assets/js/moment.js"></script>
 <script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
 <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+<script type="text/javascript" src="./drug_cms.js"></script>
 
 <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
 
@@ -80,42 +81,7 @@
     var paeds_drug_ids = [];
     var adult_drug_ids = [];
 
-    var adults_drugs_hash = {
-        "976": "Darunavir 600mg",
-        "977": "Ritonavir 100mg",
-        "978": "Etravirine 100mg",
-        "954": "RAL (Raltegravir 400mg)",
-        "22": "NVP (Nevirapine 200 mg tablet)",
-        "969": "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)",
-        "731": "AZT/3TC/NVP (300/150/200mg tablet)",
-        "39": "AZT/3TC (Zidovudine and Lamivudine 300/150mg)",
-        "11": "EFV (Efavirenz 600mg tablet)",
-        "735": "TDF/3TC/EFV (300/300/600mg tablet)",
-        "734": "TDF/3TC (Tenofavir and Lamivudine 300/300mg tablet",
-        "932": "ATV/r (Atazanavir 300mg/Ritonavir 100mg)",
-        "73": "LPV/r (Lopinavir and Ritonavir 200/50mg tablet)",
-        "576": "Cotrimoxazole (960mg)",
-        "297": "Cotrimoxazole (480mg tablet)",
-        "931": "INH or H (Isoniazid 300mg tablet)",
-        "954":"RAL (Raltegravir 400mg)",
-        "1056":"RFP (Rifapentine 150mg)",
-        "976":"Darunavir 600mg",
-        "982":"Dolutegravir (50mg tablet)"
-    };
-
-    var paedsDrugsHash = {
-        "733": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets",
-        "968": "Nevirapine 50mg, tin of 60 tablets",
-        "732": "Zidovudine / lamivudine /Nevirapine 30 / 60 / 50mg, tin of 60 tablets",
-        "736": "Zidovudine / lamivudine 60 / 30mg, tin of 60 tablets",
-        "30": "Efavirenz 200mg, tin of 90 tablets",
-        "74": "Lopinavir / Ritonavir 100 / 25mg, tin of 60 tablets",
-        "979": "LPV/r pellets",
-        "963": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets",
-        "24": "Isoniazid 100mg, tin of 100 tablets",
-        "1044": "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)",
-        "1043":"RAL (Raltegravir 25mg)",
-    };
+    
 
     function getPaedsDrugsData() {
         if (paeds_drug_ids.length == 0) {
