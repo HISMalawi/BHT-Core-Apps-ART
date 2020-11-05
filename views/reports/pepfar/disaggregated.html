@@ -298,10 +298,10 @@ function addMales() {
 
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
-    tx_new += parseInt(tds[3].innerHTML);
-    tx_curr += parseInt(tds[4].innerHTML);
-    tx_given_ipt += parseInt(tds[5].innerHTML);
-    tx_screened_for_tb += parseInt(tds[6].innerHTML);
+    tx_new += getEntries(tds[3]);
+    tx_curr += getEntries(tds[4]);
+    tx_given_ipt += getEntries(tds[5]);
+    tx_screened_for_tb += getEntries(tds[6]);
   }
 
   data_table.row.add([31,'All', 'Male', tx_new, tx_curr, 
@@ -310,6 +310,14 @@ function addMales() {
   addClass('all-males');
   
   getAllFemale('Pregnant');
+}
+
+function getEntries(td) {
+ var f = 0;
+  if (td.getElementsByTagName('a').length > 0) {
+    f = td.getElementsByTagName('a')[0].innerHTML;
+ }
+ return parseInt(f);
 }
 
 function addClass(id) {
@@ -343,10 +351,10 @@ function assignTD(tds, num, gender) {
   tds[5].setAttribute("column-name", "ipt-" + gender.toLocaleLowerCase());
   tds[5].setAttribute("column-age", "ipt-" + age);
 
-  tds[5].innerHTML =  createLink(num.tx_given_ipt);
+  tds[5].innerHTML = num.tx_given_ipt;
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
-  tds[6].innerHTML =  createLink(num.tx_screened_for_tb);
+  tds[6].innerHTML =  num.tx_screened_for_tb;
 }
 
 function createLink(num){
@@ -658,10 +666,10 @@ function updateFNProw() {
   
   for(var r = 0 ; r < rows.length; r++){
     var tds = rows[r].getElementsByTagName('td');
-    fp_bf_tx_new += parseInt(tds[3].innerHTML);
-    fp_bf_tx_curr += parseInt(tds[4].innerHTML);
-    fp_bf_tx_given_ipt += parseInt(tds[5].innerHTML);
-    fp_bf_tx_screened_for_tb += parseInt(tds[6].innerHTML);
+    fp_bf_tx_new += getEntries(tds[3]);
+    fp_bf_tx_curr += getEntries(tds[4]);
+    fp_bf_tx_given_ipt += getEntries(tds[5]);
+    fp_bf_tx_screened_for_tb += getEntries(tds[6]);
   }
 
   var all_female_tx_new = 0;
@@ -674,18 +682,18 @@ function updateFNProw() {
     var tds = female_rows[i].getElementsByTagName('td');
     
     if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
-      all_female_tx_new += parseInt(tds[3].innerHTML);
-      all_female_tx_curr += parseInt(tds[4].innerHTML);
-      all_female_tx_given_ipt += parseInt(tds[5].innerHTML);
-      all_female_tx_screened_for_tb += parseInt(tds[6].innerHTML);
+      all_female_tx_new += getEntries(tds[3]);
+      all_female_tx_curr += getEntries(tds[4]);
+      all_female_tx_given_ipt += getEntries(tds[5]);
+      all_female_tx_screened_for_tb += getEntries(tds[6]);
     }
   }
   
   var tds = fnp_row.getElementsByTagName('td');
-  tds[3].innerHTML = (all_female_tx_new - fp_bf_tx_new);  
-  tds[4].innerHTML = (all_female_tx_curr - fp_bf_tx_curr);  
-  tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
-  tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
+  tds[3].innerHTML = createLink(all_female_tx_new - fp_bf_tx_new);  
+  tds[4].innerHTML = createLink(all_female_tx_curr - fp_bf_tx_curr);  
+  tds[5].innerHTML = createLink(all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
+  tds[6].innerHTML = createLink(all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
 
   /*data_table.destroy();
   initializeTable();
@@ -829,7 +837,7 @@ function fetchTBscreenedClients(td) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
-        td.innerHTML = obj.length;
+        td.innerHTML = createLink(obj.length);
       }
 
      tb_tds.shift();
@@ -869,9 +877,9 @@ function fetchIPTclients(td) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
-        td.innerHTML = obj.length;
+        td.innerHTML = createLink(obj.length);
       }
-  
+      
      ipt_tds.shift();
      
      if(ipt_tds.length > 0) {
@@ -888,6 +896,10 @@ function fetchIPTclients(td) {
   xhttp.send();
 }
 
+
+function showClients(clients) {
+  console.log(clients);
+}
 function fetchTBscreenedFemaleClients(td) {
   if(td == undefined)
     return
@@ -911,6 +923,7 @@ function fetchTBscreenedFemaleClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        td.setAttribute("onclick", `showClients(${obj})`);
       }
 
       female_tb_tds.shift();
