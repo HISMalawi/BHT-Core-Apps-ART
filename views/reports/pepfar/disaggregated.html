@@ -357,35 +357,36 @@ function assignTD(tds, num, gender) {
   tds[6].innerHTML =  num.tx_screened_for_tb;
 }
 
-function createLink(num){
+function createLink(num, clients){
   var  span = document.createElement("span");
   var a = document.createElement("a");
   a.setAttribute("href","#");
-  a.setAttribute("onmousedown",`drillDown('${num}');`);
+  a.setAttribute("onmousedown",`drillDown('${clients}');`);
   a.innerHTML = num;
   span.appendChild(a);
   return span.innerHTML;
 }
 
-function drillDown(group, sex,  colNum){
-  for(var gender in drill_down_data){
-    if(gender != sex)
-      continue;
+function drillDown(clients){
+  console.log(clients);
+  // for(var gender in drill_down_data){
+  //   if(gender != sex)
+  //     continue;
 
-    var age_groups = drill_down_data[gender];
-    for(var age_group in age_groups){
-      if(age_group != group)
-        continue;
+  //   var age_groups = drill_down_data[gender];
+  //   for(var age_group in age_groups){
+  //     if(age_group != group)
+  //       continue;
 
-      var colNums = age_groups[age_group];
-      for(var col in colNums){
-        if(colNum != col)
-          continue;
+  //     var colNums = age_groups[age_group];
+  //     for(var col in colNums){
+  //       if(colNum != col)
+  //         continue;
 
-        getClients(drill_down_data[gender][age_group][col]);
-      }
-    }
-  }
+  //       getClients(drill_down_data[gender][age_group][col]);
+  //     }
+  //   }
+  // }
 
 }
 var rowCounter = 1;
@@ -837,7 +838,7 @@ function fetchTBscreenedClients(td) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
-        td.innerHTML = createLink(obj.length);
+        td.innerHTML = createLink(obj.length, obj);
       }
 
      tb_tds.shift();
@@ -877,7 +878,7 @@ function fetchIPTclients(td) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
-        td.innerHTML = createLink(obj.length);
+        td.innerHTML = createLink(obj.length, obj);
       }
       
      ipt_tds.shift();
@@ -896,10 +897,6 @@ function fetchIPTclients(td) {
   xhttp.send();
 }
 
-
-function showClients(clients) {
-  console.log(clients);
-}
 function fetchTBscreenedFemaleClients(td) {
   if(td == undefined)
     return
