@@ -109,8 +109,21 @@ var drugs = {
     "982": {
         "short_name": "Dolutegravir (50mg tablet)",
         "full_name": "Dolutegravir 50mg pack of 30 tablets",
+    },
+    "983": {
+        "short_name": "TDF300/3TC300/DTG50",
+        "full_name": "TDF300/3TC300/DTG50"
+    },
+    "1039": {
+        "short_name": "Pyridoxine (25mg)",
+        "full_name": "Pyridoxine (25mg)"
+    },
+    "977": {
+        "short_name": "Ritonavir 100mg",
+        "full_name": "Ritonavir 100mg"
     }
 }
+//key is derived from drug_name ie drug table while value is derived from alternate drug name / name 
 var drug_cms_names = {
     "Cotrimoxazole (960mg)": "Cotrimoxazole 960mg, blister pack of 1000 tablets",
     "Cotrimoxazole (480mg tablet)": "Cotrimoxazole 480mg, tin of 1000 tablets",
@@ -142,9 +155,13 @@ var drug_cms_names = {
     "Raltegravir 400mg": "Raltegravir 400mg, 60 tablets",
     "Rifapentine 150mg": "Rifapentine 150mg, 24 tablets",
     "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
-    "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets"
+    "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets",
+    "TDF300/3TC300/DTG50": "TDF300/3TC300/DTG50",
+    "Pyridoxine (25mg)": "Pyridoxine (25mg)",
+    "Ritonavir 100mg": "Ritonavir 100mg",
 };
 
+//uses drug name from drug table
 var drug_cms_packsizes = {
     "Cotrimoxazole (960mg)": 1000,
     "Cotrimoxazole (480mg tablet)": 1000,
@@ -176,7 +193,10 @@ var drug_cms_packsizes = {
     "Raltegravir 400mg": 60,
     "Darunavir 600mg": 60,
     "Dolutegravir (50mg tablet)": 30,
-    "Rifapentine 150mg": 24
+    "Rifapentine 150mg": 24,
+    "TDF300/3TC300/DTG50": 30,
+    "Pyridoxine (25mg)": 1000,
+    "Ritonavir 100mg": 30,
 };
 
 
@@ -209,7 +229,11 @@ var drugs_unformatted = ["EFV (Efavirenz 600mg tablet)",
     "Raltegravir 25mg",
     "Raltegravir 400mg",
     "Rifapentine 150mg",
-    "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)"];
+    "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)",
+    "TDF300/3TC300/DTG50",
+    "Pyridoxine (25mg)",
+    "Ritonavir 100mg",
+];
 var drug_map_hash = {
     "733": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets",
     "969": "Abacavir sulfate 600mg / Lamivudine 300mg, tin of 30 tablets",
@@ -241,7 +265,10 @@ var drug_map_hash = {
     "954": "Raltegravir 400mg",
     "1056": "Rifapentine 150mg",
     "976": "Darunavir 600mg",
-    "982": "Dolutegravir (50mg tablet)"
+    "982": "Dolutegravir (50mg tablet)",
+    "983":  "TDF300/3TC300/DTG50",
+    "1039":  "Pyridoxine (25mg)",
+    "977":  "Ritonavir 100mg",
 };
 
 var drug_short_full_name = {
@@ -355,9 +382,21 @@ var drug_short_full_name = {
     "982": {
         "short_name": "Dolutegravir (50mg tablet)",
         "full_name": "Dolutegravir 50mg pack of 30 tablets",
-    }
+    },
+    "983": {
+        "short_name": "TDF300/3TC300/DTG50",
+        "full_name": "TDF300/3TC300/DTG50"
+    },
+    "1039": {
+        "short_name": "Pyridoxine (25mg)",
+        "full_name": "Pyridoxine (25mg)"
+    },
+    "977": {
+        "short_name": "Ritonavir 100mg",
+        "full_name": "Ritonavir 100mg"
+    },
 }
-
+//full_name as key and short name as value
 var drug_short_names = {
             "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)": "ABC / 3TC 600 / 300mg 30 tabs",
             "NVP (Nevirapine 50 mg tablet)": "NVP 50mg 60 tabs",
@@ -391,8 +430,11 @@ var drug_short_names = {
             "Darunavir 600mg": "Darunavir 600mg, 60 tablets",
             "Dolutegravir (50mg tablet)": "Dolutegravir 50mg 30 tablets", 
             "Rifapentine 150mg": "Rifapentine 150mg 24 tablets",
+            "TDF300/3TC300/DTG50": "TDF 300 / 3TC 300 / DTG 50",
+            "Pyridoxine (25mg)": "Pyridoxine (25mg)",
+            "Ritonavir 100mg": "Ritonavir 100mg",
 };
-
+//(id, : ["full_name, full_name, tabs, 0, strength"])
 var drug_weights = {
     "16": ["Lamivudine / Tenofovir disoproxil fumarate 300 / 300mg, tin of 30 tablets", "TDF/3TC (Tenofavir and Lamivudine 300/300mg tablet", "TDF / 3TC ", "30 tabs", 30, 0, "300 / 300mg"],
     "5": ["Zidovudine / lamivudine /Nevirapine 30 / 60 / 50mg, tin of 60 tablets", "AZT/3TC/NVP (60/30/50mg tablet)", "AZT / 3TC / NVP", "60 tabs", 60, 0, "60 / 30 /50mg"],
@@ -423,6 +465,9 @@ var drug_weights = {
     "28": ["Raltegravir 400mg, 60 tablets", "Raltegravir 400mg", "RAL", "60 tabs", 60, 0, "400mg"],
     "29": ["Darunavir 600mg, 60 tablets", "Darunavir 600mg", "DRV", "60 tabs", 60, 0, "600mg"],
     "30": ["Dolutegravir 50mg 30 tablets", "Dolutegravir (50mg tablet)", "DTG", "30 tabs", 30, 0, "50mg"],
+    "31": ["TDF300/3TC300/DTG50", "TDF300/3TC300/DTG50", "TDF300/3TC300/DTG50", "30 tabs", 30, 0, "300/300/50mg"],
+    "32": ["Pyridoxine (25mg)", "Pyridoxine (25mg)", "Pyridoxine (25mg)", "1000 tabs", 1000, 0, "25mg"],
+    "33": ["Ritonavir 100mg", "Ritonavir 100mg", "Ritonavir 100mg", "30 tabs", 30, 0, "100mg"],
 };
 var formatted_drugs = 
 [
@@ -457,6 +502,9 @@ var formatted_drugs =
     "Raltegravir 25mg",
     "Raltegravir 400mg",
     "Rifapentine 150mg",
+    "Ritonavir 100mg",
+    "TDF300/3TC300/DTG50",
+    "Pyridoxine (25mg)",
 ];
 
 var adults_drugs_hash = {
@@ -479,7 +527,10 @@ var adults_drugs_hash = {
     "954": "Raltegravir 400mg",
     "1056": "Rifapentine 150mg",
     "976": "Darunavir 600mg",
-    "982": "Dolutegravir (50mg tablet)"
+    "982": "Dolutegravir (50mg tablet)",
+    "983":  "TDF300/3TC300/DTG50",
+    "1039":  "Pyridoxine (25mg)",
+    "977":  "Ritonavir 100mg",
 };
 
 var paedsDrugsHash = {
