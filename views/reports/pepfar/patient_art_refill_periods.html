@@ -274,7 +274,8 @@ function addTableBody() {
   document.getElementById('footer-content').innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  API Version ${sessionStorage.apiVersion}
+                  Site : ${sessionStorage.currentLocation}`;
   var gender = ['Female', 'Male'];
 
   for(var s = 0 ; s < gender.length; s++){

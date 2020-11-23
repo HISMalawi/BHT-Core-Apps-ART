@@ -120,6 +120,12 @@ var dataSet = [];
 var data_table;
 
 function initializeTable() {
+  document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version : ${sessionStorage.apiVersion}
+                  Site : ${sessionStorage.currentLocation}`;
+
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
@@ -140,11 +146,12 @@ function initializeTable() {
     buttons: [
       {
         extend: 'csv',
-        title: 'MoH ' + sessionStorage.currentLocation + ': cohort disaggregated report ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: 'MoH ' + sessionStorage.currentLocation + ': cohort disaggregated report ' + quarter,
+        footer: true 
       },
       {
         extend: 'pdf',
-        title: 'MoH' + sessionStorage.currentLocation + ': cohort disaggregated report ' + quarter + " " + moment().format('YYYY_MM_DD_h_m_s')+" ART("+sessionStorage.ARTVersion+") " + "CORE("+sessionStorage.coreVersion+") " + "API("+sessionStorage.apiVersion+")"
+        title: 'MoH' + sessionStorage.currentLocation + ': cohort disaggregated report ' + quarter 
       }
     ],
     columnDefs: [
@@ -236,6 +243,11 @@ function initializeTable() {
     </thead>
     <tbody id="table-body">
     </tbody>
+     <tfoot>
+      <tr>
+        <td id="footer-content"></td>
+      </tr>
+    </tfoot>
   </table>
 </div>
 
@@ -259,7 +271,10 @@ function initializeReport() {
   url += "&rebuild_outcome=false";
   url += "&initialize=true";
   url += '&program_id=' + sessionStorage.programID;
-
+  document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
   if(quarter == 'Custom'){
     url += "&start_date=" + start_date;
     url += "&end_date=" + end_date;
