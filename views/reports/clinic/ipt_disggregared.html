@@ -326,9 +326,12 @@ function addNumbers(data) {
   var total_clients = document.getElementById('total-clients');
   var table_body = document.getElementById('table-body');
   document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Version: ${sessionStorage.apiVersion}
+                  Report Period: ${start_date+" "+end_date}
+                  Site: ${sessionStorage.currentLocation}`;
+
   var rows = table_body.children;
   var total = 0;
 

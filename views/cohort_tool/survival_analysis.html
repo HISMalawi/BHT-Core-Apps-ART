@@ -115,10 +115,11 @@ var data_table;
 
 function initializeTable() {
 document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}
-                  Site : ${sessionStorage.currentLocation}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Version: ${sessionStorage.apiVersion}
+                  Report Period: ${quarter}
+                  Site: ${sessionStorage.currentLocation}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,

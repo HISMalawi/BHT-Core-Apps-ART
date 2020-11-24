@@ -114,6 +114,11 @@ var on_art =  url.searchParams.get('total_alive_and_on_art');
 if(quarter == 'Custom'){
   var start_date  = url.searchParams.get("start_date");
   var end_date  = url.searchParams.get("end_date");
+  var reporting_period=start_date+" "+end_date;
+}
+else{
+
+  var reporting_period=quarter;
 }
 
 var dataSet = [];
@@ -121,10 +126,11 @@ var data_table;
 
 function initializeTable() {
   document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version : ${sessionStorage.apiVersion}
-                  Site : ${sessionStorage.currentLocation}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Version: ${sessionStorage.apiVersion}
+                  Report Period: ${reporting_period}
+                  Site: ${sessionStorage.currentLocation}`;
 
   data_table = $('#example').DataTable({
     fixedHeader: true,

@@ -128,9 +128,12 @@ function buildDataTable(e) {
   var tfoot_tr = document.createElement('tr');
   var tfoot_td = document.createElement('td');
   tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Version: ${sessionStorage.apiVersion}
+                  Report Period: ${start_date+" "+end_date}
+                  Site: ${sessionStorage.currentLocation}`;
+
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
   table.appendChild(tfoot);

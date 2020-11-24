@@ -2201,6 +2201,7 @@ function getUrlVars() {
 }
 
 var cohortResults;
+var reporting_period;
 
 function getIndicators() {
   if(!runningReport)
@@ -2216,8 +2217,10 @@ function getIndicators() {
     url += "Cohort-" + start_date + "-" + end_date;
     url += "&start_date="  + start_date;
     url += "&end_date="  + end_date;
+    var reporting_period=start_date+" "+end_date;
   }else{
     url += Quarter + " " + Year;
+    var reporting_period=Quarter + " " + Year;
   }
 
   if(regenerate_report === true) {
@@ -2225,6 +2228,8 @@ function getIndicators() {
     regenerate_report = false;
     reload_status = true;
   }
+ 
+
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -2245,6 +2250,7 @@ function getIndicators() {
       setTimeout(getIndicators, 60000);
     }
   };
+
   xhttp.open("GET", url, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
@@ -2300,16 +2306,21 @@ function renderResults() {
     tableData.push(rowData.join(","));
   }
   
-  tableData.push([ "BHT-Core Version :"+sessionStorage.coreVersion
-                    +"    ART Version :"+sessionStorage.ARTVersion
-                    +"    API Version :"+sessionStorage.apiVersion
-                    +"    Site :"+sessionStorage.currentLocation,""]);
-  data += tableData.join("\n");
-  const a = document.createElement("a");
+  
+  
   var facility = document.getElementById('clinic-name').innerHTML;
   var url = window.location.href;
   url = new URL(url);
   var quarter = url.searchParams.get("quarter");
+
+  tableData.push([ "BHT-Core Version :"+sessionStorage.coreVersion
+                    +"    ART Version :"+sessionStorage.ARTVersion
+                    +"    API Version :"+sessionStorage.apiVersion
+                    +"    Report Period :"+quarter
+                    +"    Site :"+sessionStorage.currentLocation,""]);
+
+  data += tableData.join("\n");
+  const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
   a.setAttribute("download", facility+" "+quarter+" cohort report.csv");
   document.body.appendChild(a);

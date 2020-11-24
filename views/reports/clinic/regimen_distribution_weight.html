@@ -267,9 +267,12 @@ function addClass(id) {
 
 function addTableBody(regimens) {
   document.getElementById('footer-content').innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Version: ${sessionStorage.apiVersion}
+                  Report Period: ${start_date+" "+end_date}
+                  Site: ${sessionStorage.currentLocation}`;
+
   var table_body = document.getElementById('table-body');
   //loop for males
   for(var s = 0 ; s < regimens.length; s++){

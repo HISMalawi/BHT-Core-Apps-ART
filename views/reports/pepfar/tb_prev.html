@@ -140,10 +140,11 @@ function initializeTable() {
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
   document.getElementById('footer-content').innerHTML =  `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}
-                  Site : ${sessionStorage.currentLocation}`;
+                  BHT-Core Version: ${sessionStorage.coreVersion} 
+                  ART Version: ${sessionStorage.ARTVersion} 
+                  API Versio: ${sessionStorage.apiVersion}
+                  Report Period: ${start_date+" "+end_date}
+                  Site: ${sessionStorage.currentLocation}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
