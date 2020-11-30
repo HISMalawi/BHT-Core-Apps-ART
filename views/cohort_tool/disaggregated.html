@@ -102,7 +102,29 @@ th {
 .dt-tx-new {
   width: 200px;
 }
+#popupBox {
+  position: absolute;
+  background-color: lightgray;
+  left: 0%;
+  top: 0%;
+  z-index: 991;
+  opacity: 1;
+  width: 92%;
+  margin-left: 25px;
+  height: 88%; 
+  margin-top: 10px;
+  border-collapse: collapse;
+}
 
+#popupData th {
+  border-width: 1px;
+  border-style: solid;
+}
+
+#popupData {
+  width: 100%;
+  border-collapse: collapse;
+}
 </style>
 
 <script>
@@ -256,7 +278,24 @@ function initializeTable() {
 <img src="/apps/OPD/assets/images/formloader.gif" id="spinner" />
 <div id="report-cover"></div>
 
+<div id="popupBox">
+  <table id="popupData">
+    <thead>
+      <tr>
+        <th>ARV#</th>
+        <th>DOB</th>
+        <th>GENDER</th>
+        <!-- <th>Dispensed date</th> -->
+        <!-- <th>ARVs</th> -->
+      </tr>
+  </thead>
+    <tbody id= "popupDataBody">
+    </tbody>
+  </table>
 
+  <button class="button blue navButton" onmousedown="closeBox();" 
+    id="popupBTN"><span>Close</span></button>
+</div>
 <script>
 
 function initializeReport() {
@@ -378,7 +417,63 @@ function getScreenedForTB() {
   fetchTBscreenedClients(tb_tds[0]);
 }
 
+function renderDrillDownData(data){
+  var table = document.getElementById("popupBox");
+  table.style = "display:inline;";
+  var tbody = document.getElementById("popupDataBody");
+  // tbody.innerHTML = null;
+  var tr =  document.createElement("tr");
+  var td =  document.createElement("td");
+  td.setAttribute("class","main-table-td");
+  td.innerHTML = data.arv_number;
+  tr.appendChild(td);
+  td =  document.createElement("td");
+  td.setAttribute("class","main-table-td");
+  td.innerHTML = data.dob;
+  tr.appendChild(td);
+  td =  document.createElement("td");
+  td.setAttribute("class","main-table-td");
+  td.innerHTML = data.gender;
+  tr.appendChild(td);
+  tbody.appendChild(tr);
+}
+var popupTable;
 
+function initializePopUpTable() {
+
+  popupTable = $('#popupData').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: true,
+    scrollY: 380,
+    Processing: false,
+    ServerSide: false,
+    scroller: {
+      loadingIndicator: true
+    },
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'csv',
+        title: 'MoH ' + sessionStorage.currentLocation + ': cohort disaggregated report drill down' + quarter,
+        footer: true 
+      }
+    ],
+    columnDefs: [
+      {"className": "dt-arv-numbers", "targets": 0},
+      {"className": "dt-date", "targets": 1},
+    ]
+  });
+
+}
+
+function closeBox(){
+  try  {
+    popupTable.destroy();
+  }catch(e){}
+  
+  document.getElementById("popupBox").style = "display: none;";
+}
 function quarterEndDate(quarter) {
   if(quarter == "Custom"){
     return [start_date, end_date];
@@ -428,6 +523,9 @@ function fetchTBscreenedClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        td.onclick= function() {
+          drillDown(obj);
+        }
       }
   
      tb_tds.shift();
@@ -475,6 +573,9 @@ function fetchIPTclients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+          td.onclick= function() {
+              drillDown(obj);
+          }
       }
   
      ipt_tds.shift();
@@ -521,15 +622,91 @@ function assignNum(age, gender, num) {
 
 function assignTD(tds, num, gender, age) {
   tds[3].innerHTML = num.tx_new.length;
+  
   tds[4].innerHTML = num.tx_curr.length;
-  tds[5].innerHTML = num.tx_given_ipt.length;
-  tds[6].innerHTML = num.tx_screened_for_tb.length;
-
+  // tds[5].innerHTML = num.tx_given_ipt.length;
+  // tds[6].innerHTML = num.tx_screened_for_tb.length;
+  tds[3].onclick= function() {
+    drillDown(num.tx_new);
+  }
+  tds[4].onclick= function() {
+    drillDown(num.tx_curr);
+  }
+  tds[5].onclick= function() {
+    drillDown(num.tx_given_ipt);
+  }
+  
   tds[5].setAttribute("column-name", "ipt-" + gender.toLocaleLowerCase());
   tds[5].setAttribute("column-age", "ipt-" + age);
 
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
+}
+function drillDown(ids) {
+  var tbody = document.getElementById("popupDataBody");
+  tbody.innerHTML = null;
+  var counter = 0;
+  ids.forEach((element, index) => {
+    var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+    url += '/patients/'+element;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+        var obj = JSON.parse(this.responseText);
+        parsePatient(obj);
+        counter ++;
+        // loadAllFemale(obj, age_group);
+          if(counter === ids.length) {
+
+              initializePopUpTable();
+        }
+      }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send();
+  }); 
+  
+}
+
+function parsePatient(results) {
+    // var results = JSON.parse(this.responseText);
+    var age = results.person.birthdate;
+    var gender = results.person.gender;
+    var identifier = "";
+    var patient_name = results.person.names[0].given_name + " " + results.person.names[0].family_name;
+
+    var arv_number = results.patient_identifiers.filter((el) => {
+      return el.identifier_type === 4 ? el.identifier : '';
+    });
+    try {
+        var addressl1 = results.person.addresses[0].city_village;
+        var addressl2 = results.person.addresses[0].address2;
+        var phone_number = results.person.person_attributes[1].value;
+    }
+    catch (e) {
+        var addressl1 = "";
+        var addressl2 = "";
+        var phone_number = "";
+    }
+    try {
+        for (var index = 0; index < results.patient_identifiers.length; index++) {
+            if(results.patient_identifiers[index]["identifier_type"] == 4) {
+            identifier =  results.patient_identifiers[index]["identifier"];
+            }
+        }
+    } catch (e) {
+        console.log(e); 
+    }
+    var toPush ={};
+    toPush.dob = age;
+    toPush.arv_number = identifier;
+    toPush.gender = gender;
+    // toPush.arv_number = identifier;
+    renderDrillDownData(toPush);
+
+    // console.log(patient_name, gender, age, addressl1, addressl2, phone_number, identifier, arv_number);
 }
 
 function addTableBody() {
