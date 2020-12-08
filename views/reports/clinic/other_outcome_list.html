@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <script type="text/javascript" src="../../../../../public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="../../../../../assets/js/jquery.min.js"></script>
+
+    <script type="text/javascript" src="../../../../../assets/js/generic_ajaxrequest.js"></script>
+    <!--script type="text/javascript" src="../../../../../assets/js/does_connection_exist.js"></script-->
+
+    <script>
+      var tt_cancel_destination = "/";
+
+      function pageSetUp(){
+        const frame = $("inputFrame" + tstCurrentPage);
+        frame.style = "width: 96%; height: 30% !important;";
+
+        const btn = $("nextButton");
+        btn.setAttribute("onmousedown","submitOutcome();");
+      }
+
+      function submitOutcome(){
+        if($("outcome_select").value.isEmpty()) {
+          showMessage("Please select one outcome to continue.");
+          return;
+        }
+      
+        let passedURL = window.location.href;
+        passedURL = new URL(passedURL); 
+
+        const start_date = passedURL.searchParams.get("start_date");
+        const end_date = passedURL.searchParams.get("end_date");
+        const select_outcome = $("outcome_select").value;
+        const url = `?start_date=${start_date}&end_date=${end_date}&outcome=${select_outcome}`;
+        window.location = "outcome_report.html" + url;
+      }
+
+      String.prototype.isEmpty = function() {
+        return (this.length === 0 || !this.trim());
+      };
+    </script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="content">
+
+ <form>
+
+  <select id="outcome_select" 
+    name="outcome_select" 
+    tt_onLoad="pageSetUp();" tt_pageStyleClass="NoKeyboard"
+    helpText="Select outcome">
+    <option value="Transfer Out">Transfer Out</option>
+    <option value="Died">Died</option>
+    <option value="Stopped">Stopped</option>
+  </select>
+
+
+ </form> 
+
+  </div>
+</div>
+</body>
+
+
+
+</html>

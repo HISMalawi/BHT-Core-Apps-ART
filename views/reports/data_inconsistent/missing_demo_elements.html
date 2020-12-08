@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Missing ART start reasons</title>
+
+    <!-- Stylesheets .......................................................................... -->
+    <link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+    <link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+    <link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+    <!-- /Stylesheets .......................................................................... -->
+
+    <!-- Javacripts .......................................................................... -->
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+    <script type="text/javascript" src="/assets/js/moment.js"></script>
+
+    <!-- print report start .......................................................................... -->
+    <script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+    <!-- print report ends .......................................................................... -->
+    
+    <!-- /Javacripts .......................................................................... -->
+   
+    <style>
+      #spinner {
+        position: absolute;
+        top: 150px;
+        left: 40%;
+        z-index: 991;
+      }
+
+      #report-cover {
+        position: absolute;
+        background-color: black;
+        width: 100%;
+        height: 102%;
+        left: 0%;
+        top: 0%;
+        z-index: 990;
+        opacity: 0.65;
+     }
+
+     .arv-numbers {
+       width: 100px;
+       text-align: left;
+       padding-left: 5px;
+     }
+
+     .action-btns {
+       width: 100px;
+       text-align: center;
+     }
+
+    </style>
+
+</head>
+<body>
+    <div class="title-table">
+        <div class='title-row'>
+            <div class='title-cell' id='title-cell-right'>
+                <table style="width: 100%; text-align: left; margin-left: 10px;">
+                    <tr>
+                        <th>Title:</th>
+                        <td colspan="2" id="report-title">Clients with missing vital demographics elements<td>
+                    </tr>
+                    <tr>
+                        <th>Period:</th>
+                        <td id="report-timeline"><td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <table id="example" class="display">
+            <thead> 
+                <tr>
+                    <td class="arv-numbers">ARV number</td>
+                    <td>Given Name</td>
+                    <td>Family Name</td>
+                    <td class="action-btns">Gender</td>
+                    <td class="action-btns">Birth Date</td>
+                    <td class="action-btns">Action</td>
+                </tr> 
+            </thead>
+            <tbody id="table-body"></tbody>
+            <tfoot></tfoot>
+        </table>
+    </div>
+
+    <div id="buttons" class="buttonsDiv">
+        <button class="button blue navButton" onmousedown="window.location='/'"><span>Finish</span></button>
+    </div>
+
+    <img src="../../../assets/images/formloader.gif" id="spinner" />
+    <div id="report-cover"></div>   
+</body>
+
+<script>
+
+function fetchData() {
+  var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1/art_data_cleaning_tools?start_date=";
+  url  +=  start_date + "&end_date=" + end_date + "&program_id=1&report_name=MISSING DEMOGRAPHICS";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      document.getElementById("report-cover").style="display:none;";
+      document.getElementById("spinner").style="display:none;";
+      renderData(obj);
+    }
+  };
+
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send(); 
+}
+
+function initializeTable() {
+    
+    data_table = $('#example').DataTable({
+        fixedHeader: true,
+        pageLength: 10,
+        searching: false,
+        paging: true,
+        scrollY: 450,
+        bFilter : false,               
+        bLengthChange: false,
+        columnDefs: [{ 
+          targets: 0, type: 'natural',
+        },
+          {className: "arv-numbers", "targets": [ 0 ]},
+          {className: "action-btns", "targets": [ 3 ]},
+          {className: "action-btns", "targets": [ 4 ]},
+          {className: "action-btns", "targets": [ 5 ]}
+        ],
+        scroller: {
+          loadingIndicator: true
+        }
+    });
+}
+
+function renderData(data){
+  for(var i = 0 ; i < data.length; i++){
+    var arv_number = data[i].arv_number;
+    var gender = data[i].gender;
+    var given_name = data[i].given_name;
+    var family_name = data[i].family_name;
+    try {
+      var  birthdate = moment(data[i].birthdate).format("DD/MMM/YYYY");
+    }catch(e){
+      var  birthdate =  'N/A';
+    }
+    var patient_id = data[i].patient_id;
+    var viewBTN = drawViewBTN(patient_id);
+
+    data_table.row.add([arv_number, given_name, family_name,
+      gender, birthdate, viewBTN]).draw();
+  }
+}
+
+function drawViewBTN(patient_id){
+  return `
+    <button class="button blue navButton" onmousedown="viewMastercard(${patient_id});">
+      <span>View</span>
+    </button>
+  `
+}
+
+function viewMastercard(patient_id){
+  location = "/views/patient_dashboard.html?patient_id=" + patient_id;
+}
+
+  let url = window.location.href;
+  url = new URL(url);
+  let start_date = url.searchParams.get("start_date");
+  let end_date =  url.searchParams.get('end_date');
+  let report_timeline = document.getElementById('report-timeline');
+  report_timeline.innerHTML = moment(start_date).format("DD/MMM/YYYY");
+  report_timeline.innerHTML += " - " + moment(end_date).format("DD/MMM/YYYY")
+  let data_table;
+  initializeTable();
+
+  fetchData();
+</script>
+
+</html>
