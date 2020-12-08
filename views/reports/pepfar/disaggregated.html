@@ -337,10 +337,10 @@ function assignNum(age, gender, num) {
 }
 
 function assignTD(tds, num, gender) {
-  tds[3].innerHTML = num.tx_new;
-  tds[4].innerHTML = num.tx_curr;
-  tds[5].innerHTML = num.tx_given_ipt;
-  tds[6].innerHTML = num.tx_screened_for_tb;
+  tds[3].innerHTML = num.tx_new.length;
+  tds[4].innerHTML = num.tx_curr.length;
+  tds[5].innerHTML = num.tx_given_ipt.length;
+  tds[6].innerHTML = num.tx_screened_for_tb.length;
 
   tds[5].setAttribute("column-name", "ipt-" + gender.toLocaleLowerCase());
   tds[5].setAttribute("column-age", "ipt-" + age);
@@ -429,10 +429,10 @@ function loadAllFemale(data, age_group) {
   for(age in data) {
     var gender = data[age];
     for(sex in gender) {
-      var tx_new = data[age][sex].tx_new;
-      var tx_curr = data[age][sex].tx_curr;
-      var tx_screened_for_tb = data[age][sex].tx_screened_for_tb;
-      var tx_given_ipt = data[age][sex].tx_given_ipt;
+      var tx_new = data[age][sex].tx_new.length;
+      var tx_curr = data[age][sex].tx_curr.length;
+      var tx_screened_for_tb = data[age][sex].tx_screened_for_tb.length;
+      var tx_given_ipt = data[age][sex].tx_given_ipt.length;
       
       if(age_group == 'Pregnant'){
         var count = 32 ; var g = 'FP'; 

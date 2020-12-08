@@ -553,6 +553,10 @@ function continueShowSelectedMeds() {
         td.innerHTML = pm_dose;
         td.setAttribute("class", "numbers");
         tr.appendChild(td);
+        var td = document.createElement("td");
+        td.innerHTML = "Daily (QOD)";
+        td.setAttribute("class", "med-frequency");
+        tr.appendChild(td);
     }
 }
 
@@ -1455,9 +1459,7 @@ function postRegimenOrders(encounter) {
         var drug_name = htn_drugs[i]["name"];
         var pm_dose = "1";
         var units = "tab(s)";
-        var frequency = medication_orders[drug_name]["frequency"];
-        if(!frequency)
-            frequency = "Daily (QOD)";
+        var frequency = "Daily (QOD)";
 
 
         var drug_order = {drug_name: drug_name, drug_id: drug_id, 
