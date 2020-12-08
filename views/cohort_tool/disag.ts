@@ -1,149 +1,15 @@
-<meta charset="utf-8"/>
+import moment from '../../../../assets/js/moment';
+let data_table;
+// let url = window.location.href;
+const url = new URL(window.location.href);
+const quarter = url.searchParams.get("quarter");
+const on_art =  url.searchParams.get('total_alive_and_on_art');
 
-<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
-
-<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
-
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
-<link rel="stylesheet" href="/assets/css/datatables/fixedColumns.dataTables.min.css" type="text/css">
-
-<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-
-<!-- pring report start .......................................................................... -->
-<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
-<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-<!-- pring report ends .......................................................................... -->
-
-
-<script type="text/javascript" src="/assets/js/moment.js"></script>
-<script type="text/javascript" src="/assets/js/core.js"></script>
-
-<style>
-.disaggregated-numbers {
-  text-align: right;
-  padding-right: 10px;
-}
-
-#spinner {
-  position: absolute;
-  top: 15%;
-  left: 40%;
-}
-
-#report-cover {
-  position: absolute;
-  background-color: black;
-  width: 100%;
-  height: 102%;
-  left: 0%;
-  top: 0%;
-  z-index: 990;
-  opacity: 0.65;
-}
-
-.title-table {
-  display: table;
-  width: 100%;
-}
-
-.title-row {
-  display: table-row;
-}
-
-.title-cell {
-  display: table-cell;
-  height: 30px;
-  vertical-align: top;
-  border-style: solid;
-  border-width: 0px 0px 1px 0px;
-}
-
-
-#title-cell-left {
-  vertical-align: middle;
-  width: 100px;
-}
-
-#title-cell-left img {
-  height: 95px;
-  width: 95px;
-  margin: 5px;
-}
-
-#title-cell-right {
-  margin-left: 5px;
-}
-
-#data-cell {
-  display: table-cell;
-  width: 100%;
-}
-
-#report {
-  width: 100%;
-}
-
-th {
-  text-align: left;
-}
-
-.dt-age-groups {
-  width: 200px;
-}
-
-.dt-tx-new {
-  width: 200px;
-}
-#popupBox {
-  position: absolute;
-  background-color: lightgray;
-  left: 0%;
-  top: 0%;
-  z-index: 991;
-  opacity: 1;
-  width: 92%;
-  margin-left: 25px;
-  height: 88%; 
-  margin-top: 10px;
-  border-collapse: collapse;
-}
-
-#popupData th {
-  border-width: 1px;
-  border-style: solid;
-}
-
-#popupData {
-  width: 100%;
-  border-collapse: collapse;
-}
-.drillable {
-  color: blue;
-  text-decoration: underline;
-}
-</style>
-
-<script>
-var url = window.location.href;
-url = new URL(url);
-var quarter = url.searchParams.get("quarter");
-var on_art =  url.searchParams.get('total_alive_and_on_art');
-
+var dataSet = [];
 if(quarter == 'Custom'){
   var start_date  = url.searchParams.get("start_date");
   var end_date  = url.searchParams.get("end_date");
 }
-
-var dataSet = [];
-var data_table;
 
 function initializeTable() {
   document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
@@ -189,119 +55,6 @@ function initializeTable() {
 
 }
 
-
-</script>
-
-
-
-
-
-<div class="title-table">
-  <div class='title-row'>
-    <div class='title-cell' id='title-cell-left'>
-      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
-    </div>
-    <div class='title-cell' id='title-cell-right'>
-      <table style="width: 100%; text-align: left; margin-left: 10px;">
-        <tr>
-          <th>Title:</th><td colspan="2" id="report-title">ART disaggregated report<td>
-        </tr>
-        <tr>
-          <th>Period:</th>
-          <td id="quarter-title"><td>
-        </tr>
-        <tr>
-          <th>Total Alive and On ART:</th>
-          <td id="on-art"><td>
-        </tr>
-        <tr>
-          <td colspan="2" id="valid-report"><td>
-        </tr>
-      </table>
-    </div>
-      </table>
-    </div>
-  </div>
-</div>
-  
-
-<div>
-  <table id="example" class="display" width="100%">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Age group</th>
-        <th>Gender</th>
-        <th class="disaggregated-numbers">Tx new (new on ART)</th>
-        <th class="disaggregated-numbers">TX curr (receiving ART)</th>
-        <th class="disaggregated-numbers">TX curr (received IPT)</th>
-        <th class="disaggregated-numbers">TX curr (screened for TB)</th>
-        <th class="disaggregated-numbers">0A</th>
-        <th class="disaggregated-numbers">2A</th>
-        <th class="disaggregated-numbers">4A</th>
-        <th class="disaggregated-numbers">5A</th>
-        <th class="disaggregated-numbers">6A</th>
-        <th class="disaggregated-numbers">7A</th>
-        <th class="disaggregated-numbers">8A</th>
-        <th class="disaggregated-numbers">9A</th>
-        <th class="disaggregated-numbers">10A</th>
-        <th class="disaggregated-numbers">11A</th>
-        <th class="disaggregated-numbers">12A</th>
-        <th class="disaggregated-numbers">13A</th>
-        <th class="disaggregated-numbers">14A</th>
-        <th class="disaggregated-numbers">15A</th>
-        <th class="disaggregated-numbers">16A</th>
-        <th class="disaggregated-numbers">17A</th>
-        <th class="disaggregated-numbers">0P</th>
-        <th class="disaggregated-numbers">2P</th>
-        <th class="disaggregated-numbers">4P</th>
-        <th class="disaggregated-numbers">9P</th>
-        <th class="disaggregated-numbers">11P</th>
-        <th class="disaggregated-numbers">14P</th>
-        <th class="disaggregated-numbers">15P</th>
-        <th class="disaggregated-numbers">16P</th>
-        <th class="disaggregated-numbers">17P</th>
-        <th class="disaggregated-numbers">Unknown</th>
-        <th class="disaggregated-numbers">Total (regimen)</th>
-      </tr>
-    </thead>
-    <tbody id="table-body">
-    </tbody>
-     <tfoot>
-      <tr>
-        <td id="footer-content"></td>
-      </tr>
-    </tfoot>
-  </table>
-</div>
-
-<div id="buttons" class="buttonsDiv">
-  <button class="button blue navButton" onmousedown="javascript:window.history.back();"><span>Finish</span></button>
-</div>
-
-<img src="/apps/OPD/assets/images/formloader.gif" id="spinner" />
-<div id="report-cover"></div>
-
-<div id="popupBox">
-  <table id="popupData">
-    <thead>
-      <tr>
-        <th>ARV#</th>
-        <th>DOB</th>
-        <th>GENDER</th>
-        <th>VILLAGE</th>
-        <!-- <th>Dispensed date</th> -->
-        <!-- <th>ARVs</th> -->
-      </tr>
-  </thead>
-    <tbody id= "popupDataBody">
-    </tbody>
-  </table>
-
-  <button class="button blue navButton" onmousedown="closeBox();" 
-    id="popupBTN"><span>Close</span></button>
-</div>
-<script>
 
 function initializeReport() {
 
@@ -366,9 +119,9 @@ function getData(age_group) {
 }
 
 function loadData(data, age_group) {
-  for(age in data) {
+  for(let age in data) {
     var gender = data[age];
-    for(sex in gender) {
+    for(let sex in gender) {
       assignNum(age, sex, data[age][sex]);
     }
   }
@@ -435,8 +188,8 @@ function getScreenedForTB() {
 }
 
 function renderDrillDownData(data){
-  var table = document.getElementById("popupBox");
-  table.style = "display:inline;";
+  const table: HTMLTableElement= document.getElementById("popupBox") as HTMLTableElement;
+  table.style.display = "inline";
   var tbody = document.getElementById("popupDataBody");
   // tbody.innerHTML = null;
   var tr =  document.createElement("tr");
@@ -493,7 +246,7 @@ function closeBox(){
     popupTable.destroy();
   }catch(e){}
   
-  document.getElementById("popupBox").style = "display: none;";
+  document.getElementById("popupBox").style.display = "none";
 }
 function quarterEndDate(quarter) {
   if(quarter == "Custom"){
@@ -629,7 +382,7 @@ function fetchIPTclients(td) {
 
 function addClass(id) {
   var tr = document.getElementById(id);
-  tr.style = 'background-color: lightyellow;';
+  tr.style.backgroundColor = 'lightyellow';
   var cells = tr.getElementsByTagName('td');
 
   for(var i = 0 ; i < cells.length; i++){
@@ -640,9 +393,8 @@ function addClass(id) {
 }
 
 function assignNum(age, gender, num) {
-  var gender = (gender == 'F' ? 'Female' : 'Male');
-  var cells = document.getElementsByClassName(gender + '_row');
-
+  gender = (gender == 'F' ? 'Female' : 'Male');
+  let cells = document.getElementsByClassName(gender + '_row');
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
     if(tds[1].innerHTML == age){
@@ -718,20 +470,25 @@ function parsePatient(results) {
     var age = results.person.birthdate;
     var gender = results.person.gender;
     var identifier = "";
+    let current_village : String ; 
     var patient_name = results.person.names[0].given_name + " " + results.person.names[0].family_name;
 
     var arv_number = results.patient_identifiers.filter((el) => {
       return el.identifier_type === 4 ? el.identifier : '';
     });
+
+    results.person.addresses.filter(el => {
+        return
+    })
     try {
-        var addressl1 = results.person.addresses[0].city_village;
+        current_village = results.person.addresses[0].city_village;
         var addressl2 = results.person.addresses[0].address2;
         var phone_number = results.person.person_attributes[1].value;
     }
     catch (e) {
         var addressl1 = "";
-        var addressl2 = "";
-        var phone_number = "";
+        // var addressl2 = "";
+        // var phone_number = "";
     }
     try {
         for (var index = 0; index < results.patient_identifiers.length; index++) {
@@ -742,16 +499,194 @@ function parsePatient(results) {
     } catch (e) {
         console.log(e); 
     }
-    var toPush ={};
-    toPush.dob = age;
-    toPush.arv_number = identifier;
-    toPush.gender = gender;
-    toPush.current_village = addressl1;
+    let toPush ={
+      dob: age,
+      arv_number: identifier,
+      gender: gender,
+      current_village: addressl1,
+    };
+
+
+    // toPush.dob = age;
+    // toPush.arv_number = identifier;
+    // toPush.gender = gender;
+    // toPush.current_village = addressl1;
     // toPush.arv_number = identifier;
     renderDrillDownData(toPush);
 
     // console.log(patient_name, gender, age, addressl1, addressl2, phone_number, identifier, arv_number);
 }
+
+class Patient {
+    patient: object;
+    constructor(patient: object){
+        this.patient = patient;
+    }
+
+
+}
+declare module namespace {
+
+    export interface Name {
+        person_name_id: number;
+        preferred: number;
+        person_id: number;
+        prefix?: any;
+        given_name: string;
+        middle_name: string;
+        family_name_prefix?: any;
+        family_name: string;
+        family_name2?: any;
+        family_name_suffix?: any;
+        degree?: any;
+        creator: number;
+        date_created: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        changed_by?: any;
+        date_changed?: any;
+        uuid: string;
+    }
+
+    export interface Address {
+        person_address_id: number;
+        person_id: number;
+        preferred: number;
+        address1?: any;
+        address2: string;
+        city_village: string;
+        state_province: string;
+        postal_code?: any;
+        country?: any;
+        latitude?: any;
+        longitude?: any;
+        creator: number;
+        date_created: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        county_district: string;
+        neighborhood_cell: string;
+        region?: any;
+        subregion?: any;
+        township_division: string;
+        uuid: string;
+    }
+
+    export interface Type {
+        person_attribute_type_id: number;
+        name: string;
+        description: string;
+        format: string;
+        foreign_key?: any;
+        searchable: number;
+        creator: number;
+        date_created: Date;
+        changed_by?: number;
+        date_changed?: Date;
+        retired: number;
+        retired_by?: any;
+        date_retired?: any;
+        retire_reason?: any;
+        edit_privilege?: any;
+        uuid: string;
+        sort_weight: number;
+    }
+
+    export interface PersonAttribute {
+        person_attribute_id: number;
+        person_id: number;
+        value: string;
+        person_attribute_type_id: number;
+        creator: number;
+        date_created: Date;
+        changed_by: number;
+        date_changed: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        uuid: string;
+        type: Type;
+    }
+
+    export interface Person {
+        person_id: number;
+        gender: string;
+        birthdate: string;
+        birthdate_estimated: number;
+        dead: number;
+        death_date?: any;
+        cause_of_death?: any;
+        creator: number;
+        date_created: Date;
+        changed_by: number;
+        date_changed: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        uuid: string;
+        names: Name[];
+        addresses: Address[];
+        person_attributes: PersonAttribute[];
+    }
+
+    export interface Type2 {
+        patient_identifier_type_id: number;
+        name: string;
+        description: string;
+        format: string;
+        check_digit: number;
+        creator: number;
+        date_created: Date;
+        required: number;
+        format_description: string;
+        validator?: any;
+        retired: number;
+        retired_by?: any;
+        date_retired?: any;
+        retire_reason?: any;
+        uuid: string;
+    }
+
+    export interface PatientIdentifier {
+        patient_identifier_id: number;
+        patient_id: number;
+        identifier: string;
+        identifier_type: number;
+        preferred: number;
+        location_id: number;
+        creator: number;
+        date_created: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        uuid: string;
+        type: Type2;
+    }
+
+    export interface RootObject {
+        patient_id: number;
+        tribe?: any;
+        creator: number;
+        date_created: Date;
+        changed_by: number;
+        date_changed: Date;
+        voided: number;
+        voided_by?: any;
+        date_voided?: any;
+        void_reason?: any;
+        person: Person;
+        patient_identifiers: PatientIdentifier[];
+    }
+
+}
+
 
 function addTableBody() {
   var columns = [
@@ -779,7 +714,7 @@ function addTableBody() {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
-          td.innerHTML = (row_count++);
+          td.innerHTML = `${row_count++}`;
         
         if(td_count == 1)
           td.innerHTML = columns[i];
@@ -788,7 +723,7 @@ function addTableBody() {
           td.innerHTML = gender[s];
            
         if(td_count > 2){
-          td.innerHTML = 0;
+          td.innerHTML = `0`;
           td.setAttribute('class','disaggregated-numbers');
         }   
         tr.appendChild(td);
@@ -829,9 +764,9 @@ function getAllFemale(age_group) {
 }
 
 function loadAllFemale(data, age_group) {
-  for(age in data) {
+  for(let age in data) {
     var gender = data[age];
-    for(sex in gender) {
+    for(let sex in gender) {
       var tx_new = data[age][sex].tx_new.length;
       var tx_curr = data[age][sex].tx_curr.length;
       var tx_screened_for_tb = data[age][sex].tx_screened_for_tb.length;
@@ -853,7 +788,7 @@ function loadAllFemale(data, age_group) {
 
       if(age_group.toLowerCase() != 'all-males') {
         var tr = document.getElementById(age_group.toLowerCase());
-        tds = tr.getElementsByTagName('td');
+        let tds = tr.getElementsByTagName('td');
         tds[5].setAttribute("column-name", "ipt-" + age_group.toLowerCase());
         tds[5].setAttribute("column-age", "ipt-" + "all");
         tds[6].setAttribute("column-name", "tb-" + age_group.toLowerCase());
@@ -868,7 +803,7 @@ function loadAllFemale(data, age_group) {
     data_table.draw();
 
     var tr = document.getElementById("fnp");;
-    tds = tr.getElementsByTagName('td');
+    let tds = tr.getElementsByTagName('td');
     tds[5].setAttribute("column-name", "ipt-" + "fnp");
     tds[5].setAttribute("column-age", "ipt-" + "all");
     tds[6].setAttribute("column-name", "tb-" + "fnp");
@@ -919,10 +854,10 @@ function updateFNProw() {
   }
   
   var tds = fnp_row.getElementsByTagName('td');
-  tds[3].innerHTML = (all_female_tx_new - fp_bf_tx_new);  
-  tds[4].innerHTML = (all_female_tx_curr - fp_bf_tx_curr);  
-  tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
-  tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
+  tds[3].innerHTML = `${(all_female_tx_new - fp_bf_tx_new)}`;  
+  tds[4].innerHTML = `${(all_female_tx_curr - fp_bf_tx_curr)}`;  
+  tds[5].innerHTML = `${(all_female_tx_given_ipt - fp_bf_tx_given_ipt)}`;  
+  tds[6].innerHTML = `${(all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb)}`;  
 
   updateRemainingCells();
 }
@@ -994,8 +929,8 @@ function validateReport() {
   }else{
     valid_report.innerHTML = "<span style='color: red;'>Report is <b>Not</b> consistent</span>";
   }
-  document.getElementById('spinner').style = 'display: none;';
-  document.getElementById('report-cover').style = 'display: none;';
+  document.getElementById('spinner').style.display = 'none;';
+  document.getElementById('report-cover').style.display = 'none';
 }
 
 function fetchTBscreenedFemaleClients(td) {
@@ -1115,7 +1050,7 @@ function fetchRegimens(row){
 
   var gender  = tds[2].innerHTML;
   gender = (gender == 'FBf' ? 'Fbf' : gender);
-  dates = quarterEndDate(quarter);
+  let  dates = quarterEndDate(quarter);
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
   url += "/disaggregated_regimen_distribution";
@@ -1304,6 +1239,3 @@ function addRegimen(data, tds){
   
 var allRows = [];
 
-
-
-</script>
