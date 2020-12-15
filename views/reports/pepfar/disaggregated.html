@@ -24,6 +24,11 @@
 <script type="text/javascript" src="/assets/js/core.js"></script>
 
 <style>
+.clickable {
+  text-decoration: underline;
+  color: blue;
+}
+
 .disaggregated-numbers {
   text-align: right;
   padding-right: 10px;
@@ -331,12 +336,12 @@ function assignNum(age, gender, num) {
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
     if(tds[1].innerHTML == age){
-      assignTD(tds, num, gender);
+      assignTD(tds, num, gender, age);
     }
   }
 }
 
-function assignTD(tds, num, gender) {
+function assignTD(tds, num, gender, age) {
   tds[3].innerHTML = num.tx_new.length;
   tds[4].innerHTML = num.tx_curr.length;
   tds[5].innerHTML = num.tx_given_ipt.length;
@@ -347,6 +352,33 @@ function assignTD(tds, num, gender) {
 
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
+
+
+  if(drillDownHash[age] == undefined)
+    drillDownHash[age] = {}
+
+  if(drillDownHash[age][gender] == undefined) {
+    drillDownHash[age][gender] = {
+      tx_new: num.tx_new,
+      tx_curr: num.tx_curr,
+      tx_given_ipt: [],
+      tx_screened_for_tb: []
+    }
+  }
+
+  if(num.tx_new.length > 0){
+    let onclick = `drillDown('${age}', '${gender}', 'tx_new');`;
+    tds[3].setAttribute("onclick", onclick);
+    tds[3].setAttribute("class", "disaggregated-numbers clickable");
+  }
+
+  if(num.tx_curr.length > 0){
+    let onclick = `drillDown('${age}', '${gender}', 'tx_curr');`;
+    tds[4].setAttribute("onclick", onclick);
+    tds[4].setAttribute("class", "disaggregated-numbers clickable");
+  }
+
+
 }
 
 function addTableBody() {
@@ -661,6 +693,14 @@ function fetchTBscreenedClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        if(obj.length > 0) {
+          drillDownHash[age_group][gender] = {
+            tx_screened_for_tb: obj
+          }
+          let onclick = `drillDown('${age_group}', '${gender}', 'tb_screened');`;
+          td.setAttribute("onclick", onclick);
+          td.setAttribute("class", "disaggregated-numbers clickable");
+        }
       }
 
      tb_tds.shift();
@@ -701,6 +741,14 @@ function fetchIPTclients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        if(obj.length > 0) {
+          drillDownHash[age_group][gender] = {
+            tx_given_ipt: obj
+          }
+          let onclick = `drillDown('${age_group}', '${gender}', 'ipt_given');`;
+          td.setAttribute("onclick", onclick);
+          td.setAttribute("class", "disaggregated-numbers clickable");
+        }
       }
   
      ipt_tds.shift();
@@ -805,6 +853,9 @@ function fetchIPTfemaleClients(td) {
 }
 
 
+let drillDownHash = {};
 
-
+function drillDown(age, gender, col_name){
+  console.log(drillDownHash[age][gender]);
+}
 </script>
