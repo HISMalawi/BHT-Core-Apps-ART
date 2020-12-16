@@ -336,12 +336,12 @@ function assignNum(age, gender, num) {
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
     if(tds[1].innerHTML == age){
-      assignTD(tds, num, gender, age);
+      assignTD(tds, num, gender);
     }
   }
 }
 
-function assignTD(tds, num, gender, age) {
+function assignTD(tds, num, gender) {
   tds[3].innerHTML = num.tx_new.length;
   tds[4].innerHTML = num.tx_curr.length;
   tds[5].innerHTML = num.tx_given_ipt.length;
@@ -353,7 +353,11 @@ function assignTD(tds, num, gender, age) {
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
 
+  assignLink(tds, age, gender, num);
+}
 
+
+function assignLink(tds, age, gender, num) {
   if(drillDownHash[age] == undefined)
     drillDownHash[age] = {}
 
@@ -472,6 +476,7 @@ function loadAllFemale(data, age_group) {
         var count = 34 ; var g = 'FBf'; 
       }
 
+
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
         tx_given_ipt, tx_screened_for_tb]).node().id = age_group.toLowerCase();
       data_table.draw();
@@ -484,10 +489,42 @@ function loadAllFemale(data, age_group) {
         tds[5].setAttribute("column-age", "ipt-" + "all");
         tds[6].setAttribute("column-name", "tb-" + age_group.toLowerCase());
         tds[6].setAttribute("column-age", "ipt-" + "all");
+
+
+        if(drillDownHash[age_group] == undefined)
+          drillDownHash[age_group] = {};
+
+        if(drillDownHash[age_group][gender] == undefined){
+          drillDownHash[age_group][gender] = {
+            tx_new: [], tx_curr: [],
+            tx_given_ipt: [], tx_screened_for_tb: []
+          };
+        }
+
+
+        drillDownHash[age_group][gender] = {
+          tx_new: data[age][sex].tx_new,
+          tx_curr:  data[age][sex].tx_curr,
+          tx_given_ipt: data[age][sex].tx_given_ipt,
+          tx_screened_for_tb: data[age][sex].tx_screened_for_tb
+        }
+
+        let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
+        tds[3].setAttribute("onclick", onclick);
+        tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        
+        onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
+        tds[4].setAttribute("onclick", onclick);
+        tds[4].setAttribute("class", "disaggregated-numbers clickable");
       }
+
+
+
+
 
     }
   }
+
 
   if(age_group == 'Pregnant') {
     data_table.row.add([33,'All', 'FNP', 0,0,0,0]).node().id = 'fnp';
@@ -694,9 +731,8 @@ function fetchTBscreenedClients(td) {
       if(obj) {
         td.innerHTML = obj.length;
         if(obj.length > 0) {
-          drillDownHash[age_group][gender] = {
-            tx_screened_for_tb: obj
-          }
+          gender = (gender.match(/female/i) ? "Female" : "Male");
+          drillDownHash[age_group][gender].tx_screened_for_tb = obj;
           let onclick = `drillDown('${age_group}', '${gender}', 'tb_screened');`;
           td.setAttribute("onclick", onclick);
           td.setAttribute("class", "disaggregated-numbers clickable");
@@ -790,6 +826,21 @@ function fetchTBscreenedFemaleClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        if(drillDownHash[age_group] == undefined)
+          drillDownHash[age_group] = {}
+        
+        if(drillDownHash[age_group][gender] == undefined){
+          drillDownHash[age_group][gender] = {
+            tx_given_ipt: [],
+            tx_screened_for_tb: []
+          }
+        }
+
+        drillDownHash[age_group][gender].tx_screened_for_tb = obj
+        
+        let onclick = `drillDown('${age_group}', '${gender}', 'tb_screened');`;
+        td.setAttribute("onclick", onclick);
+        td.setAttribute("class", "disaggregated-numbers clickable");
       }
 
       female_tb_tds.shift();
@@ -832,6 +883,22 @@ function fetchIPTfemaleClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        
+        if(drillDownHash[age_group] == undefined)
+          drillDownHash[age_group] = {}
+        
+        if(drillDownHash[age_group][gender] == undefined){
+          drillDownHash[age_group][gender] = {
+            tx_given_ipt: [],
+            tx_screened_for_tb: []
+          }
+        }
+
+        drillDownHash[age_group][gender].tx_given_ipt = obj;
+
+        let onclick = `drillDown('${age_group}', '${gender}', 'ipt_given');`;
+        td.setAttribute("onclick", onclick);
+        td.setAttribute("class", "disaggregated-numbers clickable");
       }
 
      female_ipt_tds.shift();
@@ -856,6 +923,16 @@ function fetchIPTfemaleClients(td) {
 let drillDownHash = {};
 
 function drillDown(age, gender, col_name){
-  console.log(drillDownHash[age][gender]);
+  if(col_name.match(/new/i)){
+    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_new.join(",")
+  }else if(col_name.match(/curr/i)){
+    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_curr.join(",");
+  }else if(col_name.match(/tb/i)){
+    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_screened_for_tb.join(",");
+  }else if(col_name.match(/ipt/i)){
+    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_given_ipt.join(",");
+  }
+
+  window.location = "pepfar_drill_down.html";
 }
 </script>
