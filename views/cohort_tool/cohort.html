@@ -2,6 +2,8 @@
   <meta charset="utf-8"/>
 
 <title>Revised Cohort Report</title>
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/bootstrap/bootstrap.min.js"></script>
 <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
 <link rel="stylesheet" href="/assets/css/maindashboard/footer.css">
 <link rel="stylesheet" href="/assets/css/custom.css">
@@ -1152,7 +1154,7 @@ function showDisaggregatedReport(){
           <div class="granules-cell"><span>Granules</span></div>
         </div>
         <div class="granules-row">
-          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('nine_p');" id="nine_p_tabs"></a></div>
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('nine_p');" id="nine_p_tabs">0</a></div>
           <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('nine_p_granules');" id="nine_p_granules">0</a></div>
         </div>
       </div>
@@ -1626,12 +1628,15 @@ function showDisaggregatedReport(){
         <button id="btnNext" class="green right" style="margin: 5px 0px 0px; padding: 0px; float: right;" onclick="location='/';">
             <span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Finish &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;</span>
         </button>
-        <button id="activities" class="btn btn-success buttons blue" style="margin-right: 5px;" onmousedown="javascript:printWindow();">
+        <!--<button id="activities" class="btn btn-success buttons blue" style="margin-right: 5px;" onmousedown="javascript:printWindow();">
             <span>&nbsp; &nbsp; &nbsp; Print &nbsp; &nbsp; &nbsp;</span>
-        </button>
+        </button>-->
+        <button href="#" class="btn btn-success buttons blue" style="margin-right: 5px;"  data-toggle="popover" 
+          >Export</button>
         <button id="tasks" class="btn btn-success buttons blue" style="margin-right: 5px;"  onmousedown="showDisaggregatedReport();">
             <span>&nbsp; Disaggregated report &nbsp;</span>
         </button>
+
         <button id="btnNext" class="red right" style="margin: 5px 0px 0px; padding: 0px; float: left;" onmousedown="regenerateReport();">
             <span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Regenerate &nbsp; &nbsp;&nbsp;</span>
         </button>
@@ -2317,6 +2322,7 @@ function getUrlVars() {
 
 var cohortResults;
 
+
 function getIndicators() {
   if(!runningReport)
     return;
@@ -2383,6 +2389,12 @@ function myStopFunction() {
 }
 
 function renderResults() {
+
+  let data = "";
+  const tableData = [['Indicator', 'Value']];
+  const rows = [];  
+
+
   var cohortValues = cohortResults.values;
   for(var i = 0 ; i < cohortValues.length ; i++){
     var id = cohortValues[i].name;
@@ -2391,6 +2403,7 @@ function renderResults() {
     try{
       indicator = document.getElementById(id);
       indicator.setAttribute('href', `javascript:drillDown('${cohortValues[i].id}, ${cohortValues[i].name}');`);
+      rows.push([cohortValues[i].name,cohortValues[i].contents]);
       indicator.innerHTML = cohortValues[i].contents;
       print_pdf_attr[id] = cohortValues[i].contents;
     }catch(e){
@@ -2400,6 +2413,47 @@ function renderResults() {
 
   runningReport = false;
   validateReport();
+
+   for (const row of rows) {
+    const rowData = [];
+    for (const column of row) {
+       rowData.push(column);
+    }
+    tableData.push(rowData.join(","));
+  }
+  
+  
+  
+  var facility = document.getElementById('clinic-name').innerHTML;
+  var url = window.location.href;
+  url = new URL(url);
+  var quarter = url.searchParams.get("quarter");
+
+  if(quarter == undefined || quarter == null) {
+    var start_date = getUrlVars()["start_date"];
+    var end_date = getUrlVars()["end_date"];
+    quarter = start_date+ ' ' + end_date;
+  }
+
+  tableData.push([ "BHT-Core Version :"+sessionStorage.coreVersion
+                    +"    ART Version :"+sessionStorage.ARTVersion
+                    +"    API Version :"+sessionStorage.apiVersion
+                    +"    Report Period :"+quarter
+                    +"    Site :"+sessionStorage.currentLocation,""]);
+
+  data += tableData.join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
+  a.setAttribute("download", facility+" "+quarter+" cohort report.csv");
+  document.body.appendChild(a);
+
+  $(document).on("click", ".export2csv", function () {    
+        a.click();
+        document.body.removeChild(a);
+ });
+
+
+
 }
 
 var regenerate_report = false;
@@ -2460,6 +2514,16 @@ function checkIfTempTablesExisit() {
 
 
 checkIfTempTablesExisit();
+
+$(document).ready(function(){
+
+      $('[data-toggle="popover"]').popover({
+       placement : 'top',
+        html : true,       
+      content: "<button  id='activities' onmousedown='javascript:printWindow();' class='btn btn-info' style='margin-left:25px'>Print</button> <button class='btn btn-info export2csv'>CSV</button>"
+    });
+
+});
 
 </script>
 
