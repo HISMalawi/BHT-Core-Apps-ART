@@ -84,6 +84,8 @@
         }
         if(YesNoConcepts[yesNo_Hash['HIV Reception']['Patient present?']] === 1066 && YesNoConcepts[yesNo_Hash['HIV Reception']['Guardian present?']] === 1065) {
             sessionStorage.guardianOnly = true;
+        }else {
+            sessionStorage.guardianOnly = false;
         }
         submitParameters(encounter, "/encounters", "postVitalsObs");
 
