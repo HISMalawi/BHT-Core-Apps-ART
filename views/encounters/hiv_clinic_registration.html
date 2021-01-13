@@ -1435,12 +1435,12 @@
                 if(!confirmatory_year.match(/unknown/i)){
                     let confirmatory_month = $("confirmatory_hiv_test_month").value;
                     let confirmatory_day = $("confirmatory_hiv_test_day").value;
-                
+               
                     if(confirmatory_day == "")
                         confirmatory_day = $("touchscreenInput" + tstCurrentPage).value;
 
-                    let date_str = confirmatory_year + "-" + confirmatory_month + "-" + confirmatory_day;
-                    if(moment(sessionStorage.sessionDate) < moment(date_str)){
+                    let date_str = moment(confirmatory_year + "-" + confirmatory_month + "-" + confirmatory_day).format("YYYY-MM-DD");
+                    if(moment(date_str) > moment(sessionStorage.sessionDate)){
                        showMessage("Invalid confirmatory HIV test date.");
                        return; 
                     }
