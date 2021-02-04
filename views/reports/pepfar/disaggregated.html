@@ -220,6 +220,7 @@ function renegerateReport() {
   data_table.destroy();
   ageGroups();
   rebuild_outcome = true;
+  on_art = 0;
   var table_body = document.getElementById('table-body');
   table_body.innerHTML = null;
   addTableBody();
@@ -273,7 +274,18 @@ function getData(age_group) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       age_groups.shift();
+      if(on_art == undefined)
+        on_art = 0;
+
       loadData(obj, age_group);
+      try {
+        on_art += (obj[age_group]['F'].tx_curr.length)
+      }catch(e){
+      }
+      try {
+        on_art += (obj[age_group]['M'].tx_curr.length)
+      }catch(e){
+      }
     }
   };
   xhttp.open("GET", url, true);
@@ -639,7 +651,6 @@ var period = moment(start_date).format('DD/MMM/YYYY')
 period += ' - ' + moment(end_date).format('DD/MMM/YYYY')
 
 document.getElementById('reporting-period').innerHTML = period;
-document.getElementById('on-art').innerHTML = on_art;
 
 addTableBody();
 initializeTable();
@@ -660,14 +671,15 @@ function validateReport() {
   }
 
   var valid_report = document.getElementById('valid-report');
- /* 
-  if(parseInt(on_art) == report_total) {
+  
+  /*if(parseInt(on_art) == report_total) {
     valid_report.innerHTML = "<span style='color: green;'>Report is consistent</span>";
   }else{
     valid_report.innerHTML = "<span style='color: red;'>Report is <b>Not</b> consistent</span>";
-  } */
+  }*/ 
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
+  document.getElementById('on-art').innerHTML = on_art;
 }
 
 
