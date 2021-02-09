@@ -47,7 +47,7 @@
                     html += "<tbody>";
 
                     var pharmacyData = {};
-                    for (var key in pharmacy_items) {
+                    for (var key in pharmacy_items) {   // for ... of or just forEach???
                         var drug_id = pharmacy_items[key]["drug_id"];
                         var expiry_date = pharmacy_items[key]["expiry_date"];
                         expiry_date = moment(expiry_date).format("MMM/YYYY");
@@ -64,7 +64,9 @@
                             pharmacyData[drug_id]["drug_name"] = drug_name;
                             pharmacyData[drug_id]["drug_short_name"] = drug_short_name;
                         }
-                        console.log(drug_name);
+
+                        if (pharmacy_items[key].current_quantity === 0) continue;
+
                         pharmacyData[drug_id]["current_quantity"] += parseFloat(current_quantity);
                         pharmacyData[drug_id]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
                     }
