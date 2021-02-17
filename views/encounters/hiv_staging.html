@@ -700,19 +700,10 @@ bottom: 0px;
                     var presumedSevereHiv = false;
 
                     if (firstPositiveHivTestType == "HIV rapid test") {
-                        if (
-                            presumedSevereHivConditions.indexOf("Pneumocystis pneumonia") > -1 ||
-                            presumedSevereHivConditions.indexOf("Candidiasis of oseophagus, trachea and bronchi or lungs") > -1 ||
-                            presumedSevereHivConditions.indexOf("Cryptococcal meningitis") > -1 ||
-                            presumedSevereHivConditions.indexOf("Severe unexplained wasting or malnutrition not responding to treatment (weight-for-height/ -age <70% or MUAC <11cm or oedema)") > -1 ||
-                            presumedSevereHivConditions.indexOf("Toxoplasmosis of the brain (from age 1 month)") > -1) {
+                        if (PSHDconditions())
                             presumedSevereHiv = true;
-                        } else if (
-                            ((presumedSevereHivConditions.indexOf("Oral candidiasis") > -1) && (presumedSevereHivConditions.indexOf("Severe sepsis") > -1)) ||
-                            ((presumedSevereHivConditions.indexOf("Oral candidiasis") > -1) && (presumedSevereHivConditions.indexOf("Severe pneumonia") > -1)) ||
-                            ((presumedSevereHivConditions.indexOf("Severe pneumonia") > -1) && (presumedSevereHivConditions.indexOf("Severe sepsis") > -1))) {
-                            presumedSevereHiv = true;
-                        }
+                        
+
                     }
 
                     try {
@@ -741,6 +732,45 @@ bottom: 0px;
 
                 $('reason_for_art_eligibility').value = reasonForArtEligibility;
                 answers_hash["reason_for_art_eligibility"] = reasonForArtEligibility;
+            }
+
+            function PSHDconditions(){
+                let highlightedConditions =  [
+                    "Pneumocystis pneumonia",
+                    "Candidiasis of oseophagus, trachea and bronchi or lungs",
+                    "Cryptococcal meningitis",
+                    "Severe unexplained wasting or malnutrition not responding to treatment",
+                    "Toxoplasmosis of the brain",
+                    "Oral candidiasis","Severe sepsis","Oral candidiasis","Severe pneumonia"
+                ];
+
+                for(let i = 0; i < highlightedConditions.length; i++){
+                    try {
+                        if(selected_stage_conditions[1].match(highlightedConditions[i]))
+                            return true;
+
+                    }catch(e) {}
+
+                    try {
+                        if(selected_stage_conditions[2].match(highlightedConditions[i]))
+                            return true;
+
+                    }catch(e) {}
+
+                    try {
+                        if(selected_stage_conditions[3].match(highlightedConditions[i]))
+                            return true;
+
+                    }catch(e) {}
+
+                    try {
+                        if(selected_stage_conditions[4].match(highlightedConditions[i]))
+                            return true;
+                            
+                    }catch(e) {}
+
+                }
+                return false;
             }
 
             function updateReasonForArtEligibility() {
@@ -805,19 +835,9 @@ bottom: 0px;
                     var presumedSevereHiv = false;
 
                     if (firstPositiveHivTestType == "HIV rapid test") {
-                        if (
-                            presumedSevereHivConditions.indexOf("Pneumocystis pneumonia") > -1 ||
-                            presumedSevereHivConditions.indexOf("Candidiasis of oseophagus, trachea and bronchi or lungs") > -1 ||
-                            presumedSevereHivConditions.indexOf("Cryptococcal meningitis") > -1 ||
-                            presumedSevereHivConditions.indexOf("Severe unexplained wasting or malnutrition not responding to treatment (weight-for-height/ -age <70% or MUAC less than 11cm or oedema)") > -1 ||
-                            presumedSevereHivConditions.indexOf("Toxoplasmosis of the brain (from age 1 month)") > -1) {
+                        if (PSHDconditions())
                             presumedSevereHiv = true;
-                        } else if (
-                            ((presumedSevereHivConditions.indexOf("Oral candidiasis") > -1) && (presumedSevereHivConditions.indexOf("Severe sepsis") > -1)) ||
-                            ((presumedSevereHivConditions.indexOf("Oral candidiasis") > -1) && (presumedSevereHivConditions.indexOf("Severe pneumonia") > -1)) ||
-                            ((presumedSevereHivConditions.indexOf("Severe pneumonia") > -1) && (presumedSevereHivConditions.indexOf("Severe sepsis") > -1))) {
-                            presumedSevereHiv = true;
-                        }
+
                     }
 
                     try {
