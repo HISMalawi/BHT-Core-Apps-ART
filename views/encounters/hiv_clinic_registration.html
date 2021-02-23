@@ -235,7 +235,7 @@
             var firstPositiveHivTestType = "UNKNOWN";
 
             function getFirstPositiveHivTestTypeObservation() {
-                var confirmatory_hiv_test_type_concept_id = 7880;
+                /*var confirmatory_hiv_test_type_concept_id = 7880;
                 var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/observations?person_id=" + sessionStorage.patientID + "&concept_id=" + confirmatory_hiv_test_type_concept_id + "&page_size=1";
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
@@ -251,10 +251,11 @@
                 xhttp.open("GET", url, true);
                 xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
                 xhttp.setRequestHeader('Content-type', "application/json");
-                xhttp.send();
+                xhttp.send();*/
+                
+                
+               firstPositiveHivTestType = $('type_of_confirmatory_hiv_test').value.toUpperCase();
             }
-
-            getFirstPositiveHivTestTypeObservation();
 
             function hivTestTypeConceptIDMap(conceptID) {
                 conceptMap = {
@@ -1019,14 +1020,14 @@
                         presumedSevereHivConditions = selectedValues($('presumed_severe_hiv_conditions'));
                     var presumedSevereHiv = false;
 
-                    if (firstPositiveHivTestType == "HIV rapid test") {
+                    if (firstPositiveHivTestType == "HIV RAPID TEST") {
                         if (PSHDconditions())
                             presumedSevereHiv = true;
 
                     }
 
                     try {
-                        if (ageInMonths < 12 && firstPositiveHivTestType == "HIV rapid test" && presumedSevereHiv) {
+                        if (ageInMonths < 12 && firstPositiveHivTestType == "HIV RAPID TEST" && presumedSevereHiv) {
                             reasonForArtEligibility = "PRESUMED SEVERE HIV";
                         } else if (whoStage >= 3) {
                             reasonForArtEligibility = whoStageConcept(whoStage, "PEDS");
@@ -1146,7 +1147,7 @@
                         presumedSevereHivConditions = selectedValues($('presumed_severe_hiv_conditions'));
                     var presumedSevereHiv = false;
 
-                    if (firstPositiveHivTestType == "HIV rapid test") {
+                    if (firstPositiveHivTestType == "HIV RAPID TEST") {
                         if (PSHDconditions())
                               presumedSevereHiv = true;
                         
@@ -1154,7 +1155,7 @@
                     }
 
                     try {
-                        if (ageInMonths < 12 && firstPositiveHivTestType == "HIV rapid test" && presumedSevereHiv) {
+                        if (ageInMonths < 12 && firstPositiveHivTestType == "HIV RAPID TEST" && presumedSevereHiv) {
                             reasonForArtEligibility = "PRESUMED SEVERE HIV";
                         } else if (whoStage >= 3) {
                             reasonForArtEligibility = whoStageConcept(whoStage, "PEDS");
@@ -1182,6 +1183,7 @@
             }
 
             function summary() {
+                getFirstPositiveHivTestTypeObservation(); 
                 //calculateWHOstage(); //For calculating date started ART - Transfer in patients
                 if (age >= 15) {
                     updateWhoStage();
@@ -1286,7 +1288,7 @@
 
                 var adultOrPeds = (age > 14) ? "ADULT" : "PEDS";
 
-                if (ageInMonths < 12 && firstPositiveHivTestType == "HIV rapid test") {
+                if (ageInMonths < 12 && firstPositiveHivTestType == "HIV RAPID TEST") {
                     $('who_stage').value = "PRESUMED SEVERE HIV";
                 } else {
                     $('who_stage').value = whoStageConcept(whoStage, adultOrPeds);
@@ -1597,8 +1599,17 @@
 
                 var confirmatory_year = $('confirmatory_hiv_test_year').value;
                 var confirmatory_month = $('confirmatory_hiv_test_month').value;
-                var confirmatory_day = __$('touchscreenInput' + tstCurrentPage).value;
-                var current_input = __$('touchscreenInput' + tstCurrentPage).value;
+                try {
+                    var confirmatory_day = __$('touchscreenInput' + tstCurrentPage).value;
+                }catch(w){
+                    var confirmatory_day = __$('confirmatory_hiv_test_day').value;
+                }
+                
+                try {
+                    var current_input = __$('touchscreenInput' + tstCurrentPage).value;
+                }catch(w){
+                    var current_input = __$('confirmatory_hiv_test_year').value;
+                }
 
                 if (!current_input.match(/UNKNOWN/i)) {
                     if (isNumeric(confirmatory_year) == true) {
@@ -1900,15 +1911,21 @@
                 var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
                     value = $('touchscreenInput' + tstCurrentPage).value;
-                    if (value.match(/UNKNOWN/i)) {
+                    if ($('ever_received_art').value == 'YES' && $('has_transfer_letter').value == 'YES') {
+                        gotoNextPage();
+                    }else if (value.match(/UNKNOWN/i)) {
                         submitHIVClinicRegistration();
-
                     } else {
                         gotoNextPage();
                     }
                 }
             }
 
+            function setEndaction(){
+                let nextButton = document.getElementById('nextButton');
+                nextButton.setAttribute("onmousedown","submitHIVClinicRegistration();");
+            }
+            
             function submitParametersOnUnknownConfirmatoryTestType() {
                 var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
@@ -2046,8 +2063,11 @@
             function changeSubmitFunction() {
                 var nextButton = document.getElementById('nextButton');
                 nextButton.onmousedown = function () {
-                    submitHIVClinicRegistration();
-                    // alert("Form submitted")
+                    if ($('ever_received_art').value == 'YES' && $('has_transfer_letter').value == 'YES') {
+                        gotoNextPage();
+                    }else{
+                        submitHIVClinicRegistration();
+                    }
                 }
             }
 
@@ -2632,11 +2652,6 @@
             <input allowFreeText="false" id="who_stage" name="observations[][value_coded_or_text]" type="hidden"
                    value=""/>
 
-            <label for='summary'>Summary</label>
-            <input condition="$('has_transfer_letter').value == 'YES'" id="summary" name="summary" optional="true"
-                   tt_onLoad="summary();__$('keyboard').style.display = 'none';" tt_pageStyleClass="NoControls"
-                   type="text"/>
-
             <select allowFreeText="false" helpText="Confirmatory HIV test" id="type_of_confirmatory_hiv_test"
                     name="observations[][value_coded_or_text]"
                     tt_onLoad="setUnknownConfirmatoryTestForPopup(); submitParametersOnUnknownConfirmatoryTestType();"
@@ -2699,6 +2714,11 @@
 
             <input allowFreeText="false" id="confirmatory_hiv_test_date" name="observations[][value_datetime]"
                    type="hidden" value="" value_datetime="true"/>
+
+            <label for='summary'>Summary</label>
+            <input condition="$('has_transfer_letter').value == 'YES'" id="summary" name="summary" optional="true"
+                   tt_onLoad="summary();__$('keyboard').style.display = 'none';setEndaction();" tt_pageStyleClass="NoControls"
+                   type="text"/>
 
             <input name="commit" type="submit" value="Finish"/>
 
