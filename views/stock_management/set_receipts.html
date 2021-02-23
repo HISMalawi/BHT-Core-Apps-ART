@@ -452,6 +452,7 @@
 
                 var button = document.createElement("div");
                 button.id = "add-button";
+                button.style.right = '1px';
                 button.innerHTML = "<span>Add Row</span>";
                 button.setAttribute("drug", item.getAttribute("value"));
                 button.onmousedown = function () {
@@ -510,7 +511,7 @@
                             "value": "+",
                             "onmousedown": "incrementMonth(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "height: 60px; margin: auto; width: 100%; margin-left: 20px;"
+                            "style": "height: 60px; margin: auto; width: 100%; "
                         },
                         {
                             "type": "button",
@@ -519,7 +520,7 @@
                             "value": "+",
                             "onmousedown": "incrementDate(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "display: none; height: 60px; margin: auto; width: 100%;"
+                            "style": " height: 60px; margin: auto; width: 100%;"
                         }
                     ],
                     [
@@ -539,7 +540,7 @@
                             "value": months[date.getMonth()],
                             "onmousedown": "showShield(); addList(__$('txtMonthFor' + this.getAttribute('target')),{'Jan':'January','Feb':'February','Mar':'March','Apr':'April','May':'May','Jun':'June','Jul':'July','Aug':'August','Sep':'September','Oct':'October','Nov':'November','Dec':'December','?':'Unknown'},'single',__$('txtMonthFor' + this.getAttribute('target')),__$('txtMonthFor' + this.getAttribute('target')), 'checkDate(\"' + this.getAttribute('target') + '\")'); checkDate(this.getAttribute('target'));",
                             "class": "input_cell",
-                            "style": "font-size: 24px; text-align: center; width: 100%; margin-left: 23px; "
+                            "style": "font-size: 24px; text-align: center; width: 100%;  "
                         },
                         {
                             "type": "input",
@@ -548,7 +549,7 @@
                             "value": date.getDate(),
                             "onmousedown": "overwriteNumber = true; if(__$('keyboard')){document.body.removeChild(__$('keyboard'));} else {showShield(\"checkDate('\" + this.getAttribute('target') + \"', false)\"); showKeyboard(__$('txtDateFor' + this.getAttribute('target')),{':':':','/':'/','.':'.','abc':'abc'},true);} checkDate(this.getAttribute('target'));",
                             "class": "input_cell",
-                            "style": "display: none; font-size: 24px; text-align: center; width: 100%;"
+                            "style": " font-size: 24px; text-align: center; width: 100%;"
                         }
                     ],
                     [
@@ -568,7 +569,7 @@
                             "value": "-",
                             "onmousedown": "decrementMonth(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "height: 60px; margin: auto; width: 100%; margin-left: 20px;"
+                            "style": "height: 60px; margin: auto; width: 100%; "
                         },
                         {
                             "type": "button",
@@ -577,7 +578,7 @@
                             "value": "-",
                             "onmousedown": "decrementDate(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "display: none; height: 60px; margin: auto; width: 100%;"
+                            "style": " height: 60px; margin: auto; width: 100%;"
                         }
                     ]
                 ];
@@ -1176,7 +1177,29 @@
         })(jQuery, mappedData);
 
         //*********************************** End of Module ****************************
+        function incrementDate(id) {
+            if (__$("txtDateFor" + id)) {
+                var date = parseInt(__$("txtDateFor" + id).value.trim());
 
+                date++;
+
+                __$("txtDateFor" + id).value = date;
+
+                checkDate(id);
+            }
+        }
+
+        function decrementDate(id) {
+            if (__$("txtDateFor" + id)) {
+                var date = parseInt(__$("txtDateFor" + id).value.trim());
+
+                date--;
+
+                __$("txtDateFor" + id).value = date;
+
+                checkDate(id);
+            }
+        }
 
         function incrementYear(id) {
             if (__$("txtYearFor" + id)) {
@@ -1233,12 +1256,16 @@
                 checkDate(id);
             }
         }
+        function checkValidDate() {
 
+            return (moment(`${__$("txtYearFor" + id)}-${parseInt(__$("txtMonthFor" + id)) + 1}-${__$("txtYearFor" + id)}`).isValid());
+        }
+        
+        
         function checkDate(id) {
 
             if (__$("txtDateFor" + id) && __$("txtYearFor" + id) && __$("txtMonthFor" + id)) {
-
-
+                    // return;
                 if (__$("txtMonthFor" + id).value.trim() == "?") {
 
                     __$("txtMonthFor" + id).value = "?";
@@ -1265,7 +1292,7 @@
                     month = 1;
                 }
 
-                var date = new Date(__$("txtYearFor" + id).value.trim(), padZeros((month - 1), 2), 0);
+                var date = new Date(__$("txtYearFor" + id).value.trim(), padZeros((month - 1), 2), value);
 
                 date.setDate(date.getDate());
 
@@ -1291,7 +1318,7 @@
                         month = 1;
                     }
 
-                    var date = new Date(__$("txtYearFor" + id).value.trim(), padZeros(month, 2), 0)
+                    var date = new Date(__$("txtYearFor" + id).value.trim(), padZeros(month, 2), value)
 
                     date.setDate(date.getDate());
 
@@ -1813,7 +1840,7 @@
 
         #popupkeyboard {
             position: absolute;
-            left: 25%;
+            /* left: %; */
             bottom: 20px;
             margin-left: inherit !important;
 
@@ -1863,7 +1890,7 @@
                 }
             }
 
-            setInterval("trimDate();", 10);
+            // setInterval("trimDate();", 10);
             for (var j in drugs) {
 
                 for (var i = 0; i <= total_rows; i++) {
