@@ -1615,6 +1615,7 @@
                         return
                     }
                     let counter = 0;
+                    let reason = __$('reason').value;
                     for (var i = 0; i <= processed_products.length - 1; i++) {
                         var authorization_code = processed_products[i]["authorization_code"];
                         var split_data = processed_products[i]["drug"].split("::");
@@ -1745,7 +1746,12 @@
                 <input helpText="Relocation Details" id="input" name="information" optional="true"
                        tt_onLoad="$('clearButton').style.display = 'none'; checkContainer(); updateNextButton();"
                        tt_pageStyleClass="NoKeyboard" type="text"/>
-
+                <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'">
+                        <option value=""></option>
+                        <option value="Transfer to another facility/relocation">Transfer to another facility/relocation</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Damaged">Damaged</option>
+                        <option value="For trainings">For trainings</option>
                 <input helpText="<span style='color: red;background: white;'>Confirm Entry (Touch row to change) </span>"
                        id="summary" name="showSummary" optional="true"
                        tt_onLoad="showSummary(); customizeFinishButton()"
