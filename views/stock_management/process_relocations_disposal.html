@@ -1632,13 +1632,15 @@
                             var items = {
                                 "reallocation_code": authorization_code,
                                 "quantity": quantity,
-                                "location_id": facility_id
+                                "location_id": facility_id,
+                                "reason": reason
                             };
                         } else {
                             var relocate_or_dispose_stock_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/items/" + pharmacyBatchItemID + "/dispose";
                             var items = {
                                 "reallocation_code": authorization_code,
-                                "quantity": quantity
+                                "quantity": quantity,
+                                "reason": reason
                             };
                         }
 
