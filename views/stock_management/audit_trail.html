@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <title>Encounters New</title>
+    <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+    <script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+    <link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css"/>
+    <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+    <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+    <script type="text/javascript" src="/assets/js/moment.js"></script>
+    <script type="text/javascript" src="./drug_cms.js"></script>
+
+    <script type="text/javascript">
+        
+
+        function initializeVariables() {
+            jQuery(".loader").show();
+            jQuery('#keyboard').hide();
+            jQuery("#clearButton").hide();
+            jQuery("#cancelButton").hide();
+            //jQuery("#inputFrame" + tstCurrentPage).hide();
+
+
+            var pharmacy_items_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            pharmacy_items_url += "/api/v1/pharmacy/audit_trail";
+
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var pharmacy_items = JSON.parse(this.responseText);
+                    jQuery(".loader").hide();
+                    var html = "<div id='stock-div'>";
+                    html += "<table id='stock'>";
+                    html += "<thead>";
+                    html += "<th style='padding-right: 3px;'>Medication</th>";
+                    html += "<th>Transaction Date</th>";
+                    html += "<th>Transaction Type</th>";
+                    html += "<th>Quantity</th>";
+                    html += "<th>Username</th>";
+                    html += "<th>Reason</th>";
+                    html += "</thead>";
+                    html += "<tbody>";
+
+                    html += "<tbody>";
+                    pharmacy_items.forEach(element => {
+                        html += "<tr>";
+                        html += "<td class='medication'>" + element.drug_name + "</td>";
+                        html += "<td class='expiry-date'>" + element.transaction_date + "</td>";
+                        html += "<td class='current-quantity'>" + element.transaction_type + "</td>";
+                        html += "<td class='current-quantity'>" + element.amount_committed_to_stock + "</td>";
+                        html += "<td class='current-quantity'>" + element.username + "</td>";
+                        html += "<td class='current-quantity'>" + element.transaction_reason + "</td>";
+                        html += "</tr>";   
+                    });
+                    
+                    html += "</tbody>";
+                    html += "</table>";
+                    html += "</div>";
+                    jQuery(".inputFrameClass").append(html);
+                    // var pharmacyData = {};
+                    // for (var key in pharmacy_items) {   // for ... of or just forEach???
+                    //     var drug_id = pharmacy_items[key]["drug_id"];
+                    //     var expiry_date = pharmacy_items[key]["expiry_date"];
+                    //     expiry_date = moment(expiry_date).format("MMM/YYYY");
+                    //     var drug_name = pharmacy_items[key]["drug_name"];
+                    //     var drug_short_name = drug_short_full_name[pharmacy_items[key]["drug_id"]]["short_name"];
+                    //     var pack_size = drug_cms_packsizes[drug_short_name];
+                    //     var current_quantity = pharmacy_items[key]["current_quantity"];
+
+                    //     if (!pharmacyData[drug_id]) {
+                    //         pharmacyData[drug_id] = {};
+                    //         pharmacyData[drug_id]["current_quantity"] = 0;
+                    //         pharmacyData[drug_id]["expiry_dates"] = [];
+                    //         pharmacyData[drug_id]["pack_size"] = pack_size;
+                    //         pharmacyData[drug_id]["drug_name"] = drug_name;
+                    //         pharmacyData[drug_id]["drug_short_name"] = drug_short_name;
+                    //     }
+
+                    //     if (pharmacy_items[key].current_quantity === 0) continue;
+
+                    //     pharmacyData[drug_id]["current_quantity"] += parseFloat(current_quantity);
+                    //     pharmacyData[drug_id]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
+                    // }
+
+                    // for (var drugID in pharmacyData) {
+                    //     var drug_name = pharmacyData[drugID]["drug_name"];
+                    //     var drug_short_name = pharmacyData[drugID]["drug_short_name"];
+                    //     var pack_size = pharmacyData[drugID]["pack_size"];
+                    //     var current_quantity = Math.trunc(pharmacyData[drugID]["current_quantity"] / pack_size);
+                    //     var expiry_dates = pharmacyData[drugID]["expiry_dates"];
+
+                    //     expiry_dates.sort(function (a, b) {
+                    //         return new Date(a) - new Date(b);
+                    //     });
+                    //     expiry_date = moment(expiry_dates[0]).format("MMM/YYYY");
+
+                    //     html += "<tr>";
+                    //     html += "<td class='medication'>" + drug_short_name + "</td>";
+                    //     html += "<td class='expiry-date'>" + expiry_date + "</td>";
+                    //     html += "<td class='current-quantity'>" + current_quantity + "</td>";
+                    //     html += "</tr>";
+                    // }
+                    
+                }
+            };
+
+            xhttp.open("GET", pharmacy_items_url, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+        }
+
+        function customizeFinishButton() {
+            __$("nextButton").onmousedown = function () {
+                window.location = "/";
+            }
+        }
+
+    </script>
+</head>
+
+
+<body id="mateme">
+<div id="container">
+    <div id="content">
+
+        <form>
+
+            <input type="text" name="summary"
+                   tt_onLoad="initializeVariables(); customizeFinishButton();"
+                   tt_pageStyleClass="NoControls" helpText="ART Stock audit trail" optional="true"/>
+
+        </form>
+        <div class="loader"></div>
+    </div>
+</div>
+</body>
+
+<style>
+    .loader {
+        position: absolute;
+        display: none;
+        top: 30%;
+        left: 40%;
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        z-index: 9999999999999;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #stock-div {
+        overflow: auto;
+        height: 590px;
+    }
+
+    #stock {
+        width: 100%;
+    }
+
+    #stock th {
+        background-color: gray;
+        color: white;
+        text-align: center;
+        line-height: 2em;
+    }
+
+    #stock tbody {
+        line-height: 2em;
+        letter-spacing: 1;
+    }
+
+    #stock tbody tr td {
+        border: 1px solid black;
+    }
+
+    .expiry-date {
+        text-align: center;
+    }
+
+    .current-quantity {
+        text-align: right;
+        padding-right: 10px;
+    }
+
+    .medication {
+        padding-left: 10px;
+    }
+</style>
