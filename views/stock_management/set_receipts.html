@@ -1597,6 +1597,7 @@
                             expiry_date: date_of_expiry,
                             quantity: parseInt(tabs_per_tin) * parseInt(total_tins),
                             delivery_date: delivery_date,
+                            pack_size: tabs_per_tin
                         })
                     }
                 }
@@ -1606,7 +1607,7 @@
                 xhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
                         //var response = JSON.parse(this.responseText);
-                        window.location = "/";
+                        // window.location = "/";
 
                     }
                 };
