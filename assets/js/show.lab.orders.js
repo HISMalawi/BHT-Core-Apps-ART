@@ -1,6 +1,6 @@
 function showOrders() {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/programs/1/lab_tests/orders?patient_id=" + sessionStorage.patientID;
+  url += "/lab/orders?patient_id=" + sessionStorage.patientID;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {

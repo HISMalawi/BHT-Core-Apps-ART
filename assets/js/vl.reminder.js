@@ -45,12 +45,13 @@ function prepareForVLcheck() {
       nextBtn.setAttribute('onmousedown', 'processVLalert();');
     }
   }
-  
-  var cover = document.getElementById('regimen-change-cover');
-  var loader = document.getElementsByClassName('loader')[0];
-  cover.style = 'display: none';
-  loader.style = 'display: none;'
-
+ 
+  try {
+    let cover = document.getElementById('regimen-change-cover');
+    let loader = document.getElementsByClassName('loader')[0];
+    cover.style = 'display: none';
+    loader.style = 'display: none;'
+  }catch(e){}
 }
 
 var VLmilestoneCheckDone = false;
@@ -159,7 +160,8 @@ function vlOrdered() {
   var passedObs = {
     encounter_id: null,
     observations: [{concept_id: 856, value_coded: 1271,
-    value_datetime: sessionStorage.sessionDate, value_numeric: vl_info.milestone}]
+    value_datetime: sessionStorage.sessionDate, 
+    value_text: "Milestone in days",  value_numeric: vl_info.milestone}]
   };
 
   postEncounter(encounter, passedObs, 'createEncounter');
@@ -214,16 +216,23 @@ function postEncounter(encounter, passedObs, nextEncName) {
 }
 
 function postVLalertResponses(responses, nextEncName) {  
-  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += '/observations';
-  var parameters = JSON.stringify(responses);
+  let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/observations";
+  let parameters = JSON.stringify(responses);
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       res = JSON.parse(this.responseText);
-      if(nextEncName.length > 0)
-        createEncounter();
+
+      //To be looked at ... now I will just hack through
+      try {
+        /*if(nextEncName.length > 0)
+          createEncounter();*/
+
+        if(nextEncName.length > 0)
+          createOrderEncounter();
+
+      }catch(l) {}
 
     }
   };
