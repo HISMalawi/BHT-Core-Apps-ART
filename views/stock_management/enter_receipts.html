@@ -11,6 +11,7 @@
     <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
     <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
     <script type="text/javascript" src="/assets/js/moment.js"></script>
+    <script type="text/javascript" src="./drug_cms.js"></script>
     <script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
     <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
     <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
@@ -634,7 +635,7 @@
         <form id="create_stoke" name="create_stoke" action="set_receipts">
             <input class="touchscreenTextInput" helpText="Scan barcode on  delivery note" id="barcode" name="identifier"
                    style="position:absolute"
-                   tt_onLoad="returning = false; $('keyboard').style.display = 'none'; formatBarcodeSpace()" type="text"
+                   tt_onLoad="loadCustomDrugs();returning = false; $('keyboard').style.display = 'none'; formatBarcodeSpace()" type="text"
                    value=""/>
 
             <select helpText="Previous drug deliveries for barcode" id="selected_drugs" multiple="multiple"
@@ -648,7 +649,7 @@
                     tt_onUnLoad="selectedDrugs()"
                     tt_pageStyleClass="longSelectList">
                 <option></option>
-                <option value='ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)' drug_id="733">Abacavir / Lamivudine 60
+                <!-- <option value='ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)' drug_id="733">Abacavir / Lamivudine 60
                     / 30mg, tin of 60 tablets
                 </option>
                 <option value='ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)' drug_id="1044">Abacavir / Lamivudine 120
@@ -715,7 +716,7 @@
                 </option>
                 <option value='AZT/3TC (Zidovudine and Lamivudine 60/30 tablet)' drug_id="736">Zidovudine / lamivudine
                     60 / 30mg, tin of 60 tablets
-                </option>
+                </option> -->
             </select>
 
             <input field_type="date" helpText="Delivery Date" id="delivery_date"
@@ -749,6 +750,13 @@
             }
         });
     });
+
+    function loadCustomDrugs() {
+        let drugField = document.getElementById('select_drugs');
+        drugsByName.forEach((drug) => {
+            drugField.innerHTML += `<option value='${drug.short_name}' drug_id='${drug.drug_id}'> ${drug.full_name} </option>`;
+        });
+    }
 </script>
 </body>
 </html>

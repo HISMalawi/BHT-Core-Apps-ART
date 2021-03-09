@@ -123,6 +123,171 @@ var drugs = {
         "full_name": "Ritonavir 100mg"
     }
 }
+var drugsByName = [
+     {
+        "drug_id" : 733,
+        "short_name": "ABC/3TC (Abacavir and Lamivudine 60/30mg tablet)",
+        "full_name": "Abacavir / Lamivudine 60 / 30mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 969,
+        "short_name": "ABC/3TC (Abacavir and Lamivudine 600/300mg tablet)",
+        "full_name": "Abacavir sulfate 600mg / Lamivudine 300mg, tin of 30 tablets"
+    },
+     {
+        "drug_id" : 932,
+        "short_name": "ATV/r (Atazanavir 300mg/Ritonavir 100mg)",
+        "full_name": "Atazanavir / Ritonavir 300 / 100mg, tin of 30 tablets"
+    },
+    {
+        "drug_id" : 963,
+        "short_name": "TMP/SMX (Cotrimoxazole 120mg tablet)",
+        "full_name": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets"
+    },
+    {
+        "drug_id" : 297,
+        "short_name": "Cotrimoxazole (480mg tablet)",
+        "full_name": "Cotrimoxazole 480mg, tin of 1000 tablets"
+    },
+     {
+        "drug_id" : 576,
+        "short_name": "Cotrimoxazole (960mg)",
+        "full_name": "Cotrimoxazole 960mg, blister pack of 1000 tablets"
+    },
+     {
+
+        "drug_id" : 30,
+         "short_name": "EFV (Efavirenz 200mg tablet)", "full_name": "Efavirenz 200mg, tin of 90 tablets" },
+     {
+        "drug_id" : 11,
+         "short_name": "EFV (Efavirenz 600mg tablet)", "full_name": "Efavirenz 600mg, tin of 30 tablets" },
+    {
+        "drug_id" : 24,
+        "short_name": "INH or H (Isoniazid 100mg tablet)",
+        "full_name": "Isoniazid 100mg, tin of 100 tablets"
+    },
+    {
+        "drug_id" : 931,
+        "short_name": "INH or H (Isoniazid 300mg tablet)",
+        "full_name": "Isoniazid 300mg, tin of 1000 tablets"
+    },
+    {
+        "drug_id" : 613,
+        "short_name": "d4T/3TC/NVP (30/150/200mg tablet)",
+        "full_name": "Lamivudine / Stavudine / Nevirapine 150 / 30 / 200mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 734,
+        "short_name": "TDF/3TC (Tenofavir and Lamivudine 300/300mg tablet",
+        "full_name": "Lamivudine / Tenofovir disoproxil fumarate 300 / 300mg, tin of 30 tablets"
+    },
+    {
+        "drug_id" : 74,
+        "short_name": "LPV/r (Lopinavir and Ritonavir 100/25mg tablet)",
+        "full_name": "Lopinavir / Ritonavir 100 / 25mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 73,
+        "short_name": "LPV/r (Lopinavir and Ritonavir 200/50mg tablet)",
+        "full_name": "Lopinavir / Ritonavir 200 / 50mg, tin of 120 tablets"
+    },
+    {
+        "drug_id" : 971,
+        "short_name": "NVP (Nevirapine syrup 1mL/dose in 100mL bottle)",
+        "full_name": "Nevirapine 10mg/ml,100ml"
+    },
+    {
+        "drug_id" : 21,
+        "short_name": "NVP (Nevirapine syrup 1.5mL/dose in 25mL bottle)",
+        "full_name": "Nevirapine 10mg/ml, 25ml"
+    },
+    {
+        "drug_id" : 22,
+         "short_name": "NVP (Nevirapine 200 mg tablet)", "full_name": "Nevirapine 200mg, tin of 60 tablets" },
+    {
+        "drug_id" : 968,
+         "short_name": "NVP (Nevirapine 50 mg tablet)", "full_name": "Nevirapine 50mg, tin of 60 tablets" },
+    {
+        "drug_id" : 76,
+         "short_name": "Pyridoxine (50mg)", "full_name": "Pyridoxine 50mg tab, 1000 tablets" },
+    {
+        "drug_id" : 738,
+        "short_name": "d4T/3TC (Stavudine Lamivudine 30/150 tablet)",
+        "full_name": "Stavudine / lamivudine 30 / 150mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 735,
+        "short_name": "TDF/3TC/EFV (300/300/600mg tablet)",
+        "full_name": "Tenofovir disoproxil fumarate / Lamivudine / Efavirenz 300 / 300 / 600mg, tin of 30 tablets"
+    },
+    {
+        "drug_id" : 732,
+        "short_name": "AZT/3TC/NVP (60/30/50mg tablet)",
+        "full_name": "Zidovudine / lamivudine /Nevirapine 30 / 60 / 50mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 731,
+        "short_name": "AZT/3TC/NVP (300/150/200mg tablet)",
+        "full_name": "Zidovudine / lamivudine /Nevirapine 300 / 150 / 200mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 39,
+        "short_name": "AZT/3TC (Zidovudine and Lamivudine 300/150mg)",
+        "full_name": "Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets"
+    },
+    {
+        "drug_id" : 736,
+        "short_name": "AZT/3TC (Zidovudine and Lamivudine 60/30 tablet)",
+        "full_name": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets"
+    },
+    
+    {
+        "drug_id" : 1044,
+        "short_name": "ABC/3TC (Abacavir and Lamivudine 120/60mg tablet)",
+        "full_name": "Abacavir and Lamivudine 60mg pack of 60 tablets"
+    },
+    
+    {
+        "drug_id" : 1043,
+        "short_name": "Raltegravir 25mg",
+        "full_name": "Raltegravir 25mg pack of 60 tablets"
+    },
+    {
+        "drug_id" : 954,
+        "short_name": "Raltegravir 400mg",
+        "full_name": "Raltegravir 400mg pack of 60 tablets"
+    },
+     {
+        "drug_id" : 1056,
+        "short_name": "Rifapentine 150mg",
+        "full_name": "Rifapentine 150mg pack of 24 tablets"
+    },
+    {
+        "drug_id" : 976,
+        "short_name": "Darunavir 600mg",
+        "full_name": "Darunavir 600mg pack of 60 tablets",
+    },
+    {
+        "drug_id" : 982,
+        "short_name": "Dolutegravir (50mg tablet)",
+        "full_name": "Dolutegravir 50mg pack of 30 tablets",
+    },
+    {
+        "drug_id" : 983,
+        "short_name": "TDF300/3TC300/DTG50",
+        "full_name": "TDF300/3TC300/DTG50"
+    },
+    {
+        "drug_id" : 1039,
+        "short_name": "Pyridoxine (25mg)",
+        "full_name": "Pyridoxine (25mg)"
+    },
+    {
+        "drug_id" : 977,
+        "short_name": "Ritonavir 100mg",
+        "full_name": "Ritonavir 100mg"
+    }
+]
 //key is derived from drug_name ie drug table while value is derived from alternate drug name / name 
 var drug_cms_names = {
     "Cotrimoxazole (960mg)": "Cotrimoxazole 960mg, blister pack of 1000 tablets",
