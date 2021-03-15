@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
     
     <script type="text/javascript">
-      
+       
       var patient_id = sessionStorage.patientID;
       
       var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
@@ -164,8 +164,7 @@
 
 
           function fetchAvailableTests() {
-            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-            url += '/programs/1/lab_tests/types';
+            let url = apiProtocol + "://" + apiURL + ":" + apiPort + '/api/v1/lab/test_types';
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -205,13 +204,33 @@
             addMainReasonForTests();
           }
 
-          function addLefttable(tests) {
+          function addLefttable(tests_obj) {
             var table = document.createElement('table');
             table.setAttribute('class', 'tests-tables');
             var container = document.getElementById('tests-left');
             container.appendChild(table);
+            let tests = [];
+            let hiv_vl;
+            let unsorted_test_names = []
 
-            for (var i = 0; i < tests.sort().length; i++) {
+            for(let i = 0; i < tests_obj.length; i++){
+              all_available_tests[tests_obj[i].name] = tests_obj[i].concept_id;
+
+              if(tests_obj[i].name.match(/viral load/i)){
+                hiv_vl = tests_obj[i].name;
+                continue;
+              }
+              unsorted_test_names.push(tests_obj[i].name);
+            }
+
+            if(hiv_vl)
+              tests.push(hiv_vl);
+
+            for(let i = 0; i < unsorted_test_names.sort().length; i++){
+              tests.push(unsorted_test_names[i]);
+            }
+
+            for (let i = 0; i < tests.length; i++) {
               var tr = document.createElement('tr');
               table.appendChild(tr);
 
@@ -291,7 +310,6 @@
 
             var viral_load_selected = false;
             for(var i = 0; i < selected_tests.length; i++){
-              console.log(selected_tests[i]);
               for(var test in selected_tests[i]) {
                 if(selected_tests[i][test].match(/viral load/i)){
                   viral_load_selected = true;
@@ -323,59 +341,75 @@
             submitParameters(encounter, "/encounters", "createLabOrders");
           }
 
-
-          function createLabOrders(encounter) {
-            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-            url += '/programs/1/lab_tests/orders/lims-old?date='+sessionStorage.sessionDate;
-
-            for(var i = 0; i < selected_tests.length; i++){
-
-              data = {}
-              data["test_type"] = selected_tests[i]["Test Type"];
-              data["specimen_type"] = selected_tests[i]["Specimen"];
-              data["reason"] = selected_tests[i]["Reason"];
-              data["patient_id"] = sessionStorage.patientID;
-            
-              var parametersPassed = JSON.stringify(data);
-
-              var xhttp = new XMLHttpRequest();
-              xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                    if(parseInt(i) === parseInt(selected_tests.length)){
-                      selected_tests = [];
-                      window.history.back();
-                    }
-                }
-              };
-              xhttp.open("POST", url, true);
-              xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-              xhttp.setRequestHeader('Content-type', "application/json");
-              xhttp.send(parametersPassed);
-
+          function getTextReason(test_name){
+            let selected_reason;
+            for(let i = 0; i < selected_tests.length; i++){
+              if(selected_tests[i]["Test Type"] == test_name){
+                selected_reason = selected_tests[i]['Reason'];
+              }
             }
-            
-          }
 
-          function postOrders(encounter, test, reason) {
-            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-            url += '/programs/1/lab_tests/orders?patient_id=' + sessionStorage.patientID;
-
-            var parameters = {
-                encounter_id: encounter.encounter_id,
-                test_types: [test],
-                date: sessionStorage.sessionDate,
-                reason: reason,
-                requesting_clinician: sessionStorage.username
+            let reasons = {
+                "Repeat / Missing": 9144,
+                "Targeted": 3280,
+                "Confirmatory": 1345,
+                "Stat": 6368,
+                "Routine": 432
             };
 
-            var parametersPassed = JSON.stringify(parameters);
+            return reasons[selected_reason];
+          }
+
+          function getSelectedSpecimen(test_name){
+            let selected_specimen;
+
+            for(let i = 0; i < selected_tests.length; i++){
+              if(selected_tests[i]["Test Type"] == test_name){
+                selected_specimen = parseInt(selected_tests[i]['Specimen ID']);
+              }
+            }
+
+            return selected_specimen;
+          }
+
+          var lab_orders_data = [];
+          var all_available_tests = {};
+
+          function createLabOrders(encounter) {
+            for (let i = 0; i < selected_tests.length; i++){
+                let test_name = selected_tests[i]['Test Type'];
+                let test_reason = getTextReason(test_name);
+                lab_orders_data.push({
+                    encounter_id: encounter.encounter_id,
+                    specimen: {
+                      concept_id: getSelectedSpecimen(test_name)
+                    },
+                    tests: [{concept_id: all_available_tests[test_name]}],
+                    reason_for_test_id: test_reason,
+                    target_lab: sessionStorage.currentLocation,
+                    requesting_clinician: sessionStorage.username
+                });
+            }
+
+            postOrders({orders: lab_orders_data});  
+          }
+
+
+          function postOrders(orders) {
+            let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/lab/orders";
+            let parametersPassed = JSON.stringify(orders);
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                    var obs = JSON.parse(this.responseText);
-                    sortOrders(encounter);
-                }
+            if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                ab_orders_data = []; 
+                try {
+                  var messageBar = document.getElementById('messageBar');
+                  messageBar.style = 'background-color: green; border-color: lightgreen;';
+                }catch(s){}
+                showMessage('Order(s) successful done.');
+                cancelLabOrder();
+              }
             };
             xhttp.open("POST", url, true);
             xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
@@ -383,9 +417,9 @@
             xhttp.send(parametersPassed);
           }
 
-          function fetchOrders() {
-            var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-            url += "/programs/1/lab_tests/orders?patient_id=" + sessionStorage.patientID;
+          /*function fetchOrders() {
+            let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+            url += "/lab/orders?patient_id=" + sessionStorage.patientID;
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -400,6 +434,25 @@
             xhttp.send();
           }
 
+          function updateOrderTable(orders) {
+            orders_table.clear().draw();
+
+            for (var x = 0; x < orders.length; x++) {
+              let accession_number = orders[x].accession_number;
+              let test_status = (orders[x].specimen.name == "Unknown" ? "N/A" : orders[x].specimen.name);
+              let date_ordered = moment(orders[x].order_date).format('DD/MMM/YYYY');
+              let tests = orders[x].tests;
+
+              for(let i = 0; i <  tests.length; i++){
+                  let order_result = (tests[i].result == null ? "" : tests[i].result.value);
+                  let result_date = (tests[i].result == null ? "" : moment(tests[i].result.date).format("DD/MMM/YYYY"));
+
+                  orders_table.row.add([accession_number, tests[i].name, test_status,
+                      date_ordered, order_result, result_date]).node().id = "lab-order-" + (i+1);
+                  orders_table.draw();
+              }
+            }
+          }*/
 
           function selectTest(e) {
             var selected = e.getAttribute('test-selected');
@@ -435,7 +488,7 @@
 
           function fetchSpecimen(test_type){
             var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-            url += '/programs/1/lab_tests/panels?test_type=' +encodeURIComponent(test_type.replace(/&amp;/g, "&"));
+            url += '/lab/specimen_types?test_type=' + encodeURIComponent(test_type.replace(/&amp;/g, "&"));
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -452,10 +505,10 @@
                   var oddEven = (i & 1) ? "odd" : "even";
 
                   var li = document.createElement('li');
-                  li.innerHTML = specimen[i];
-                  li.setAttribute('value', specimen[i]);
-                  li.setAttribute('specimen', specimen[i]);
-                  li.setAttribute('id', i);
+                  li.innerHTML = specimen[i].name;
+                  li.setAttribute('value', specimen[i].name);
+                  li.setAttribute('specimen', specimen[i].name);
+                  li.setAttribute('id', specimen[i].concept_id);
                   li.setAttribute('class', 'test-reasons ' + oddEven);
                   li.setAttribute('onmousedown', "selectSpecimen(this);");
                   ul.appendChild(li);
@@ -496,6 +549,7 @@
 
             e.style = 'background-color: lightblue;';
             selected_tests[selected_tests.length - 1]["Specimen"] = e.getAttribute('specimen')
+            selected_tests[selected_tests.length - 1]["Specimen ID"] = e.getAttribute('id')
 
             disableReasons();
           }

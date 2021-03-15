@@ -226,13 +226,14 @@ function postVLalertResponses(responses, nextEncName) {
 
       //To be looked at ... now I will just hack through
       try {
-        /*if(nextEncName.length > 0)
-          createEncounter();*/
-
         if(nextEncName.length > 0)
           createOrderEncounter();
 
-      }catch(l) {}
+      }catch(l) {
+        if(nextEncName.length > 0)
+          createEncounter();
+
+      }
 
     }
   };
