@@ -659,6 +659,7 @@
             var verification_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/items/" + pharmacyBatchItemID;
             var current_quantity = {
                 "current_quantity": current_quantity,
+                "reason": reason
             };
 
             var xhttp = new XMLHttpRequest();
