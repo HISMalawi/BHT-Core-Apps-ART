@@ -35,6 +35,11 @@
       "activitiesIcon": "/assets/images/registration.png",
       "url": "/apps/ART/views/encounters/hiv_clinic_registration.html"
     },
+    "patient type registration": {
+      "available": true,
+      "activitiesIcon": "/assets/images/registration.png",
+      "url": "/apps/ART/views/encounters/registration.html"
+    },
     "art adherence": {
       "available": true,
       "activitiesIcon": "/assets/images/adherence.png",
