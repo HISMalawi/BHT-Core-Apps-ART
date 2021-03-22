@@ -1,0 +1,107 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+
+<script>
+var tt_cancel_destination = "/";
+
+function addYesNo() {
+    var tar = document.getElementById("inputFrame" + tstCurrentPage);
+    var attr = 'Activate screening?,1805,changeNextBTN'
+    buildYesNoUI('CxCa screening', attr, tar); 
+}
+
+function changeNextBTN(){
+    let nextBTN = __$('nextButton');
+    if(yesNo_Hash['CxCa screening']['Activate screening?'] == 'Yes'){
+        nextBTN.innerHTML = "<span>Next</span>";
+        nextBTN.setAttribute("onmousedown","gotoNextPage();");
+    }else{
+        submissionReady();
+    }
+}
+
+function submissionReady(){
+    let nextBTN = __$('nextButton');
+    nextBTN.innerHTML = "<span>Finish</span>";
+    nextBTN.setAttribute("onmousedown","submitChoice();");
+}
+
+let global_properties = [];
+
+function submitChoice(){
+    if(yesNo_Hash['CxCa screening']['Activate screening?'] == 'Yes'){
+        let start_age = parseInt(__$('start_age').value);
+        let end_age = parseInt(__$('touchscreenInput' + tstCurrentPage).value);
+
+        if(start_age < 1 || end_age < 1 ||  isNaN(start_age) ||  isNaN(end_age)){
+            showMessage("Please enter a valid start age or end age");
+            return;
+        }
+        
+        if(end_age < start_age){
+            showMessage("End age has to be equal or greater than start age");
+            return;
+        }
+
+        global_properties.push({
+            property: "activate.cervical.cancer.screening", 
+            property_value: 'true'
+        });
+  
+        global_properties.push({
+            property: "cervical.cancer.screening.age.bounds", 
+            property_value: `${start_age}:${end_age}`
+        });
+        
+        submitParameters(global_properties[0], "/global_properties", "submitAgeBounds");
+    }else{
+        global_property = {    
+            property: "activate.cervical.cancer.screening", 
+            property_value: 'false'
+        }
+        submitParameters(global_property, "/global_properties", "backToGP");
+    }
+}
+
+function submitAgeBounds(e){
+    submitParameters(global_properties[1], "/global_properties", "backToGP");
+}
+
+function backToGP(e){
+    history.back();
+}
+</script>
+
+
+
+
+
+
+
+<body id="mateme">
+    <div id="container">
+        <div id="content">
+
+        <form>
+            <input type="text" name="summary"
+            tt_onLoad="__$('keyboard').style.display = 'none';addYesNo();"
+            tt_pageStyleClass= "NoControls" helpText="Activate CxCa screening" optional = "true"/>
+
+            <input absoluteMin="10" field_type="number" helpText="Screening start age" 
+            id="start_age" name="start_age" tt_onLoad="" tt_pageStyleClass="Numeric NumbersOnly" type="text" />
+
+            <input absoluteMin="10" field_type="number" helpText="Screening end age"
+            tt_onLoad="submissionReady();" 
+            id="end_age" name="end_age" tt_onLoad="" tt_pageStyleClass="Numeric NumbersOnly" type="text" />
+
+        </form>
+      </div>
+   </div>
+</body>
