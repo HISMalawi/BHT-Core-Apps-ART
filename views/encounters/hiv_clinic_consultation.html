@@ -2199,6 +2199,18 @@
                 }
 
                 if (patientGender == "F") {
+                    if(__$('cervical_cancer_screening').value) {
+                        obs.observations.push({
+                        concept_id: 9992,
+                        value_coded: (__$('cervical_cancer_screening').value === "NO" ? 1066 : 1065)
+                    })
+                    }
+                    if(__$('cervical_cancer_screening').value === "NO") {
+                       obs.observations.push({
+                        concept_id: 10008,
+                        value_text:  __$('cxca_reason').value
+                    })
+                    }
                     obs.observations.push({
                         concept_id: 6131,
                         value_coded: (answers_hash["is_patient_pregnant"].length > 0 ? (answers_hash["is_patient_pregnant"].trim().toUpperCase() == "YES" ? 1065 : 1066) : "")
@@ -2600,6 +2612,12 @@
                 $("breastfeeding").value = breast_feeding_status.toUpperCase();
 
             }
+            function updateCxCaAnswers() {
+                let screen = yesNo_Hash["cxca"]["Screen for cervical cancer?"];
+
+                $('cervical_cancer_screening').value = screen.toUpperCase();
+
+            }
 
             function changeSubmitFunction() {
                 /*var nextButton = document.getElementById('nextButton');
@@ -2824,6 +2842,72 @@
                 jQuery(".loader").hide();
             }
 
+            function checkCxCaEligibility() {
+                
+                let status = false;
+                let eligible = eligibleForScreening();
+                let inAgeRange = checkEligibleAge();
+                if(sessionStorage.patientGender === 'F' && eligible== true && inAgeRange == true && $('pregnant').value !== 'YES') {
+                    status = true;
+                }
+                return status;
+            }
+
+            function eligibleForScreening() {
+                let status = true;
+                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/observations?person_id=" + sessionStorage.patientID + "&concept_id=" + 9992 + "&page_size=1";
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                        var lastOb = JSON.parse(this.responseText)[0];
+                        var latest_cxca_observation = JSON.parse(this.responseText)[0];
+                        if (latest_cxca_observation) {
+                            if(moment(sessionStorage.sessionDate).diff(moment(latest_cxca_observation.obs_datetime), 'years') < 1) {
+                                let value_coded = parseInt(latest_cxca_observation.value_coded);
+                                if (value_coded == 1066) {
+                                    status = true;
+                                } else if (value_coded == 1065) {
+                                    status = false;
+                                }
+                            }
+                            
+                        }
+                    }
+                };
+
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+                return status;
+            }
+
+            function checkEligibleAge() {
+                //  let status = true;
+                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/global_properties?property=cervical.cancer.screening.age.bounds";
+                let min_age = null;
+                let max_age = null;
+                let status = true;
+                // var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/observations?person_id=" + sessionStorage.patientID + "&concept_id=" + 9992 + "&page_size=1";
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                        var data  = JSON.parse(this.responseText)['cervical.cancer.screening.age.bounds'];
+                        min_age = data.split(':')[0];
+                        max_age = data.split(':')[1];
+                        if(parseInt(sessionStorage.patientAge) < min_age && parseInt(sessionStorage.patientAge) > max_age) {
+                            status = false;
+                        }
+
+                    }
+                };
+
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+                return status;
+            }
         </script>
 
         <form action="#" method='post'>
@@ -2992,6 +3076,29 @@
 
             <!-- Extended family assessment end -->
 
+
+            <!-- Cervical cancer screening -->
+
+            <input type="text" name="cervical_cancer_screening"
+            id="cervical_cancer_screening"
+                   condition="checkCxCaEligibility() === true"
+                   tt_onLoad="__$('keyboard').style.display = 'none';addCxCaYesNo(); "
+                tt_onUnLoad="updateCxCaAnswers();"
+                   tt_pageStyleClass="NoControls" helpText="Screen for cervical cancer" optional="true"/>
+
+            <select allowFreeText="false"
+                   condition="$('cervical_cancer_screening').value === 'NO'"
+                    helpText="Reason for declining cervical cancer screening"
+                    id="cxca_reason"
+                    name="cxca_reason"
+                    tt_pageStyleClass="NoKeyboard">
+                <option value=''></option>
+                <option value=""></option>
+                <option value="Accepted">Accepted</option>
+                <option value="Declined">Declined</option>
+                <option value="Discuss with spouse">Discuss with spouse</option>
+            </select>
+            <!-- Cervical cancer screening end -->
 
             <input allowFreeText="false" id="on_fpm" name="observations[][value_coded_or_text]" type="hidden" value=""/>
 

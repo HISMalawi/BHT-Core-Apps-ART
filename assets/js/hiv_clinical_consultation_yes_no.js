@@ -60,7 +60,19 @@ function addPregBreastFeedingYesNo() {
   }
   
 }
+function addCxCaYesNo() {
+  var tar = document.getElementById("inputFrame" + tstCurrentPage);
 
+  
+    var attr = 'Screen for cervical cancer?,11'
+    buildYesNoUI('cxca', attr, tar);
+
+  if(iac == true) {
+    var nextButton =  document.getElementById('nextButton');
+    nextButton.setAttribute('onmousedown', previousNextButton);
+  }
+  
+}
 function addIACYesNo() {
   var frame   = document.getElementById("inputFrame" + tstCurrentPage);
   var effectsLeft  = iacLeft.join(";").split(";").join("#");
