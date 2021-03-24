@@ -655,9 +655,11 @@
             var pack_size = data[0]["pack_size"];
             var tins = parseFloat(data[0]["tins"]);
             var current_quantity = tins * pack_size;
+            var reason = __$('reason').value;
             var verification_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/items/" + pharmacyBatchItemID;
             var current_quantity = {
                 "current_quantity": current_quantity,
+                "reason": reason
             };
 
             var xhttp = new XMLHttpRequest();
@@ -685,7 +687,13 @@
             <input type="text" name="summary"
                    tt_onLoad="showStocVerification();"
                    tt_pageStyleClass="NoControls" helpText="Stock Verification" optional="true"/>
-
+             
+                   <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'">
+                        <option value=""></option>
+                        <option value="Monthly stock take">Monthly stock take</option>
+                        <option value="Audit">Audit</option>
+                        <option value="Adhoc (due to stock imbalance)">Adhoc (due to stock imbalance)</option>
+                        <option value="Supervision">Supervision</option>
             <input helpText="<span style='color: red;background: white;'>Summary </span>"
                    id="summary" name="showSummary" optional="true"
                    tt_onLoad="showSummary(); customizeFinishButton();"

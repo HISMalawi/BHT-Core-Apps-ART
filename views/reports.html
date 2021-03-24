@@ -80,7 +80,8 @@ function reportGrouping(group) {
       //["Viral load", "","#",'link'],
       //["IPT (coverage)","","/apps/ART/views/reports/clinic/report_dates.html?report=ipt_disggregared",'link'],
       //["Regimen distribution (Weight)","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_distribution_weight",'link'],
-      ["TX CURR MMD","","/apps/ART/views/reports/moh/report_dates.html?report=tx_curr_mmd",'link']
+      ["TX CURR MMD","","/apps/ART/views/reports/moh/report_dates.html?report=tx_curr_mmd",'link'],
+      ["TPT new initiations","","/apps/ART/views/reports/moh/report_dates.html?report=tpt_new_initiations",'link']
     ];
   }else if(group == 'Clinic'){
     return [
@@ -93,7 +94,9 @@ function reportGrouping(group) {
       ["Regimen report","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_report",'link'],
       ["Regimens and Formulation ","","/apps/ART/views/reports/clinic/report_dates.html?report=regimen_select",'link'],
       ["Pregnant Patients","","/apps/ART/views/reports/clinic/report_dates.html?report=pregnant_patients",'link'],
-      ["Retention","","/apps/ART/views/reports/clinic/report_dates.html?report=retention",'link']
+      ["Retention","","/apps/ART/views/reports/clinic/report_dates.html?report=retention",'link'],
+      ["Stock card report", '', "/apps/ART/views/stock_management/stock_card_report.html", 'link'],
+      ["Client due VL ","","/apps/ART/views/reports/clinic/report_dates.html?report=clients_due_vl",'link']
     ];
   }else if(group == 'PEPFAR'){
       return [

@@ -665,7 +665,7 @@
                     var className = "even";
                     for (var i = 0; i <= batch_items.length - 1; i++) {
                         var drug_id = batch_items[i].drug_id;
-                        var expiry_date = batch_items[i].expiry_date;
+                        var expiry_date = moment(batch_items[i].expiry_date).format('DD/MMM/YYYY');
                         var pharmacy_batch_item_id = batch_items[i].id;
                         var drug_name = drug_map_hash[drug_id] + " Expiry date:      " + expiry_date;
                         if (!expiry_dates.includes(expiry_date)) {

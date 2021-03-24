@@ -27,7 +27,7 @@
 
 
             var pharmacy_items_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-            pharmacy_items_url += "/api/v1/pharmacy/items";
+            pharmacy_items_url += "/api/v1/pharmacy/audit_trail";
 
 
             var xhttp = new XMLHttpRequest();
@@ -39,61 +39,74 @@
                     html += "<table id='stock'>";
                     html += "<thead>";
                     html += "<th style='padding-right: 3px;'>Medication</th>";
-                    html += "<th>Earliest Expiry Date</th>";
-                    html += "<th>Stock on hand (Tins)</th>";
+                    html += "<th>Transaction Date</th>";
+                    html += "<th>Transaction Type</th>";
+                    html += "<th>Quantity</th>";
+                    html += "<th>Username</th>";
+                    html += "<th>Reason</th>";
                     html += "</thead>";
                     html += "<tbody>";
 
                     html += "<tbody>";
-
-                    var pharmacyData = {};
-                    for (var key in pharmacy_items) {   // for ... of or just forEach???
-                        var drug_id = pharmacy_items[key]["drug_id"];
-                        var expiry_date = pharmacy_items[key]["expiry_date"];
-                        expiry_date = moment(expiry_date).format("DD/MMM/YYYY");
-                        var drug_name = pharmacy_items[key]["drug_name"];
-                        var drug_short_name = drug_short_full_name[pharmacy_items[key]["drug_id"]]["short_name"];
-                        var pack_size = drug_cms_packsizes[drug_short_name];
-                        var current_quantity = pharmacy_items[key]["current_quantity"];
-
-                        if (!pharmacyData[drug_id]) {
-                            pharmacyData[drug_id] = {};
-                            pharmacyData[drug_id]["current_quantity"] = 0;
-                            pharmacyData[drug_id]["expiry_dates"] = [];
-                            pharmacyData[drug_id]["pack_size"] = pack_size;
-                            pharmacyData[drug_id]["drug_name"] = drug_name;
-                            pharmacyData[drug_id]["drug_short_name"] = drug_short_name;
-                        }
-
-                        if (pharmacy_items[key].current_quantity === 0) continue;
-
-                        pharmacyData[drug_id]["current_quantity"] += parseFloat(current_quantity);
-                        pharmacyData[drug_id]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
-                    }
-
-                    for (var drugID in pharmacyData) {
-                        var drug_name = pharmacyData[drugID]["drug_name"];
-                        var drug_short_name = pharmacyData[drugID]["drug_short_name"];
-                        var pack_size = pharmacyData[drugID]["pack_size"];
-                        var current_quantity = Math.trunc(pharmacyData[drugID]["current_quantity"] / pack_size);
-                        var expiry_dates = pharmacyData[drugID]["expiry_dates"];
-
-                        expiry_dates.sort(function (a, b) {
-                            return new Date(a) - new Date(b);
-                        });
-                        expiry_date = moment(expiry_dates[0]).format("DD/MMM/YYYY");
-
+                    pharmacy_items.forEach(element => {
                         html += "<tr>";
-                        html += "<td class='medication'>" + drug_short_name + "</td>";
-                        html += "<td class='expiry-date'>" + expiry_date + "</td>";
-                        html += "<td class='current-quantity'>" + current_quantity + "</td>";
-                        html += "</tr>";
-                    }
-
+                        html += "<td class='medication'>" + element.drug_name + "</td>";
+                        html += "<td class='expiry-date'>" + moment(element.transaction_date).format('DD/MMM/YYYY') + "</td>";
+                        html += "<td class='current-quantity' style='text-align: left;'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
+                        html += "<td class='current-quantity'>" + element.amount_committed_to_stock + "</td>";
+                        html += "<td class='current-quantity'>" + element.username + "</td>";
+                        html += "<td class='current-quantity'>" + element.transaction_reason + "</td>";
+                        html += "</tr>";   
+                    });
+                    
                     html += "</tbody>";
                     html += "</table>";
                     html += "</div>";
                     jQuery(".inputFrameClass").append(html);
+                    // var pharmacyData = {};
+                    // for (var key in pharmacy_items) {   // for ... of or just forEach???
+                    //     var drug_id = pharmacy_items[key]["drug_id"];
+                    //     var expiry_date = pharmacy_items[key]["expiry_date"];
+                    //     expiry_date = moment(expiry_date).format("MMM/YYYY");
+                    //     var drug_name = pharmacy_items[key]["drug_name"];
+                    //     var drug_short_name = drug_short_full_name[pharmacy_items[key]["drug_id"]]["short_name"];
+                    //     var pack_size = drug_cms_packsizes[drug_short_name];
+                    //     var current_quantity = pharmacy_items[key]["current_quantity"];
+
+                    //     if (!pharmacyData[drug_id]) {
+                    //         pharmacyData[drug_id] = {};
+                    //         pharmacyData[drug_id]["current_quantity"] = 0;
+                    //         pharmacyData[drug_id]["expiry_dates"] = [];
+                    //         pharmacyData[drug_id]["pack_size"] = pack_size;
+                    //         pharmacyData[drug_id]["drug_name"] = drug_name;
+                    //         pharmacyData[drug_id]["drug_short_name"] = drug_short_name;
+                    //     }
+
+                    //     if (pharmacy_items[key].current_quantity === 0) continue;
+
+                    //     pharmacyData[drug_id]["current_quantity"] += parseFloat(current_quantity);
+                    //     pharmacyData[drug_id]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
+                    // }
+
+                    // for (var drugID in pharmacyData) {
+                    //     var drug_name = pharmacyData[drugID]["drug_name"];
+                    //     var drug_short_name = pharmacyData[drugID]["drug_short_name"];
+                    //     var pack_size = pharmacyData[drugID]["pack_size"];
+                    //     var current_quantity = Math.trunc(pharmacyData[drugID]["current_quantity"] / pack_size);
+                    //     var expiry_dates = pharmacyData[drugID]["expiry_dates"];
+
+                    //     expiry_dates.sort(function (a, b) {
+                    //         return new Date(a) - new Date(b);
+                    //     });
+                    //     expiry_date = moment(expiry_dates[0]).format("MMM/YYYY");
+
+                    //     html += "<tr>";
+                    //     html += "<td class='medication'>" + drug_short_name + "</td>";
+                    //     html += "<td class='expiry-date'>" + expiry_date + "</td>";
+                    //     html += "<td class='current-quantity'>" + current_quantity + "</td>";
+                    //     html += "</tr>";
+                    // }
+                    
                 }
             };
 
@@ -121,7 +134,7 @@
 
             <input type="text" name="summary"
                    tt_onLoad="initializeVariables(); customizeFinishButton();"
-                   tt_pageStyleClass="NoControls" helpText="HIV product stock report" optional="true"/>
+                   tt_pageStyleClass="NoControls" helpText="ART Stock audit trail" optional="true"/>
 
         </form>
         <div class="loader"></div>
