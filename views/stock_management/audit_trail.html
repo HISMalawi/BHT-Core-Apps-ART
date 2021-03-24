@@ -52,7 +52,7 @@
                         html += "<tr>";
                         html += "<td class='medication'>" + element.drug_name + "</td>";
                         html += "<td class='expiry-date'>" + element.transaction_date + "</td>";
-                        html += "<td class='current-quantity'>" + element.transaction_type + "</td>";
+                        html += "<td class='current-quantity' style='text-align: left;'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
                         html += "<td class='current-quantity'>" + element.amount_committed_to_stock + "</td>";
                         html += "<td class='current-quantity'>" + element.username + "</td>";
                         html += "<td class='current-quantity'>" + element.transaction_reason + "</td>";
