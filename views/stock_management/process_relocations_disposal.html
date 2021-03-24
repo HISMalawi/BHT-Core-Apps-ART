@@ -1451,7 +1451,7 @@
 
                 for (var drug_name in drugs_hash) {
                     var drug = drug_name.split("::")[0];
-                    var date_of_expiry = drug_name.split("::")[1].split("_")[0]//drugs_hash[drug_name]["date_of_expiry"];
+                    var date_of_expiry = moment(drug_name.split("::")[1].split("_")[0]).format('DD/MMM/YYYY')//drugs_hash[drug_name]["date_of_expiry"];
                     var tabs_per_tin = drugs_hash[drug_name]["tabs_per_tin"];
                     var total_tins = drugs_hash[drug_name]["total_tins"];
                     var authorization_code = drugs_hash[drug_name]["authorization_code"];
