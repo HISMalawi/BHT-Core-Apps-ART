@@ -497,12 +497,12 @@
                     [
                         {
                             "type": "button",
-                            "id": "btnAddYearFor" + target.id,
+                            "id": "btnAddDateFor" + target.id,
                             "target": target.id,
                             "value": "+",
-                            "onmousedown": "incrementYear(this.getAttribute('target'))",
+                            "onmousedown": "incrementDate(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "height: 60px; margin: auto; width: 100%;"
+                            "style": " height: 60px; margin: auto; width: 100%;"
                         },
                         {
                             "type": "button",
@@ -515,23 +515,24 @@
                         },
                         {
                             "type": "button",
-                            "id": "btnAddDateFor" + target.id,
+                            "id": "btnAddYearFor" + target.id,
                             "target": target.id,
                             "value": "+",
-                            "onmousedown": "incrementDate(this.getAttribute('target'))",
+                            "onmousedown": "incrementYear(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": " height: 60px; margin: auto; width: 100%;"
+                            "style": "height: 60px; margin: auto; width: 100%;"
                         }
+                       
                     ],
                     [
                         {
                             "type": "input",
-                            "id": "txtYearFor" + target.id,
+                            "id": "txtDateFor" + target.id,
                             "target": target.id,
-                            "value": date.getFullYear(),
-                            "onmousedown": "overwriteNumber = true; if(__$('keyboard')){document.body.removeChild(__$('keyboard'));} else {showShield(\"checkDate('\" + this.getAttribute('target') + \"', false)\"); showKeyboard(__$('txtYearFor' + this.getAttribute('target')),{':':':','/':'/','.':'.','abc':'abc'},true);} checkDate(this.getAttribute('target'));",
+                            "value": date.getDate(),
+                            "onmousedown": "overwriteNumber = true; if(__$('keyboard')){document.body.removeChild(__$('keyboard'));} else {showShield(\"checkDate('\" + this.getAttribute('target') + \"', false)\"); showKeyboard(__$('txtDateFor' + this.getAttribute('target')),{':':':','/':'/','.':'.','abc':'abc'},true);} checkDate(this.getAttribute('target'));",
                             "class": "input_cell",
-                            "style": "font-size: 24px; text-align: center; width: 100%;"
+                            "style": " font-size: 24px; text-align: center; width: 100%;"
                         },
                         {
                             "type": "input",
@@ -544,24 +545,26 @@
                         },
                         {
                             "type": "input",
-                            "id": "txtDateFor" + target.id,
+                            "id": "txtYearFor" + target.id,
                             "target": target.id,
-                            "value": date.getDate(),
-                            "onmousedown": "overwriteNumber = true; if(__$('keyboard')){document.body.removeChild(__$('keyboard'));} else {showShield(\"checkDate('\" + this.getAttribute('target') + \"', false)\"); showKeyboard(__$('txtDateFor' + this.getAttribute('target')),{':':':','/':'/','.':'.','abc':'abc'},true);} checkDate(this.getAttribute('target'));",
+                            "value": date.getFullYear(),
+                            "onmousedown": "overwriteNumber = true; if(__$('keyboard')){document.body.removeChild(__$('keyboard'));} else {showShield(\"checkDate('\" + this.getAttribute('target') + \"', false)\"); showKeyboard(__$('txtYearFor' + this.getAttribute('target')),{':':':','/':'/','.':'.','abc':'abc'},true);} checkDate(this.getAttribute('target'));",
                             "class": "input_cell",
-                            "style": " font-size: 24px; text-align: center; width: 100%;"
-                        }
+                            "style": "font-size: 24px; text-align: center; width: 100%;"
+                        },
+                        
                     ],
                     [
                         {
                             "type": "button",
-                            "id": "btnSubtractYearFor" + target.id,
+                            "id": "btnSubtractDateFor" + target.id,
                             "target": target.id,
                             "value": "-",
-                            "onmousedown": "decrementYear(this.getAttribute('target'))",
+                            "onmousedown": "decrementDate(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": "height: 60px; margin: auto; width: 100%;"
+                            "style": " height: 60px; margin: auto; width: 100%;"
                         },
+
                         {
                             "type": "button",
                             "id": "btnSubtractMonthFor" + target.id,
@@ -573,13 +576,13 @@
                         },
                         {
                             "type": "button",
-                            "id": "btnSubtractDateFor" + target.id,
+                            "id": "btnSubtractYearFor" + target.id,
                             "target": target.id,
                             "value": "-",
-                            "onmousedown": "decrementDate(this.getAttribute('target'))",
+                            "onmousedown": "decrementYear(this.getAttribute('target'))",
                             "class": "dbutton bluee",
-                            "style": " height: 60px; margin: auto; width: 100%;"
-                        }
+                            "style": "height: 60px; margin: auto; width: 100%;"
+                        },
                     ]
                 ];
 

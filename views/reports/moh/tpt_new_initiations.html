@@ -308,18 +308,17 @@
   function disaggregateData(data) {
     var age_groups = ageGroups();
     var genders = ["M", "F"];
-    const client_sex = ["F", "M"];
+    const client_sex = ["F", "M", "Unknown"];
 
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
-        let idx = -1;
-        let num;
-        if (element !== "Unknown") {
 
           if (gender === 'F') {
-            num = index + 1 + idx;
+            num = index + 1 ;
           } else if (gender === 'M') {
-            num = index + 16 + idx;
+            num = index + 16;
+          }else{
+            num = index + 32;
           }
           rows.push({
             number: num,
@@ -334,7 +333,6 @@
             setDrillClients(data[element]["6H"][gender], num, "sixh"),
           ]).draw()
 
-        }
       });
     })
 
