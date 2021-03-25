@@ -20,10 +20,12 @@ function getARTstartedDate() {
       if(Object.keys(vl_info).length > 0){
         prepareForVLcheck();
       }else{
-        var cover = document.getElementById('regimen-change-cover');
-        var loader = document.getElementsByClassName('loader')[0];
-        cover.style = 'display: none';
-        loader.style = 'display: none;'
+        try {
+          var cover = document.getElementById('regimen-change-cover');
+          var loader = document.getElementsByClassName('loader')[0];
+          cover.style = 'display: none';
+          loader.style = 'display: none;'
+        }catch(e){}
       }
     }
   };

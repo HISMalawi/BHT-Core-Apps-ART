@@ -2,11 +2,13 @@
 <link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
 
 <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<!--script type="text/javascript" src="../../../assets/js/datatables/jquery-3.5.1.js"></script-->
 
 <link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
 <link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<!--script type="text/javascript" src="../../../assets/js/datatables/jquery.dataTables.min2.js"></script-->
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
 
 <!-- pring report start .......................................................................... -->
@@ -125,6 +127,22 @@ footer {
   width: 12px;
 }
 
+.six-h {
+  /*background-color: #F0E68C;*/
+  border-right-width: 1px;
+  border-right-style: solid;
+}
+
+.gender {
+  border-right-width: 1px;
+  border-right-style: solid;
+  text-align: center;
+  width: 12px;
+}
+
+.age-groups {
+  width: 30%;
+}
 </style>
 
 <script>
@@ -143,11 +161,12 @@ function initializeTable() {
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
                   API Version ${sessionStorage.apiVersion}`;
+
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 350,
+    scrollY: 310,
     Processing: true,
     ServerSide: true,
     scroller: {
@@ -167,10 +186,16 @@ function initializeTable() {
     ],
     columnDefs: [
       {"className": "dt-row-counters", "targets": 0},
-      {"className": "dt-numbers", "targets": 3},
-      {"className": "dt-numbers", "targets": 4},
-      {"className": "dt-numbers", "targets": 5},
-      {"className": "dt-numbers", "targets": 6}
+      {"className": "age-groups", "targets": 1},
+      {"className": "gender", "targets": 2},
+      {"className": "dt-numbers three-hp", "targets": 3},
+      {"className": "dt-numbers six-h", "targets": 4},
+      {"className": "dt-numbers three-hp", "targets": 5},
+      {"className": "dt-numbers six-h", "targets": 6},
+      {"className": "dt-numbers three-hp", "targets": 7},
+      {"className": "dt-numbers six-h", "targets": 8},
+      {"className": "dt-numbers three-hp", "targets": 9},
+      {"className": "dt-numbers six-h", "targets": 10}
     ]
   });
 
@@ -209,13 +234,29 @@ function initializeTable() {
   <table id="example" class="display" width="100%">
     <thead>
       <tr>
+        <!--th rowspan="2" colspan="3">&nbsp;</th-->
+
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+
+        <th style="font-size: 12px;" colspan="2">Started New on ART</th>
+        <th style="font-size: 12px;" colspan="2">Started Previously on ART</th>
+        <th style="font-size: 12px;" colspan="2">Completed New on ART</th>
+        <th style="font-size: 12px;" colspan="2">Completed Previously on ART</th>
+      </tr>
+      <tr>
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th>Started<br />New on ART</th>
-        <th>Started<br />Previously on ART</th>
-        <th>Completed<br />New on ART</th>
-        <th>Completed<br />Previously on ART</th>
+        <th>3HP</th>
+        <th>6H</th>
+        <th>3HP</th>
+        <th>6H</th>
+        <th>3HP</th>
+        <th>6H</th>
+        <th>3HP</th>
+        <th>6H</th>
       </tr>
     </thead>
     <tfoot>
@@ -240,7 +281,7 @@ function initializeTable() {
 
 function initializeReport() {
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
-  url += "/tb_prev?date=" + moment().format('YYYY-MM-DD');
+  url += "/programs/1/reports/tb_prev2?date=" + moment().format('YYYY-MM-DD');
   url += "&start_date=" + start_date;
   url += "&end_date=" + end_date;
   url += '&program_id=' + sessionStorage.programID;
@@ -262,44 +303,13 @@ var reporting_data = {}
 
 function disaggregateData(data){
   var age_groups = ageGroups();
-  var genders = ["M","F"];
 
-  for(var patient_id in data){
-    var info  = data[patient_id];
-    var group = info.age_group;
-    var sex = info.gender;
-    var client_type = info.client;
-    var  outcome = info.outcome;
-
-    if(reporting_data[group] == undefined)
-      reporting_data[group]  = {};
-
-    if(reporting_data[group][sex] == undefined) {
-      reporting_data[group][sex]  = {
-        new: [], old: [], art: [], defaulter: [], died: [],
-        stopped: [], transfer_out: [], unknown: [], 
-        new_initiated: [], old_initiated: []
-      };
-    }
-
-    if(client_type == 'New on ART' && info.course_completed)
-      reporting_data[group][sex].new.push(patient_id);
-
-    if(client_type == 'Previously on ART' &&  info.course_completed)
-      reporting_data[group][sex].old.push(patient_id);
-
-    if(client_type == 'New on ART'){
-      reporting_data[group][sex].new_initiated.push(patient_id);
-    }else{
-      reporting_data[group][sex].old_initiated.push(patient_id);
-    }
-  }
   document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";
-  renderResults();
+  renderResults(data);
 }
 
-function renderResults(){
+function renderResults(data){
   var  counter = 1;
   var age_groups = ageGroups();
   var genders = ["F","M"];
@@ -307,20 +317,24 @@ function renderResults(){
   for(var g = 0; g < genders.length; g++){
     for(var i = 0; i < age_groups.length; i++){
       try {
-        var info = reporting_data[age_groups[i]][genders[g]];
+        var info = data[age_groups[i]][genders[g]];
       }catch(e){
         var info;
       }
 
       if(info == undefined){
-        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0, 0,  0 ]).draw();
+        data_table.row.add([ counter++, age_groups[i], genders[g], 0, 0, 0,  0, 0, 0, 0, 0 ]).draw();
         continue;
       }else{
         data_table.row.add([ counter++, age_groups[i], genders[g], 
-          setDrillClients(age_groups[i], genders[g], info.new_initiated, 1),
-          setDrillClients(age_groups[i], genders[g], info.old_initiated, 2),
-          setDrillClients(age_groups[i], genders[g], info.new, 3),
-          setDrillClients(age_groups[i], genders[g], info.old, 4)
+          setDrillClients(age_groups[i], genders[g], info['3HP'].started_new_on_art, 1),
+          setDrillClients(age_groups[i], genders[g], info['6H'].started_new_on_art, 2),
+          setDrillClients(age_groups[i], genders[g], info['3HP'].started_previously_on_art, 3),
+          setDrillClients(age_groups[i], genders[g], info['6H'].started_previously_on_art, 5),
+          setDrillClients(age_groups[i], genders[g], info['3HP'].completed_new_on_art, 6),
+          setDrillClients(age_groups[i], genders[g], info['6H'].completed_new_on_art, 7),
+          setDrillClients(age_groups[i], genders[g], info['3HP'].completed_previously_on_art, 8),
+          setDrillClients(age_groups[i], genders[g], info['6H'].completed_previously_on_art, 9)
           ]).draw();
         delete info;
         info = undefined;
@@ -333,8 +347,8 @@ function renderResults(){
 
 var clients = {};
 
-function setDrillClients(age_group, sex, patient_ids, column_number){
-  if(patient_ids.length < 1)
+function setDrillClients(age_group, sex, patients, column_number){
+  if(patients.length < 1)
     return 0;
 
   if(!clients[age_group])
@@ -343,7 +357,12 @@ function setDrillClients(age_group, sex, patient_ids, column_number){
   if(!clients[age_group][sex])
     clients[age_group][sex] = {};
 
-  clients[age_group][sex][column_number] = patient_ids;
+  if(!clients[age_group][sex][column_number])
+    clients[age_group][sex][column_number] = [];
+    
+  for(let i = 0; i < patients.length; i++){
+    clients[age_group][sex][column_number].push(patients[i].patient_id);
+  }
   
   var html = "drillDown(" + column_number;
   html += ", '" +  sex + "','" +  age_group + "')";
@@ -352,7 +371,7 @@ function setDrillClients(age_group, sex, patient_ids, column_number){
   var a = document.createElement("a");
   a.setAttribute("onclick", html);
   a.setAttribute("href","#");
-  a.innerHTML = patient_ids.length;
+  a.innerHTML = patients.length;
   span.appendChild(a);
 
 
