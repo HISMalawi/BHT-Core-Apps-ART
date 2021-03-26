@@ -691,7 +691,7 @@ function validateReport() {
   
   
   if(cohort_report) {
-    cohort_report = JSON.parse(sessionStorage.reportValidation);
+    cohort_report = JSON.parse(cohort_report);
     let report_start_date = cohort_report.cohort.start_date;
     let report_end_date = cohort_report.cohort.end_date;
 
@@ -699,8 +699,8 @@ function validateReport() {
       valid_report.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
         reporting period and then run this report.</b>`;
     }else if(cohort_report.cohort.indicators.initiated_on_art_first_time != TXnew_initiated_on_art_first_time) {
-      valid_report.innerHTML = `<span style='color: red;'>Report is <b>Not</b> consistent. MoH cohort initiated 
-        on ART first time (${cohort_report.cohort.indicators.initiated_on_art_first_time}) is not equal to total TX new; ${TXnew_initiated_on_art_first_time}</span>`;
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort initiated 
+        on ART first time (${cohort_report.cohort.indicators.initiated_on_art_first_time}) is not matching with TX new (${TXnew_initiated_on_art_first_time})</span>`;
     }else{
       valid_report.innerHTML = `<span style='color: green;'>Report is consistent with MoH 
         initiated on ART first time; ${cohort_report.cohort.indicators.initiated_on_art_first_time}</span>`;

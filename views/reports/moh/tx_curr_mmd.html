@@ -796,9 +796,10 @@ function validateReport(){
   let total_on_art = cohort_report.cohort.indicators.total_alive_and_on_art;
 
   if(total_on_art != total_clients){
-    validation_message.innerHTML = `<b style="color:red;">Report not consistent with MoH cohort Alive and on ART clients; ${total_on_art}.</b>`
+    validation_message.innerHTML = `<b style="color:red;">Validation error: MoH cohort Alive and on ART clients (${total_on_art}) is not
+       not matching with total TX MMD clients.</b>`
   }else{
-    validation_message.innerHTML = `<b style="color:green;">Report is consistent with MoH cohort Alive and on ART clients; ${total_on_art}.</b>`
+    validation_message.innerHTML = `<b style="color:green;">Report is consistent with MoH cohort Alive and on ART clients (${total_on_art}).</b>`
   }
 
 

@@ -364,13 +364,13 @@
         displayMessage.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
           reporting period and then run this report.</b>`;
       }else if(cohort_report.cohort.indicators.newly_initiated_on_3hp != total_3hp_clients) {
-        displayMessage.innerHTML = `<b style="color:red;">Report not validated. MoH newly initiated on 3HP
-          (${cohort_report.cohort.indicators.newly_initiated_on_3hp}) is not equal to report newly 
-          initiated on 3hp (${total_3hp_clients}).</b>`;
+        displayMessage.innerHTML = `<b style="color:red;">Validation error: Total newly initiated on 3HP 
+          (${total_3hp_clients}) is not matching newly initiated on 3HP in Cohort report
+          (${cohort_report.cohort.indicators.newly_initiated_on_3hp}).</b>`;
       }else if(cohort_report.cohort.indicators.newly_initiated_on_ipt != total_IPT_clients) {
-        displayMessage.innerHTML = `<b style="color:red;">Report not validated. MoH newly initiated on IPT
-          (${cohort_report.cohort.indicators.newly_initiated_on_ipt}) is not equal to report 
-          newly initiated on IPT (${total_IPT_clients}).</b>`;
+        displayMessage.innerHTML = `<b style="color:red;">Validation error: Total newly initiated on IPT 
+          (${total_IPT_clients}) is not matching newly initiated on IPT in Cohort report
+          (${cohort_report.cohort.indicators.newly_initiated_on_ipt}).</b>`;
       }else{
         displayMessage.innerHTML = `<b style="color:red;">Report is consistent.</b>`;
       }
