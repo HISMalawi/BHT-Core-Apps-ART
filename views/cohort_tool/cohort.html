@@ -2270,10 +2270,48 @@ function validateReport() {
     document.body.insertBefore(title_div, current_div);
   }
 
+  let report_start_date;
+  let report_end_date;
+
+  if(quarter_val == undefined){
+    report_start_date = start_date;
+    report_end_date = end_date;
+  }else{
+    report_dates = QuarterDates();
+    report_start_date = report_dates[0];
+    report_end_date = report_dates[1];
+  }
+  sessionStorage.reportValidation = JSON.stringify({
+    cohort: 
+      {
+          start_date: `${report_start_date}`,
+          end_date: `${report_end_date}`,
+          indicators: {
+            ever_registered: parseInt(`${document.getElementById('cum_total_registered').innerHTML}`),
+            initiated_on_art_first_time: parseInt(`${document.getElementById('initiated_on_art_first_time').innerHTML}`),
+            total_alive_and_on_art: parseInt(`${document.getElementById('total_alive_and_on_art').innerHTML}`)
+          }
+     }
+    });
+
+
+
 }
 
+function QuarterDates(){
+  let report_year = parseInt(quarter_val.split(" ")[1]);
+  let reportQ = quarter_val.split(" ")[0];
 
-  
+  if(reportQ.match(/Q4/i)){
+    return [`${report_year}-10-01`, `${report_year}-12-31`];
+  }else if(reportQ.match(/Q3/i)){
+    return [`${report_year}-07-01`, `${report_year}-09-30`];
+  }else if(reportQ.match(/Q2/i)){
+    return [`${report_year}-04-01`, `${report_year}-06-30`];
+  }else if(reportQ.match(/Q1/i)){
+    return [`${report_year}-01-01`, `${report_year}-03-31`];
+  }
+}
   
 
 </script>

@@ -366,6 +366,7 @@ function assignTD(tds, num, gender) {
   tds[6].setAttribute("column-age", "tb-" + age);
 
   assignLink(tds, age, gender, num);
+  TXnew_initiated_on_art_first_time += num.tx_new.length;
 }
 
 
@@ -670,24 +671,39 @@ function validateReport() {
     report_total += parseInt(tds[4].innerHTML);
   }
 
-  var valid_report = document.getElementById('valid-report');
+  let valid_report = document.getElementById('valid-report');
+  let cohort_report = sessionStorage.reportValidation;
   
-  /*if(parseInt(on_art) == report_total) {
-    valid_report.innerHTML = "<span style='color: green;'>Report is consistent</span>";
-  }else{
-    valid_report.innerHTML = "<span style='color: red;'>Report is <b>Not</b> consistent</span>";
-  }*/ 
+  if(cohort_report == undefined) {
+    valid_report.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+      reporting period and then run this report.</b>`;
+  }
+  
+  
+  if(cohort_report) {
+    cohort_report = JSON.parse(sessionStorage.reportValidation);
+    let report_start_date = cohort_report.cohort.start_date;
+    let report_end_date = cohort_report.cohort.end_date;
+
+    if(report_start_date != start_date || report_end_date != end_date){
+      valid_report.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+        reporting period and then run this report.</b>`;
+    }else if(cohort_report.cohort.indicators.initiated_on_art_first_time != TXnew_initiated_on_art_first_time) {
+      valid_report.innerHTML = `<span style='color: red;'>Report is <b>Not</b> consistent. MoH cohort initiated 
+        on ART first time (${cohort_report.cohort.indicators.initiated_on_art_first_time}) is not equal to total TX new; ${TXnew_initiated_on_art_first_time}</span>`;
+    }else{
+      valid_report.innerHTML = `<span style='color: green;'>Report is consistent with MoH 
+        initiated on ART first time; ${cohort_report.cohort.indicators.initiated_on_art_first_time}</span>`;
+    }
+  }
+
+
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
   document.getElementById('on-art').innerHTML = on_art;
 }
 
-
-
-
-
-
-
+var TXnew_initiated_on_art_first_time = 0;
 
 
 
