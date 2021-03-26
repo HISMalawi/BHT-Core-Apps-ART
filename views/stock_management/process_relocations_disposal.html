@@ -277,10 +277,10 @@
                         var li = document.createElement("div");
                         li.id = all_drugs[k];
                         li.style.display = "table-cell";
-                        li.innerHTML = short_names[drug_name] + " :: " + expiry_date;
+                        li.innerHTML = drug_name + " :: " + expiry_date;
 
                         li.setAttribute("value", all_drugs[k]);
-                        li.setAttribute("cms_name", drug_cms_names[drug_name]);
+                        li.setAttribute("cms_name", drug_name);
 
                         li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                         li.className = (k % 2 == 0) ? "even" : "odd";

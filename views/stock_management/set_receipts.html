@@ -135,6 +135,7 @@
         }
 
         var Entries = (function (jQ, data) {
+            console.log(data);
             function guiSetup() {
 
                 var style = document.createElement("style");
@@ -270,7 +271,7 @@
                     var li = document.createElement("div");
                     li.id = all_drugs[k];
                     li.style.display = "table-cell";
-                    li.innerHTML = short_names[all_drugs[k]];
+                    li.innerHTML = all_drugs[k];
 
                     li.setAttribute("value", all_drugs[k]);
                     li.setAttribute("cms_name", drug_cms_names[all_drugs[k]]);
