@@ -1516,12 +1516,12 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;">Number of ART patients newly started on TB preventive therapy this quarter</td>
     <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
-      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_cpt');"
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('newly_initiated_on_ipt');"
       id="newly_initiated_on_ipt"><!-- total_patients_on_arvs_and_cpt --></a></td>
     <td style="font-weight:bold; order-top-width:1px; text-align:right;
       border-left-width:0px; border-bottom-width:1px; padding-right:5px;">6H</td>
     <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
-      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_ipt');"
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('newly_initiated_on_3hp');"
       id="newly_initiated_on_3hp"><!-- total_patients_on_arvs_and_ipt --></a></td>
     <td style="font-weight:bold; order-top-width:1px; text-align: right;
       border-left-width:0px; border-bottom-width:1px; padding-right:5px;">3HP</td>
@@ -2289,7 +2289,9 @@ function validateReport() {
           indicators: {
             ever_registered: parseInt(`${document.getElementById('cum_total_registered').innerHTML}`),
             initiated_on_art_first_time: parseInt(`${document.getElementById('initiated_on_art_first_time').innerHTML}`),
-            total_alive_and_on_art: parseInt(`${document.getElementById('total_alive_and_on_art').innerHTML}`)
+            total_alive_and_on_art: parseInt(`${document.getElementById('total_alive_and_on_art').innerHTML}`),
+            newly_initiated_on_3hp: parseInt(`${document.getElementById('newly_initiated_on_3hp').innerHTML}`),
+            newly_initiated_on_ipt: parseInt(`${document.getElementById('newly_initiated_on_ipt').innerHTML}`) 
           }
      }
     });

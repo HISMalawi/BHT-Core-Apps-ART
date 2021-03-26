@@ -100,6 +100,10 @@ tfoot {
   visibility: hidden;
 }
 
+.age-groups {
+  width: 30%;
+}
+
 </style>
 
 <script>
@@ -120,7 +124,7 @@ function initializeTable() {
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 400,
+    scrollY: 335,
     Processing: true,
     ServerSide: true,
     scroller: {
@@ -137,6 +141,9 @@ function initializeTable() {
         extend: 'pdf',
         title: 'PEPFAR ' + sessionStorage.currentLocation + ': cohort disaggregated report: ' + date_title 
       }
+    ],
+    columnDefs: [
+      {"className": "age-groups", "targets": 1}
     ]
   });
 
@@ -212,7 +219,7 @@ function initializeTable() {
 
 <script>
 
-var rebuild_outcome = false;
+var rebuild_outcome = true;
 
 function renegerateReport() {
   document.getElementById('spinner').style = 'display: inline;';
@@ -266,6 +273,9 @@ function getData(age_group) {
   url += "&rebuild_outcome=" + rebuild_outcome;
   url += "&initialize=false";
   url += '&program_id=' + sessionStorage.programID;
+
+  if(rebuild_outcome)
+    TXnew_initiated_on_art_first_time = 0;
 
   rebuild_outcome = false;
 
