@@ -47,11 +47,13 @@ function prepareForVLcheck() {
       nextBtn.setAttribute('onmousedown', 'processVLalert();');
     }
   }
-  
-  var cover = document.getElementById('regimen-change-cover');
-  var loader = document.getElementsByClassName('loader')[0];
-  cover.style = 'display: none';
-  loader.style = 'display: none;'
+ 
+  try {
+    var cover = document.getElementById('regimen-change-cover');
+    var loader = document.getElementsByClassName('loader')[0];
+    cover.style = 'display: none';
+    loader.style = 'display: none;'
+  }catch(e){}
 
 }
 
