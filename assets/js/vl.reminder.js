@@ -225,7 +225,7 @@ function postVLalertResponses(responses, nextEncName) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       res = JSON.parse(this.responseText);
       if(nextEncName.length > 0)
-        createEncounter();
+        createOrderEncounter();
 
     }
   };
