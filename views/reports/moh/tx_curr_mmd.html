@@ -276,6 +276,9 @@ function initializeTable() {
           <th>Total clients:</th>
           <td id="total-clients">0<td>
         </tr>
+        <tr>
+          <td colspan="2" id="validation-message">&nbsp;<td>
+        </tr>
       </table>
     </div>
       </table>
@@ -348,6 +351,7 @@ function initializeReport() {
     document.getElementById('spinner').style = "display: none;";
     document.getElementById('report-cover').style = "display: none;";
     document.getElementById("total-clients").innerHTML = total_clients;
+    validateReport()
     return;
   }
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
@@ -769,6 +773,36 @@ function closeBox(){
   }catch(e){}
   
   document.getElementById("popupBox").style = "display: none;";
+}
+
+function validateReport(){
+  let cohort_report;
+  let validation_message = document.getElementById('validation-message');
+
+  if(sessionStorage.reportValidation == undefined){
+    validation_message.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+      reporting period and then run this report.</b>`
+    return;
+  }else{
+    cohort_report = JSON.parse(sessionStorage.reportValidation);
+    if(cohort_report.cohort.start_date != start_date || cohort_report.cohort.end_date != end_date){
+      validation_message.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+       reporting period and then run this report.</b>`
+      return;
+    }
+  }
+
+  let total_clients = parseInt(document.getElementById('total-clients').innerHTML);
+  let total_on_art = cohort_report.cohort.indicators.total_alive_and_on_art;
+
+  if(total_on_art != total_clients){
+    validation_message.innerHTML = `<b style="color:red;">Validation error: MoH cohort Alive and on ART clients (${total_on_art}) is not
+       not matching with total TX MMD clients.</b>`
+  }else{
+    validation_message.innerHTML = `<b style="color:green;">Report is consistent with MoH cohort Alive and on ART clients (${total_on_art}).</b>`
+  }
+
+
 }
 </script>
 

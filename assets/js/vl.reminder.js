@@ -20,10 +20,12 @@ function getARTstartedDate() {
       if(Object.keys(vl_info).length > 0){
         prepareForVLcheck();
       }else{
-        var cover = document.getElementById('regimen-change-cover');
-        var loader = document.getElementsByClassName('loader')[0];
-        cover.style = 'display: none';
-        loader.style = 'display: none;'
+        try {
+          var cover = document.getElementById('regimen-change-cover');
+          var loader = document.getElementsByClassName('loader')[0];
+          cover.style = 'display: none';
+          loader.style = 'display: none;'
+        }catch(e){}
       }
     }
   };
@@ -45,11 +47,13 @@ function prepareForVLcheck() {
       nextBtn.setAttribute('onmousedown', 'processVLalert();');
     }
   }
-  
-  var cover = document.getElementById('regimen-change-cover');
-  var loader = document.getElementsByClassName('loader')[0];
-  cover.style = 'display: none';
-  loader.style = 'display: none;'
+ 
+  try {
+    var cover = document.getElementById('regimen-change-cover');
+    var loader = document.getElementsByClassName('loader')[0];
+    cover.style = 'display: none';
+    loader.style = 'display: none;'
+  }catch(e){}
 
 }
 
@@ -223,7 +227,7 @@ function postVLalertResponses(responses, nextEncName) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       res = JSON.parse(this.responseText);
       if(nextEncName.length > 0)
-        createEncounter();
+        createOrderEncounter();
 
     }
   };
