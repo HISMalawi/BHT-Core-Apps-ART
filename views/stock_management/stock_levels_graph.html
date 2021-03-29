@@ -91,8 +91,6 @@
         if (paeds_drug_ids.length > 0) {
             var drugID = paeds_drug_ids.pop();
             var drugName = drugs[drugID]['short_name'];
-            console.log(drugID);
-            console.log(drugs[drugID]['short_name']);
             var stockLevelsUrl = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/pharmacy/drug_consumption?drug_id=" + drugID;
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -181,8 +179,8 @@
     }
 
     function plotGraph(paedsOrAdult) {
-        paeds_drug_ids = [733, 968, 732, 736, 30, 74, 979, 963, 24];
-        adult_drug_ids = [976, 977, 978, 954, 22, 969, 731, 39, 11, 735, 734, 932, 73, 576, 297, 931];
+        paeds_drug_ids = [968, 732, 736, 30, 74, 979, 963];
+        adult_drug_ids = [976, 977, 978, 954, 22, 969, 731, 39, 11, 735, 734, 932, 73, 576, 297];
         drugsArray = [];
         data_list = [];
 

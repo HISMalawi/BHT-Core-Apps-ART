@@ -754,7 +754,7 @@
     function loadCustomDrugs() {
         let drugField = document.getElementById('select_drugs');
         finalList.forEach((drug) => {
-            drugField.innerHTML += `<option value='${drug.short_name}' drug_id='${drug.drug_id}'> ${drug.full_name} </option>`;
+            drugField.innerHTML += `<option value='${drug.short_name}' drug_id='${drug.drug_id}'> ${drug.short_name} </option>`;
         });
     }
 </script>
