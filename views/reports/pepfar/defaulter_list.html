@@ -195,7 +195,6 @@ function getList(sdate, edate) {
 
 function loadClients(data) {
   var formatted_data = [];
-
   for (var i = 0; i < data.length; i++) {
     var given_name = data[i].given_name;
     var family_name = data[i].family_name;
@@ -266,6 +265,7 @@ function loadClients(data) {
     ]
   } );
 
+  __$('helpText' + tstCurrentPage).innerHTML = `Defaulter list (${formatted_data.length} defaulters)`;
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
 }
