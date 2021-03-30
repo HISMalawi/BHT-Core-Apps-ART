@@ -94,6 +94,19 @@
 
 
     <style type="text/css">
+        .tt_controls_cxca_test_month .keyboard {
+            display: none !important;
+        }
+
+        #tt_page_cxca_test_month #viewport {
+            height: 95% !important;
+        }
+
+        #tt_page_cxca_test_month .inputFrameClass {
+            height: 90%;
+            width: 95.5% !important;
+        }
+
         #tab {
             height: 312px;
         }
@@ -2383,12 +2396,65 @@
                     })
                 }
 
+                if(offerCxCa()){
+                    let offer_cxca_screening = __$('offer_cxca_screening').value.toLowerCase();
+                    obs.observations.push({
+                      concept_id: 9992, value_coded: (offer_cxca_screening == 'Yes' ? 1065 : 1066)
+                    });
+
+                    if(offer_cxca_screening == 'no'){
+                        let reason_for_no_cxca = setReasonForNoCxCa(__$('reason_for_no_cxca').value);
+
+                        obs.observations.push({
+                            concept_id: 10008, value_coded: reason_for_no_cxca
+                        });
+
+                        if(__$('reason_for_no_cxca').value == 'Not due for screening'){
+                            let screened_y = __$('cxca_test_year').value;
+                            let last_screen_date;
+                            if(screened_y.toUpperCase() == 'UNKNOWN'){
+                                let estimated_period = __$('previous_cxca_date_estimation').value;
+                                if(estimated_period == '6 months'){
+                                    last_screen_date = moment(sessionStorage.sessionDate).subtract(6, 'months').format('YYYY-MM-DD');
+                                }else if(estimated_period == '12 months'){
+                                    last_screen_date = moment(sessionStorage.sessionDate).subtract(12, 'months').format('YYYY-MM-DD');
+                                }else if(estimated_period == '18 months'){
+                                    last_screen_date = moment(sessionStorage.sessionDate).subtract(18, 'months').format('YYYY-MM-DD');
+                                }else if(estimated_period == '24 months'){
+                                    last_screen_date = moment(sessionStorage.sessionDate).subtract(24, 'months').format('YYYY-MM-DD');
+                                }else{
+                                    last_screen_date = moment(sessionStorage.sessionDate).subtract(48, 'months').format('YYYY-MM-DD');
+                                }
+
+                                obs.observations.push({
+                                    concept_id: 9994, value_datetime: last_screen_date,
+                                    value_text: `Date is estimated: ${last_screen_date}`
+                                });
+                            }else{
+                                let screened_m = __$('cxca_test_month').value;
+                                let screened_d = __$('cxca_test_day').value;
+                                last_screen_date = moment(`${screened_y}-${screened_m}-${screened_d}`).format('YYYY-MM-DD');
+                                obs.observations.push({
+                                    concept_id: 9994, value_datetime: last_screen_date
+                                });
+                            }
+                        }
+                    }
+                }
+
                 submitParameters(obs, "/observations", "nextPage");
                 }
             }
 
             
-            
+            function setReasonForNoCxCa(value){
+                let reasons = {
+                    'Not due for screening': 8387,
+                    'Client preferred counseling': 10007,
+                    'Not applicable': 1175
+                };
+                return reasons[value];
+            }
             
             
             
@@ -2991,6 +3057,107 @@
             </select>
 
             <!-- Extended family assessment end -->
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- CxCa screening Questions  starts -->
+
+            <select allowFreeText="false" helpText="Refer client for CxCa screening" id="offer_cxca_screening"
+                    condition="offerCxCa() == true;"
+                    name="offer_cxca_screening" tt_onLoad="" tt_pageStyleClass="NoKeyboard">
+                <option value=""></option>
+                <option value="YES">Yes</option>
+                <option value="NO">No</option>
+            </select>
+
+            <select allowFreeText="false" helpText="Reason for denying CxCa screening" 
+                  id="reason_for_no_cxca" name="reason_for_no_cxca" 
+                  condition="offerCxCa() == true && CxCaDenied() == true"
+                  tt_onLoad="" key="reason_for_no_cxca">
+                  <option value=""></option>
+                  <option value="Not due for screening">Not due for screening</option>
+                  <option value="Client preferred counseling">Client preferred counseling</option>
+                  <option value="Not applicable">Not applicable</option>
+              </select>
+
+
+            <input condition="CxCaDenied() == true && offerCxCa() == true && $('reason_for_no_cxca').value == 'Not due for screening';" 
+              field_type="number"
+              helpText="Previous CxCa test year" 
+              id="cxca_test_year"
+              name="cxca_test_year"
+              tt_onLoad="$('Unknown').style.display = 'inline';ShowCategory2('Previous CxCa screening');"
+              tt_onUnLoad="hideCategory();"
+              tt_pageStyleClass="Numeric NumbersOnly" type="text"/>
+
+
+          <select allowFreeText="false" condition="CxCaDenied() == true && offerCxCa() == true 
+            && $('cxca_test_year').value.toUpperCase() == 'UNKNOWN' && $('reason_for_no_cxca').value == 'Not due for screening';"
+              helpText="Estimated time since last CxCa screening" id="previous_cxca_date_estimation"
+              name="previous_cxca_date_estimation" ttMatchFromBeginning="true"
+              tt_onLoad="ShowCategory2('Previous CxCa screening');"
+              tt_onUnLoad="hideCategory();">
+              <option value=""></option>
+              <option value="6 months">6 months</option>
+              <option value="12 months">12 months</option>
+              <option value="18 months">18 months</option>
+              <option value="24 months">24 months</option>
+              <option value="Over 2 years">Over 2 years</option>
+          </select>
+
+          <select condition="CxCaDenied() == true && offerCxCa() == true && $('cxca_test_year').value.toLowerCase() != 'unknown'
+          && $('reason_for_no_cxca').value == 'Not due for screening';"
+              helpText="CxCa test month" id="cxca_test_month"
+              name="cxca_test_month"
+              tt_onUnLoad="hideCategory();"
+              tt_onLoad="ShowCategory2('Previous CxCa screening');__$('keyboard').style.display = 'none';configureCxCaTestMonthCSS();ShowCategory2('Previous CxCa screening');">
+              <option value=""></option>
+              <option value="1">Jan</option>
+              <option value="2">Feb</option>
+              <option value="3">Mar</option>
+              <option value="4">Apr</option>
+              <option value="5">May</option>
+              <option value="6">Jun</option>
+              <option value="7">Jul</option>
+              <option value="8">Aug</option>
+              <option value="9">Sep</option>
+              <option value="10">Oct</option>
+              <option value="11">Nov</option>
+              <option value="12">Dec</option>
+              <!--<option value="Unknown">Unknown</option>-->
+          </select>
+
+          <input condition="CxCaDenied() == true && offerCxCa() == true && $('cxca_test_year').value.toLowerCase() != 'unknown'
+          && $('reason_for_no_cxca').value == 'Not due for screening';"
+             field_type="number" 
+             helpText="CxCa test day" id="cxca_test_day"
+             name="cxca_test_day"
+             tt_onLoad="ShowCategory2('Previous CxCa screening');getDayOfMonthPicker($('cxca_test_year').value, $('cxca_test_month').value);$('nextButton').style.display = 'block';"
+             tt_onUnLoad="hideCategory();" type="text" />
+              <!-- CxCa screening Questions  ends -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             <input allowFreeText="false" id="on_fpm" name="observations[][value_coded_or_text]" type="hidden" value=""/>
@@ -3720,7 +3887,6 @@
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
 
-
             <input allowFreeText="false" id="fast-track-input" name="observations[][value_coded_or_text]" type="hidden"
                    value=""/>
 
@@ -3760,6 +3926,112 @@
 
         <script type="text/javascript">
             var selectedSideEffects;
+            var activateCxCascreening;
+            var CxCa_age_ranges;
+            var client_due_for_CXCa = false;
+
+            function isCxCaActivated() {
+
+                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += '/global_properties?property=activate.cervical.cancer.screening';
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        let obj = JSON.parse(this.responseText);
+                        activateCxCascreening = (obj['activate.cervical.cancer.screening'] == 'true' ? true : false);
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+
+            function CxCaAgeRanges() {
+                var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += '/global_properties?property=cervical.cancer.screening.age.bounds';
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        let obj = JSON.parse(this.responseText);
+                        CxCa_age_ranges = obj['cervical.cancer.screening.age.bounds'].split(":");
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+
+            function fetchCxCaInfo() {
+                let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += '/last_cxca_screening_details?id=' + sessionStorage.patientID;
+                url += '&date=' + sessionStorage.sessionDate;
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        last_cxca_details = JSON.parse(this.responseText);
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+
+            var last_cxca_details;
+
+            function clientCxCaDue(){
+                if(Object.keys(last_cxca_details).length == 0)
+                    return true;
+
+                let last_date = last_cxca_details.date_screened
+                let ref_date = moment(sessionStorage.sessionDate);
+                let diff_date = moment(last_date);
+                let diff_in_years = ref_date.diff(diff_date, 'years');   
+                console.log(diff_in_years)
+                return (diff_in_years >= 1 ? true : false);
+            }
+
+            if(sessionStorage.patientGender == 'F')
+                fetchCxCaInfo();
+
+            isCxCaActivated();
+            CxCaAgeRanges();
+
+            function CxCaDenied(){
+                let offer_cxca = __$('offer_cxca_screening').value;
+                return (offer_cxca.toLowerCase() == 'no' ? true : false);
+            }
+
+            function offerCxCa() {
+                if(sessionStorage.gender != 'F' || !activateCxCascreening)
+                    return false;
+
+                if(clientWithinCxCaRange() && clientCxCaDue()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+
+            function clientWithinCxCaRange(){
+                let start_age = parseInt(CxCa_age_ranges[0]);
+                let end_age = parseInt(CxCa_age_ranges[1]);
+                let client_age = parseInt(sessionStorage.patientAge);
+
+                return ((client_age >= start_age && 
+                    client_age <= end_age) ? true : false);
+            }
 
             function setselectedSideEffects() {
                 selectedSideEffects = __$('touchscreenInput' + tstCurrentPage).value.toUpperCase().trim();
