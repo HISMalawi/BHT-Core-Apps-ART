@@ -1365,7 +1365,7 @@
                     }
 
                     if (date_of_expiry) {
-                        if (!isDateValid("01/" + date_of_expiry)) {
+                        if (!isDateValid(date_of_expiry)) {
                             error_messages.push("Invalid expiry date for " + drugName);
                         }
                     }
