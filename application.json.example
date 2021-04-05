@@ -153,7 +153,7 @@
     {
       "activitiesName": "Mastercard",
       "available": false,
-      "activitiesIcon": "/assets/images/results.png",
+      "activitiesIcon": "/assets/images/card.png",
       "url": "/views/patient/mastercard.html",
       "activitiesDescription": "Mastercard",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
@@ -161,7 +161,7 @@
     {
       "activitiesName": "View past Filing number",
       "available": false,
-      "activitiesIcon": "/assets/images/results.png",
+      "activitiesIcon": "/assets/images/filing.png",
       "url": "/apps/ART/views/filing_number/past_filing_numbers.html",
       "activitiesDescription": "View past filing numbers",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
@@ -189,6 +189,14 @@
       "url": "/apps/ART/views/filing_number/filing_number_management.html",
       "activitiesDescription": "Assign a new filing number",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this   template"
+    },
+    {
+      "activitiesName": "Change patient type",
+      "available": false,
+      "activitiesIcon": "/assets/images/patient-type.png",
+      "url": "/views/patient/type.html",
+      "activitiesDescription": "Change patient type",
+      "comment": ""
     }
   ]
 }
