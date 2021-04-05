@@ -74,6 +74,9 @@
   z-index: 991;
 }
 
+.dt-right {
+  text-align: right;
+}
 </style>
 
 
@@ -117,7 +120,7 @@ function buildDataTable(e) {
 
   var headers = ['ARV#','First name','Last name', 'Gender',
     'birthdate','App date','ART start date', 'Months on ART', 
-    'Milestone','&nbsp;'];
+    'Milestone'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -192,7 +195,7 @@ function loadClients(data) {
     
     formatted_data.push([npid, given_name, family_name, gender, 
       birthdate, app_date, art_start_date, months_on_ART, 
-      mile_stone, addSelectButton(person_id)]);
+      mile_stone]); //addSelectButton(person_id)]);
   }
   
   jQuery('#clients').DataTable( {
@@ -211,7 +214,8 @@ function loadClients(data) {
       {"className": "dt-center", "targets": 0},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6}
+      {"className": "dt-center", "targets": 6},
+      {"className": "dt-right", "targets": 7}
     ]
   } );false
 
