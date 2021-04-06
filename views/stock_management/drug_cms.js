@@ -7,127 +7,139 @@ const finalList = [
     },
     {
         "drug_id": 1044,
-        "short_name": "ABC 120 /3TC 300",
-        "full_name": "Abacavir and Lamivudine 60mg pack of 60 tablets",
+        "short_name": "ABC 120 /3TC 300mg",
+        "full_name": "Abacavir and Lamivudine 120mg pack of 60 tablets",
         "pack_sizes": [60]
     },
     {
         "drug_id": 969,
-        "short_name": "ABC 600 / 3TC 300",
+        "short_name": "ABC 600 / 3TC 300mg",
         "full_name": "Abacavir sulfate 600mg / Lamivudine 300mg, tin of 30 tablets",
         "pack_sizes": [30]
     },
     {
         "drug_id": 932,
-        "short_name": "ATV 300 / r 100",
+        "short_name": "ATV 300 / r 100mg",
         "full_name": "Atazanavir / Ritonavir 300 / 100mg, tin of 30 tablets",
         "pack_sizes": [30]
     },
     {
         "drug_id": 963,
-        "short_name": "CPT 120",
+        "short_name": "CPT 120mg",
         "full_name": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets",
         "pack_sizes": [1000]
     },
     {
         "drug_id": 297,
-        "short_name": "CPT 480",
+        "short_name": "CPT 480mg",
         "full_name": "Cotrimoxazole 480mg, tin of 1000 tablets",
         "pack_sizes": [1000]
     },
     {
         "drug_id": 576,
-        "short_name": "CPT 960",
+        "short_name": "CPT 960mg",
         "full_name": "Cotrimoxazole 960mg, blister pack of 1000 tablets"
         ,"pack_sizes": [1000]
     },
     {
         "drug_id": 976,
-        "short_name": "DRV 600",
+        "short_name": "DRV 600mg",
         "full_name": "Darunavir 600mg pack of 60 tablets",
         "pack_sizes": [60]
     },
     {
         "drug_id": 980,
-        "short_name": "DTG 10",
+        "short_name": "DTG 10mg",
         "full_name": "Dolutegravir 10mg pack of 90 tablets",
         "pack_sizes": [90]
     },
     {
         "drug_id": 982,
-        "short_name": "DTG 50",
+        "short_name": "DTG 50mg",
         "full_name": "Dolutegravir 50mg pack of 30 tablets",
         "pack_sizes": [30]
     },
     {
         "drug_id": 30,
-        "short_name": "EFV 200", 
+        "short_name": "EFV 200mg", 
         "full_name":"Efavirenz 200mg, tin of 90 tablets",
         "pack_sizes": [90]
     },
     {
         "drug_id": 11,
-        "short_name": "EFV 600", 
+        "short_name": "EFV 600mg", 
         "full_name":"Efavirenz 600mg, tin of 30 tablets"
         ,"pack_sizes": [30]
     },
     {
         "drug_id": 978,
-        "short_name": "ETV 100",
+        "short_name": "ETV 100mg",
         "full_name": "Etravirine 100mg, tin of 120 tablets"
         ,"pack_sizes": [120]
     },
     {
+        "drug_id": 24,
+        "short_name": "Isoniazid 100mg",
+        "full_name": "Isoniazid (H) 100mg, blist packs of 100 tablets"
+        ,"pack_sizes": [100]
+    },
+    {
+        "drug_id": 991,
+        "short_name": "Isoniazid 300mg",
+        "full_name": "Isoniazid (H) 300mg, blist packs of 1000 tablets"
+        ,"pack_sizes": [1000, 672]
+    },    
+    {
         "drug_id": 74,
-        "short_name": "LPV 100 / r 25",
+        "short_name": "LPV 100 / r 25mg",
         "full_name": "Lopinavir / Ritonavir 100 / 25mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 73,
-        "short_name": "LPV 200 / r 50",
+        "short_name": "LPV 200 / r 50mg",
         "full_name": "Lopinavir / Ritonavir 200 / 50mg, tin of 120 tablets"
         ,"pack_sizes": [120]
     },
     {
         "drug_id": 1045,
-        "short_name": "LPV 40 / r 10 granules",
+        "short_name": "LPV 40 / r 10mg granules",
         "full_name": "Lopinavir/Ritonavir(LPV/r ), 40/10mg granules, pack of 120 sachets"
         ,"pack_sizes": [120]
     },
     {
         "drug_id": 979,
-        "short_name": "LPV 40 / r 10 pellets",
+        "short_name": "LPV 40 / r 10mg pellets",
         "full_name": "Lopinavir/Ritonavir(LPV/r ), 40/10mg granules, pack of 120 pellets"
         ,"pack_sizes": [120]
     },
     {
         "drug_id": 22,
-        "short_name": "NVP 200",
+        "short_name": "NVP 200mg",
         "full_name": "Nevirapine 200mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 968,
-        "short_name": "NVP 50",
+        "short_name": "NVP 50mg",
         "full_name": "Nevirapine 50mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 1039,
-        "short_name": "Pyridoxine (25mg)",
+        "short_name": "Pyridoxine 25mg",
         "full_name": "Pyridoxine (25mg)"
         ,"pack_sizes": [1000]
     },
     {
         "drug_id": 1043,
-        "short_name": "RAL 25",
+        "short_name": "RAL 25mg",
         "full_name": "Raltegravir 25mg pack of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 954,
-        "short_name": "RAL 400",
+        "short_name": "RAL 400mg",
         "full_name": "Raltegravir 400mg pack of 60 tablets"
         ,"pack_sizes": [60]
     },
@@ -139,49 +151,49 @@ const finalList = [
     },
     {
         "drug_id": 977,
-        "short_name": "r 100",
+        "short_name": "r 100mg",
         "full_name": "Ritonavir 100mg pack of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 734,
-        "short_name": "TDF 300 / 3TC 300 ",
+        "short_name": "TDF 300 / 3TC 300mg ",
         "full_name": "Lamivudine / Tenofovir disoproxil fumarate 300 / 300mg, tin of 30 tablets"
         ,"pack_sizes": [30]
     },
     {
         "drug_id": 735,
-        "short_name": "TDF 300 / 3TC 300 / EFV 600",
+        "short_name": "TDF 300 / 3TC 300 / EFV 600mg",
         "full_name": "Tenofovir disoproxil fumarate / Lamivudine / Efavirenz 300 / 300 / 600mg, tin of 30 tablets"
         ,"pack_sizes": [30]
     },
     {
         "drug_id": 983,
-        "short_name": "TDF 300 / 3TC 300 / DTG 50",
+        "short_name": "TDF 300 / 3TC 300 / DTG 50mg",
         "full_name": "Tenofovir Disoproxil Fumarate/Lamivudine/Dolutegravir (TDF/3TC /DTG), 300/300/50mg, pack of 90 tablets"
         ,"pack_sizes": [90]
     },
     {
         "drug_id": 39,
-        "short_name": "AZT 300 /3TC 150",
+        "short_name": "AZT 300 /3TC 150mg",
         "full_name": "Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 731,
-        "short_name": "AZT 300 / 3TC 150 / NVP 200",
+        "short_name": "AZT 300 / 3TC 150 / NVP 200mg",
         "full_name": "Zidovudine / lamivudine /Nevirapine 300 / 150 / 200mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 732,
-        "short_name": "AZT 60 / 3TC 30 / NVP 50",
+        "short_name": "AZT 60 / 3TC 30 / NVP 50mg",
         "full_name": "Zidovudine / lamivudine /Nevirapine 60 / 30 / 50mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
     {
         "drug_id": 736,
-        "short_name": "AZT 60 / 3TC 30",
+        "short_name": "AZT 60 / 3TC 30mg",
         "full_name": "Zidovudine / lamivudine 60 / 30mg, tin of 60 tablets"
         ,"pack_sizes": [60]
     },
