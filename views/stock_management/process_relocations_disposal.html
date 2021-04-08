@@ -39,7 +39,7 @@
                 var full_name = selected_drugs_hash[key]["full_name"];
                 var drug_id = selected_drugs_hash[key]["drug_id"];
                 var expiry_date = selected_drugs_hash[key]["expiry_date"];
-                var short_name_with_expiry_date = short_name + "::" + expiry_date;
+                var short_name_with_expiry_date = short_name + `(${drug_cms_packsizes[short_name]})` + "::" + expiry_date;
                 short_name_drug_id[short_name_with_expiry_date] = drug_id;
                 drugs.push(short_name_with_expiry_date);
                 selected.push(short_name_with_expiry_date);
@@ -1473,7 +1473,7 @@
                         var label = document.createElement("div");
                         label.className = "drug-label scell";
                         label.style.display = "table-cell";
-                        label.innerHTML = drug_cms_names[drug];
+                        label.innerHTML = drug;
                         if (i == 0)
                             label.style.borderTop = "0.4px solid gray";
                         row.appendChild(label);
@@ -1619,7 +1619,7 @@
                     for (var i = 0; i <= processed_products.length - 1; i++) {
                         var authorization_code = processed_products[i]["authorization_code"];
                         var split_data = processed_products[i]["drug"].split("::");
-                        var shortName = split_data[0];
+                        var shortName = split_data[0].split("(")[0];
                         var expiryDate = split_data[1].split("_")[0];
                         var pharmacyBatchItemID = getPharmacyBatchItemID(shortName, expiryDate);
                         var totalTins = parseInt(processed_products[i]["total_tins"]);

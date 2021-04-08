@@ -755,7 +755,7 @@
         let drugField = document.getElementById('select_drugs');
         finalList.forEach((drug) => {
             drug.pack_sizes.forEach(element => {
-                drugField.innerHTML += `<option value='${drug.short_name}' drug_id='${drug.drug_id}'> ${drug.short_name}  (${element} pack)</option>`;
+                drugField.innerHTML += `<option value='${drug.short_name}' drug_id='${drug.drug_id}'> ${drug.short_name}  (${element})</option>`;
             });
         });
     }

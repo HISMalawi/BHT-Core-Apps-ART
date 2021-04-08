@@ -668,7 +668,7 @@
                         var drug_name_display = (batch_items[i].drug_name === null ? batch_items[i].drug_legacy_name :batch_items[i].drug_name);
                         var expiry_date = moment(batch_items[i].expiry_date).format('DD/MMM/YYYY');
                         var pharmacy_batch_item_id = batch_items[i].id;
-                        var drug_name = drug_name_display + " Expiry date:      " + expiry_date;
+                        var drug_name = drug_name_display + `(${batch_items[i].pack_size})` +  " Expiry date:      " + expiry_date;
                         if (!expiry_dates.includes(expiry_date)) {
                             expiry_dates.push(expiry_date);
                         }
