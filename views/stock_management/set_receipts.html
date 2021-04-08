@@ -271,12 +271,11 @@
                     var li = document.createElement("div");
                     li.id = all_drugs[k];
                     li.style.display = "table-cell";
-                    li.innerHTML = all_drugs[k];
+                    li.innerHTML = all_drugs[k] + `(${drug_cms_packsizes[all_drugs[k]]})`;
 
                     li.setAttribute("value", all_drugs[k]);
                     li.setAttribute("cms_name", drug_cms_names[all_drugs[k]]);
                     console.log(drug_cms_names[all_drugs[k]])
-                    console.log(drug_cms_names)
                     console.log(all_drugs[k])
                     li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                     li.className = (k % 2 == 0) ? "even" : "odd";
@@ -1464,7 +1463,8 @@
                     var label = document.createElement("div");
                     label.className = "drug-label scell";
                     label.style.display = "table-cell";
-                    label.innerHTML = drug_cms_names[drug];
+                    // console.log()
+                    label.innerHTML = drug + `(${drug_cms_packsizes[drug]})`;
                     if (i == 0)
                         label.style.borderTop = "0.4px solid gray";
                     row.appendChild(label);
