@@ -24,6 +24,30 @@ const finalList = [
         "pack_sizes": [30]
     },
     {
+        "drug_id": 39,
+        "short_name": "AZT 300 /3TC 150mg",
+        "full_name": "Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets"
+        ,"pack_sizes": [60]
+    },
+    {
+        "drug_id": 731,
+        "short_name": "AZT 300 / 3TC 150 / NVP 200mg",
+        "full_name": "Zidovudine / lamivudine /Nevirapine 300 / 150 / 200mg, tin of 60 tablets"
+        ,"pack_sizes": [60]
+    },
+    {
+        "drug_id": 732,
+        "short_name": "AZT 60 / 3TC 30 / NVP 50mg",
+        "full_name": "Zidovudine / lamivudine /Nevirapine 60 / 30 / 50mg, tin of 60 tablets"
+        ,"pack_sizes": [60]
+    },
+    {
+        "drug_id": 736,
+        "short_name": "AZT 60 / 3TC 30mg",
+        "full_name": "Zidovudine / lamivudine 60 / 30mg, tin of 60 tablets"
+        ,"pack_sizes": [60]
+    },
+    {
         "drug_id": 963,
         "short_name": "CPT 120mg",
         "full_name": "Cotrimoxazole 120mg, blister pack of 1000 dispersible tablets",
@@ -132,6 +156,12 @@ const finalList = [
         ,"pack_sizes": [1000]
     },
     {
+        "drug_id": 977,
+        "short_name": "r 100mg",
+        "full_name": "Ritonavir 100mg pack of 60 tablets"
+        ,"pack_sizes": [60]
+    },
+    {
         "drug_id": 1043,
         "short_name": "RAL 25mg",
         "full_name": "Raltegravir 25mg pack of 60 tablets"
@@ -150,12 +180,6 @@ const finalList = [
         ,"pack_sizes": [24]
     },
     {
-        "drug_id": 977,
-        "short_name": "r 100mg",
-        "full_name": "Ritonavir 100mg pack of 60 tablets"
-        ,"pack_sizes": [60]
-    },
-    {
         "drug_id": 734,
         "short_name": "TDF 300 / 3TC 300mg ",
         "full_name": "Lamivudine / Tenofovir disoproxil fumarate 300 / 300mg, tin of 30 tablets"
@@ -172,31 +196,7 @@ const finalList = [
         "short_name": "TDF 300 / 3TC 300 / DTG 50mg",
         "full_name": "Tenofovir Disoproxil Fumarate/Lamivudine/Dolutegravir (TDF/3TC /DTG), 300/300/50mg, pack of 90 tablets"
         ,"pack_sizes": [90]
-    },
-    {
-        "drug_id": 39,
-        "short_name": "AZT 300 /3TC 150mg",
-        "full_name": "Zidovudine / lamivudine 300 / 150mg, tin of 60 tablets"
-        ,"pack_sizes": [60]
-    },
-    {
-        "drug_id": 731,
-        "short_name": "AZT 300 / 3TC 150 / NVP 200mg",
-        "full_name": "Zidovudine / lamivudine /Nevirapine 300 / 150 / 200mg, tin of 60 tablets"
-        ,"pack_sizes": [60]
-    },
-    {
-        "drug_id": 732,
-        "short_name": "AZT 60 / 3TC 30 / NVP 50mg",
-        "full_name": "Zidovudine / lamivudine /Nevirapine 60 / 30 / 50mg, tin of 60 tablets"
-        ,"pack_sizes": [60]
-    },
-    {
-        "drug_id": 736,
-        "short_name": "AZT 60 / 3TC 30mg",
-        "full_name": "Zidovudine / lamivudine 60 / 30mg, tin of 60 tablets"
-        ,"pack_sizes": [60]
-    },
+    }
 ]
 var drugs = {};
 finalList.forEach(element => {
