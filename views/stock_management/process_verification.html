@@ -331,14 +331,13 @@
         jQuery(".inputFrameClass").append(data);
 
         var leftData = "";
-        for (var drugID in drugs) {
-            var short_name = drugs[drugID]["short_name"];
-            var full_name = drugs[drugID]["full_name"];
-            leftData += "<div drug_id='" + drugID + "' class='row-drug even' onclick='showAllDrugStock(this)'>";
-            leftData += short_name;
-            leftData += "</div>";
-        }
-
+        finalList.forEach((drug) => {
+            drug.pack_sizes.forEach(element => {
+                leftData += "<div drug_id='" + drug.drug_id + "' class='row-drug even' onclick='showAllDrugStock(this)'>";
+                leftData += `${drug.short_name} (${element})`;
+                leftData += "</div>";
+            });
+        });
         jQuery(".left-div").append(leftData);
     }
 
@@ -371,7 +370,7 @@
                     var current_quantity = previous_stock_data[key]["current_quantity"];
                     current_quantity = parseFloat(current_quantity) / packSize;
                     var delivery_date = previous_stock_data[key]["delivery_date"];
-                    var expiry_date = previous_stock_data[key]["expiry_date"];
+                    var expiry_date = moment(previous_stock_data[key]["expiry_date"]).format("DD/MMM/YYYY");
                     var pharmacy_batch_item_id = previous_stock_data[key]["id"];
                     var current_quantity_id = "current-quantity-" + pharmacy_batch_item_id;
                     rightData += "<tr>";
