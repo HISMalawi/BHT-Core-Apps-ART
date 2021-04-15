@@ -463,10 +463,10 @@ function initializePopUpTable() {
       // }
 
       tbody.appendChild(tr);
-      initializePopUpTable();
       // sessionStorage.pepfarDrillDown = clients[age_group][sex][column_number].join(",");
       // location = "pepfar_drill_down.html";
     });
+    initializePopUpTable();
   }
   function addCustomEventListener(selector, event, handler) {
     let rootElement = document.querySelector('body');
