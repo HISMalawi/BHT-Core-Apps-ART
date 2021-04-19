@@ -1746,14 +1746,10 @@
         <div id="container">
             <form>
                 <input helpText="Relocation Details" id="input" name="information" optional="true"
-                       tt_onLoad="$('clearButton').style.display = 'none'; checkContainer(); updateNextButton();"
+                       tt_onLoad="$('clearButton').style.display = 'none'; checkContainer(); updateNextButton();setReasons()"
                        tt_pageStyleClass="NoKeyboard" type="text"/>
-                <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'">
-                        <option value=""></option>
-                        <option value="Transfer to another facility/relocation">Transfer to another facility/relocation</option>
-                        <option value="Expired">Expired</option>
-                        <option value="Damaged">Damaged</option>
-                        <option value="For trainings">For trainings</option>
+                <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'; ">
+                      
                 <input helpText="<span style='color: red;background: white;'>Confirm Entry (Touch row to change) </span>"
                        id="summary" name="showSummary" optional="true"
                        tt_onLoad="showSummary(); customizeFinishButton()"
@@ -1792,7 +1788,18 @@
                         };
                     }
                 }
-
+                function setReasons() {
+                    let reasons = [];
+                    if(JSON.parse(sessionStorage.relocation_or_disposal).relocation_or_disposal === "Relocations") {
+                        reasons = ["Transfer to another facility/relocation", "For trainings"];
+                    }else {
+                        reasons = ["Expired", "Damaged", "For trainings"];
+                    }
+                    let reasonsField = document.getElementById('reason');
+                    reasons.forEach(element => {
+                        reasonsField.innerHTML += `<option value='${element}' > ${element}</option>`;
+                    });
+                }
                 function updateDrugsHash() {
                     input_fields = document.getElementsByClassName("input-field");
                     if (input_fields.length > 0) {
