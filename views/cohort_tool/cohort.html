@@ -250,6 +250,11 @@ function showDisaggregatedReport(){
   <div id="cum_gender_consistency"></div>
   <div id="age_consistency"></div>
   <div id="cum_age_consistency"></div>
+  
+  <div id="age_group_consistency"></div>
+  <div id="cum_age_group_consistency"></div>
+  
+  
   <div id="reasons_consistency"></div>
   <div id="cum_reasons_consistency"></div>
   <div id="conditions_consistency"></div>
@@ -2256,6 +2261,38 @@ function validateReport() {
     }
   }
 
+  /***************************************************************/
+
+
+  let children_below_24_months_at_art_initiation = document.getElementById('children_below_24_months_at_art_initiation').innerHTML;
+  let children_24_months_14_years_at_art_initiation = document.getElementById('children_24_months_14_years_at_art_initiation').innerHTML;
+  let adults_at_art_initiation =  document.getElementById('adults_at_art_initiation').innerHTML;
+
+  age_group_consistency = parseInt(children_below_24_months_at_art_initiation);
+  age_group_consistency += parseInt(children_24_months_14_years_at_art_initiation);
+  age_group_consistency += parseInt(adults_at_art_initiation);
+  if(age_group_consistency != total_registered){
+    report_inconsistency += 1;
+    document.getElementById('age_group_consistency').innerHTML = `Quarterly newly registered is not equal to 
+    (children_below_24_months_at_art_initiation) + (children_24_months_14_years_at_art_initiation) + 
+    (adults_at_art_initiation)`;
+  }
+
+
+
+  children_below_24_months_at_art_initiation = document.getElementById('cum_children_below_24_months_at_art_initiation').innerHTML;
+  children_24_months_14_years_at_art_initiation = document.getElementById('cum_children_24_months_14_years_at_art_initiation').innerHTML;
+  adults_at_art_initiation =  document.getElementById('cum_adults_at_art_initiation').innerHTML;
+
+  age_group_consistency = parseInt(children_below_24_months_at_art_initiation);
+  age_group_consistency += parseInt(children_24_months_14_years_at_art_initiation);
+  age_group_consistency += parseInt(adults_at_art_initiation);
+  if(age_group_consistency != cum_total_registered){
+    report_inconsistency += 1;
+    document.getElementById('cum_age_group_consistency').innerHTML = `Cumulative registered is not equal to 
+    (Cumulative children_below_24_months_at_art_initiation) + (Cumulative children_24_months_14_years_at_art_initiation) + 
+    (Cumulative adults_at_art_initiation)`;
+  }
   /***************************************************************/
 
   if(report_inconsistency > 0){
