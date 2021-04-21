@@ -3941,6 +3941,10 @@
                     if (this.status == 201 || this.status == 200 ) {
                         let obj = JSON.parse(this.responseText);
                         activateCxCascreening = (obj['activate.cervical.cancer.screening'] == 'true' ? true : false);
+                        if(activateCxCascreening)
+                            CxCaAgeRanges();
+
+
                     }
                 }
                 };
@@ -4006,7 +4010,6 @@
                 fetchCxCaInfo();
 
             isCxCaActivated();
-            CxCaAgeRanges();
 
             function CxCaDenied(){
                 let offer_cxca = __$('offer_cxca_screening').value;
