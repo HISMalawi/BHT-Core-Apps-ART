@@ -319,7 +319,7 @@ function initializeTable() {
 
 
 <script>
-
+var patients = [];
 function initializeReport() {
   var min_age;
   var max_age;
@@ -351,6 +351,10 @@ function initializeReport() {
     document.getElementById('spinner').style = "display: none;";
     document.getElementById('report-cover').style = "display: none;";
     document.getElementById("total-clients").innerHTML = total_clients;
+    document.getElementById("total-clients").style = "text-decoration: underline;";
+    document.getElementById("total-clients").onclick =  function() {
+      getClients(patients);
+    };
     validateReport()
     return;
   }
@@ -365,12 +369,18 @@ function initializeReport() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       addRow(obj);
+      patients.push(...Object.keys(obj.Female));
+      patients.push(...Object.keys(obj.Male));
     }
   };
   xhttp.open("GET", url_path, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send();
+}
+
+function showAllClients() {
+  console.log(patients);
 }
 
 function createLink(num, age_group, gender, colNum){
@@ -758,6 +768,14 @@ function initializePopUpTable() {
     scroller: {
       loadingIndicator: true
     },
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "tx_curr total drill down",
+        footer: true 
+      }
+    ],
     columnDefs: [
       {"className": "dt-arv-numbers", "targets": 0},
       {"className": "dt-date", "targets": 1},
