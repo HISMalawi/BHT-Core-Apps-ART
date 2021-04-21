@@ -369,8 +369,12 @@ function initializeReport() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       addRow(obj);
-      patients.push(...Object.keys(obj.Female));
-      patients.push(...Object.keys(obj.Male));
+      try {
+        patients.push(...Object.keys(obj.Female));
+        patients.push(...Object.keys(obj.Male));
+      } catch (error) {
+        
+      }
     }
   };
   xhttp.open("GET", url_path, true);
