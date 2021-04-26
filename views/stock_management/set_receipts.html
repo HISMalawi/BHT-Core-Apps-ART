@@ -321,7 +321,7 @@
                 tbl.style.paddingTop = "35px";
                 tbl.style.paddingBottom = "20px";
 
-                table_headers = ["Tabs Per Tin", "Total tins", "Date Of Expiry"];
+                table_headers = ["Tabs Per Tin", "Total tins", "Date Of Expiry", "Batch Number"];
 
                 var th_row = document.createElement("tr");
                 drg = item.getAttribute("value");
@@ -330,9 +330,9 @@
                     rows_count = rows_count + parseInt(addedRowsHash[drg]);
                 }
 
-                for (var i = 0; i <= 2; i++) {
+                for (var i = 0; i <= 3; i++) {
                     var th = document.createElement("th");
-                    th.style.width = '10%';
+                    th.style.width = '5%';
                     var thText = document.createTextNode(table_headers[i]);
                     th.appendChild(thText);
                     th_row.appendChild(th);
@@ -343,9 +343,9 @@
                 for (var i = 0; i <= rows_count; i++) {
                     var row = document.createElement("tr");
                     var drug_name = item.getAttribute("value") + "_" + i;
-                    for (var j = 0; j <= 2; j++) {
+                    for (var j = 0; j <= 3; j++) {
                         var cell = document.createElement("td");
-                        cell.style.width = '80px';
+                        cell.style.width = '50px';
                         cell.style.textAlign = 'center';
                         var textField = document.createElement("input");
                         if (j == 0) {
@@ -364,7 +364,7 @@
                         if (j == 1) {
                             //var inputID = "Number of expiring tins";
                             var inputID = item.getAttribute("value") + "_" + i + "_total_tins";
-
+                            console.log(drug_name);
                             var inputValue = drugs_hash[drug_name]["total_tins"] //__$(item.getAttribute("value") + "_expire_amount_" + pos).value;
                             var field_type = "total_tins"
                         }
@@ -376,7 +376,13 @@
                             var inputValue = drugs_hash[drug_name]["date_of_expiry"]; //__$(item.getAttribute("value") + "_date_" + pos).value;
                             var field_type = "date_of_expiry"
                         }
+                        if (j == 3) {
+                            //var inputID = "Number of expiring tins";
+                            var inputID = item.getAttribute("value") + "_" + i + "_batch_number";
 
+                            var inputValue = drugs_hash[drug_name]["batch_number"] //__$(item.getAttribute("value") + "_expire_amount_" + pos).value;
+                            var field_type = "batch_number"
+                        }
                         textField.className = "input-field";
                         textField.id = inputID;
                         textField.value = inputValue;
@@ -384,7 +390,7 @@
                         textField.setAttribute("row", i);
                         textField.setAttribute("drug_name", item.getAttribute("value") + "_" + i)
                         textField.style.height = '35px';
-                        textField.style.width = '264px';
+                        textField.style.width = '154px';
                         textField.style.fontSize = '26px';
                         textField.style.marginLeft = '10px';
                         textField.style.textAlign = 'center';
@@ -1590,6 +1596,7 @@
                     var date_of_expiry = drugs_hash[drug_name]["date_of_expiry"];
                     var tabs_per_tin = drugs_hash[drug_name]["tabs_per_tin"];
                     var total_tins = drugs_hash[drug_name]["total_tins"];
+                    var bactch = drugs_hash[drug_name]["total_tins"];
                     var drug_id = short_name_drug_id[drug];
                     //amount = tabs_per_tin
                     //expire_amount = total_tins
@@ -1900,7 +1907,7 @@
 
                 for (var i = 0; i <= total_rows; i++) {
                     drug_name = drugs[j] + "_" + i;
-                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": ""}
+                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": "", "batch_number": ""}
                 }
             }
 
@@ -1921,6 +1928,9 @@
                         }
                         if (field == 'date_of_expiry') {
                             drugs_hash[drug_name]["date_of_expiry"] = value;
+                        }
+                        if (field == 'batch_number') {
+                            drugs_hash[drug_name]["batch_number"] = value;
                         }
                     }
                 }
@@ -1951,6 +1961,7 @@
                     tabs_per_tin = drugs_hash[key]["tabs_per_tin"];
                     total_tins = drugs_hash[key]["total_tins"];
                     date_of_expiry = drugs_hash[key]["date_of_expiry"];
+                    batch_number = drugs_hash[key]["batch_number"];
 
                     if (!row_complete(tabs_per_tin, total_tins, date_of_expiry)) {
                         incomplete_rows.push([drugName, row_number]);
@@ -2011,11 +2022,11 @@
                     var drug = __$('data-pane').getAttribute("drug");
 
                     var drug_name = drug + "_" + i;
-                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": ""};
+                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": "", "batch_number": ""};
 
                     var row = document.createElement("tr");
 
-                    for (var j = 0; j <= 2; j++) {
+                    for (var j = 0; j <= 3; j++) {
                         var cell = document.createElement("td");
                         cell.style.width = '80px';
                         cell.style.textAlign = "center";
@@ -2042,6 +2053,12 @@
                             var field_type = "date_of_expiry"
                         }
 
+                        if (j == 3) {
+                            //var inputID = "Date of expiry";
+                            var inputID = drug + "_" + i + "_batch_number";
+                            var inputValue = drugs_hash[drug_name]["batch_number"];
+                            var field_type = "batch_number"
+                        }
                         textField.className = "input-field";
                         textField.id = inputID;
                         //textField.value = inputValue;
@@ -2049,7 +2066,7 @@
                         textField.setAttribute("row", i);
                         textField.setAttribute("drug_name", drug + "_" + i);
                         textField.style.height = '35px';
-                        textField.style.width = '264px';
+                        textField.style.width = '154px';
                         textField.style.fontSize = '26px';
                         textField.style.marginLeft = '10px';
                         textField.style.textAlign = 'center';
