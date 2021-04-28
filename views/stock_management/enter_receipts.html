@@ -44,7 +44,6 @@
                 var short_name = selectedDrugsLiOptions[i].value;
                 var full_name = selectedDrugsLiOptions[i].innerHTML;
                 var drug_id = selectedDrugsLiOptions[i].getAttribute("drug_id");
-                drugs_hash.push({short_name: short_name, full_name: full_name, drug_id: drug_id});
                 var pack_size = selectedDrugsLiOptions[i].getAttribute("pack_size");
                 drugs_hash.push({short_name: short_name, full_name: full_name, drug_id: drug_id, pack_size});
             }
