@@ -691,16 +691,16 @@
                         var dg = node.getAttribute("value");
 
                         for (var v = 1; v <= counts[dg]; v++) {
-                            var sd = (sieved.indexOf(dg) >= 0);
-                            var am = __$(dg + "_amount_" + v).value;
-                            var ex_am = __$(dg + "_expire_amount_" + v).value;
-                            var dt = __$(dg + "_date_" + v).value;
+                            // var sd = (sieved.indexOf(dg) >= 0);
+                            // var am = __$(dg + "_amount_" + v).value;
+                            // var ex_am = __$(dg + "_expire_amount_" + v).value;
+                            // var dt = __$(dg + "_date_" + v).value;
 
-                            if (!((am.length > 0 && ex_am.length > 0 && dt.length > 0) ||
-                                (!sd && (am.length > 0 && ex_am.length == 0 && dt.length == 0)))) {
-                                p = v;
-                                break;
-                            }
+                            // if (!((am.length > 0 && ex_am.length > 0 && dt.length > 0) ||
+                            //     (!sd && (am.length > 0 && ex_am.length == 0 && dt.length == 0)))) {
+                            //     p = v;
+                            //     break;
+                            // }
                         }
 
                         loadControls(node, p);
@@ -1006,7 +1006,7 @@
                         if (coll_nodes.length > 0)
                             jQ(".small").remove();
 
-                        __$(all_drugs[i]).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] +
+                        __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] +
                             "&nbsp</span> " + drug_short_names[all_drugs[i].short_name];
                         __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] + "&nbsp</span> " + all_drugs[i].short_name;
                         __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] +
