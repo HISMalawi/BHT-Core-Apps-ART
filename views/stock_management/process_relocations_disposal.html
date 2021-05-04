@@ -1370,11 +1370,11 @@
                         if (!row_complete(tabs_per_tin, total_tins, date_of_expiry, authorization_code)) {
                             error_messages.push("Incomplete entries for " + drugName);
                         }
-                        if(authorization_code.length > 0) {
-                            if(isNaN(Number.parseInt(authorization_code, 30))) {
-                                error_messages.push("Invalid authorization code for " + drugName);
-                            }
-                        }
+                        // if(authorization_code.length > 0) {
+                        //     if(isNaN(Number.parseInt(authorization_code, 30))) {
+                        //         error_messages.push("Invalid authorization code for " + drugName);
+                        //     }
+                        // }
                         
                         if (parseInt(key.split("_")[1]) == 0) {
                             if (drugs_hash[key]["tabs_per_tin"].length == 0) {
