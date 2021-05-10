@@ -65,9 +65,9 @@ function processVLalert() {
   VLmilestoneCheckDone = true;
 
   var eligibile = vl_info.eligibile;
-  var earliest_start_date = moment(vl_info.earliest_start_date).format('DD/MMM/YYYY');
+  /*var earliest_start_date = moment(vl_info.earliest_start_date).format('DD/MMM/YYYY');
   var milestone = vl_info.milestone;
-  var period_on_art = vl_info.period_on_art;
+  var period_on_art = vl_info.period_on_art;*/
   var skip_milestone = vl_info.skip_milestone;
   var message = vl_info.message;
 
