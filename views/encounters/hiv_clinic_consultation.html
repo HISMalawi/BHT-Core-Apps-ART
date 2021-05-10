@@ -2889,7 +2889,14 @@
                 jQuery("#inputFrame" + tstCurrentPage).show();
                 jQuery(".loader").hide();
             }
-
+            var givingTubal = false;
+            function setOnTubal() {
+                if(answers_hash["current_fpm"] === "Tubal ligation") {
+                    return true;
+                }else {
+                    return false;
+                }
+            }
         </script>
 
         <form action="#" method='post'>
@@ -2959,7 +2966,7 @@
             </select>
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
+                    condition="setOnTubal() == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
                     helpText="What method are you providing today?" id="session_fpm_used" multiple="multiple"
                     name="observations[][value_coded_or_text_multiple][]"
                     tt_onLoad="setNextButtonToGetInputValue('todays_fpm'); showCategory2('Clinic consultation'); fpm_used=false; startFamilyPlanningTimer(); window.setTimeout('controlNoneSelectionForFamilyPlanning(); setOptionsForSafeFamilyPlanningMethodsPopup();', 300)"
