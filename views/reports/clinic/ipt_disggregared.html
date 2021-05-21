@@ -325,7 +325,7 @@ function addNumbers(data) {
   document.getElementById('report-cover').style = "display: none;";
   var total_clients = document.getElementById('total-clients');
   var table_body = document.getElementById('table-body');
-  document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+  document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('DD/MMM/YYYY h:m:s')} 
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
                   API Version ${sessionStorage.apiVersion}`;
