@@ -127,6 +127,7 @@ function initializeTable() {
     scrollY: 335,
     Processing: true,
     ServerSide: true,
+    info:       false,
     scroller: {
       loadingIndicator: true
     },
@@ -405,7 +406,6 @@ function assignLink(tds, age, gender, num) {
     tds[4].setAttribute("class", "disaggregated-numbers clickable");
   }
 
-
 }
 
 function addTableBody() {
@@ -532,13 +532,17 @@ function loadAllFemale(data, age_group) {
           tx_screened_for_tb: data[age][sex].tx_screened_for_tb
         }
 
-        let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
-        tds[3].setAttribute("onclick", onclick);
-        tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        if(data[age][sex].tx_new.length > 0){
+          let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
+          tds[3].setAttribute("onclick", onclick);
+          tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        }
         
-        onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
-        tds[4].setAttribute("onclick", onclick);
-        tds[4].setAttribute("class", "disaggregated-numbers clickable");
+        if(data[age][sex].tx_curr.length > 0){
+          onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
+          tds[4].setAttribute("onclick", onclick);
+          tds[4].setAttribute("class", "disaggregated-numbers clickable");
+        }
       }
 
 
@@ -689,6 +693,8 @@ function validateReport() {
       reporting period and then run this report.</b>`;
   }
   
+  let tx_new_all_males = parseInt(document.getElementById("all-males").getElementsByTagName("td")[3].innerHTML);
+  let tx_new_pregnant = parseInt(document.getElementById("pregnant").getElementsByTagName("td")[3].innerHTML);
   
   if(cohort_report) {
     cohort_report = JSON.parse(cohort_report);
@@ -701,6 +707,12 @@ function validateReport() {
     }else if(cohort_report.cohort.indicators.initiated_on_art_first_time != TXnew_initiated_on_art_first_time) {
       valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort initiated 
         on ART first time (${cohort_report.cohort.indicators.initiated_on_art_first_time}) is not matching with TX new (${TXnew_initiated_on_art_first_time})</span>`;
+    }else if(cohort_report.cohort.indicators.initial_pregnant_females_all_ages != tx_new_pregnant) {
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort  
+        initial pregnant females all ages (${cohort_report.cohort.indicators.initial_pregnant_females_all_ages}) is not matching with TX new Pregnant women</span>`;
+    }else if(cohort_report.cohort.indicators.males_initiated_on_art_first_time != tx_new_all_males) {
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort  
+        males initiated on ART first time (${cohort_report.cohort.indicators.males_initiated_on_art_first_time}) is not matching with TX new All males</span>`;
     }else{
       valid_report.innerHTML = `<span style='color: green;'>Report is consistent with MoH 
         initiated on ART first time; ${cohort_report.cohort.indicators.initiated_on_art_first_time}</span>`;

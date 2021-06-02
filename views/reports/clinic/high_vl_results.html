@@ -69,15 +69,29 @@
   text-align: right;
 }
 
+.dt-left{
+  text-align: left;
+  width: 15%;
+}
+
 .dt-center {
   text-align: center;
+  width: 15%;
 }
 
-.warning {
-  background-color: red !important;
-  color: white !important;
+.dt-btns {
+  text-align: center;
+  vertical-align: middle !important;
+  width: 10%;
 }
 
+.gender {
+    width: 8%;
+}
+
+.results {
+    width: 16%;
+}
 </style>
 
 
@@ -103,7 +117,7 @@ function buildList() {
   var end_date = url.searchParams.get("end_date");
  
   let helpText = document.getElementById('helpText' + tstCurrentPage);
-  let innerHTML = `VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
+  let innerHTML = `High VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
   innerHTML += `&nbsp;and&nbsp;<b>${moment(end_date).format("DD/MMM/YYYY")}</b>)</span>`;
   helpText.innerHTML = innerHTML;
   buildDataTable(f);
@@ -122,8 +136,8 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','Accession#', 'Gender',
-    'birthdate','Order date','Result date', 'Result'];
+  var headers = ['ARV#','Gender', 'Birthdate', 'Order date', 'Specimen drawn date',
+    'Result', 'Result date',''];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -146,9 +160,8 @@ function initDataTable() {
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/vl_results?date=" + sessionStorage.sessionDate;
-  url += `&program_id=${sessionStorage.programID}`;
-  url += `&start_date=${sdate}&end_date=${edate}`; 
+  url += `/programs/${sessionStorage.programID}/reports/high_vl_patients?`;
+  url += `start_date=${sdate}&end_date=${edate}`; 
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -165,22 +178,31 @@ function getList(sdate, edate) {
   xhttp.send();
 }
 
+function buildViewBTN(patient_id){
+    return `<button id="view-${patient_id}" class="button blue navButton" 
+    onmousedown="gotoPatient(${patient_id});"><span>View</span></button>`
+}
+
+function gotoPatient(patient_id){
+    window.location = `/views/patient_dashboard.html?patient_id=${patient_id}`;
+}
+
 function loadClients(data) {
   var formatted_data = [];
 
   for (var i = 0; i < data.length; i++) {
-    let accession_number = data[i].accession_number;
     let gender = data[i].gender;
     let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
     let arv_number = data[i].arv_number;
     let person_id = data[i].patient_id;
     let result_date = moment(data[i].result_date).format('DD/MMM/YYYY');
     let order_date = moment(data[i].order_date).format('DD/MMM/YYYY');
+    let specimen_drawn_date = moment(data[i].specimen_drawn_date).format('DD/MMM/YYYY');
     let result = data[i].result;
     let result_modifier = data[i].result_modifier;
    
-    formatted_data.push([arv_number, accession_number, gender, 
-      birthdate, order_date, result_date, `${result_modifier} ${result}`]);
+    formatted_data.push([arv_number, gender, birthdate, order_date, specimen_drawn_date, 
+      `${result_modifier} ${result}`, result_date, buildViewBTN(person_id)]);
       
   }
   
@@ -195,25 +217,17 @@ function loadClients(data) {
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 0, "asc" ], [5, "asc"]],
+    order:          [[ 0, "asc" ]],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 1},
+      {"className": "dt-left", "targets": 0},
+      {"className": "dt-center gender", "targets": 1},
       {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 5},
-      {"className": "dt-right", "targets": 6}
-    ],
-    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-      if (aData[6].match(/=|>/) && parseFloat(aData[6].replace("=","").replace(">","")) >= 1000) {
-        let class_name = nRow.getAttribute("class");
-        nRow.setAttribute("class", `${class_name} warning`);
-      }else if (aData[6].replace(/\s+/g, '').toUpperCase() == ">LDL") {
-        let class_name = nRow.getAttribute("class");
-        nRow.setAttribute("class", `${class_name} warning`);
-      }
-    }
+      {"className": "dt-right results", "targets": 5},
+      {"className": "dt-center", "targets": 6},
+      {"className": "dt-btns", "targets": 7}
+    ]
   } );
 
 }
@@ -267,7 +281,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="hhhhhhhhh" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="High VL results" optional = "true"/>
 
       </form>
 

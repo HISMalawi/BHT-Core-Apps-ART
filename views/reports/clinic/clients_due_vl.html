@@ -10,6 +10,17 @@
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
 
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+
 <style>
 #clearButton, #cancelButton {
   display: none;
@@ -77,6 +88,12 @@
 .dt-right {
   text-align: right;
 }
+
+.warning {
+  background-color: red !important;
+  color: white !important;
+}
+
 </style>
 
 
@@ -118,16 +135,20 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','First name','Last name', 'Gender',
-    'birthdate','App date','ART start date', 'Months on ART', 
-    'Milestone'];
-  
+  if(sessionStorage.filingNumnerAvailable == 'false'){
+    var headers = ['ARV#','Gender','birthdate','App date','ART start date',
+   'Months on ART', 'Milestone', "Last result", "Result date"];
+  }else{
+    var headers = ['Filing#','Gender','birthdate','App date','ART start date',
+   'Months on ART', 'Milestone', "Last result", "Result date"];
+  }
+
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
     
-    if(i == 0) 
+   /* if(i == 0) 
       th.setAttribute('class', 'npid');
 
     if(i == 1) 
@@ -140,7 +161,7 @@ function buildDataTable(e) {
       th.setAttribute('class', 'gender');
 
     if(i == 4) 
-      th.setAttribute('class', 'birthdate');
+      th.setAttribute('class', 'birthdate');*/
   
   }
 
@@ -192,10 +213,13 @@ function loadClients(data) {
     let art_start_date = moment(data[i].start_date).format('DD/MMM/YYYY');
     let months_on_ART = data[i].months_on_art;
     let mile_stone = moment(data[i].mile_stone).format('DD/MMM/YYYY');
-    
-    formatted_data.push([npid, given_name, family_name, gender, 
-      birthdate, app_date, art_start_date, months_on_ART, 
-      mile_stone]); //addSelectButton(person_id)]);
+    let last_result = data[i].last_result;
+    let result_date = 'N/A'
+    if(data[i].last_result_date != 'N/A')
+      result_date = moment(data[i].last_result_date).format('DD/MMM/YYYY');
+
+    formatted_data.push([npid, gender, birthdate, app_date, art_start_date, 
+      months_on_ART, mile_stone, last_result, result_date]); //addSelectButton(person_id)]);
   }
   
   jQuery('#clients').DataTable( {
@@ -203,21 +227,38 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        485,
+    scrollY:        385,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 2, "asc" ]],
+    order:          [[0, "asc"],[ 5, "asc" ]],
     columnDefs: [
       {"className": "dt-center", "targets": 0},
+      {"className": "dt-center", "targets": 1},
+      {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6},
-      {"className": "dt-right", "targets": 7}
-    ]
-  } );false
+      {"className": "dt-right", "targets": 5},
+      {"className": "dt-right", "targets": 7},
+      {"className": "dt-center", "targets": 8}
+    ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "Clients due for VL",
+        footer: true 
+      }
+    ],
+    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+      if (aData[7].match(/=|>/) && parseFloat(aData[7].replace("=","").replace(">","")) >= 1000) {
+        let class_name = nRow.getAttribute("class");
+        nRow.setAttribute("class", `${class_name} warning`);
+      }
+    }
+  } );
 
 }
 
