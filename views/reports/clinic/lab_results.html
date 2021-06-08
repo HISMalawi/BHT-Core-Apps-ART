@@ -15,6 +15,16 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
 
 
 <style>
@@ -303,7 +313,7 @@ function buildReport(){
         fixedHeader:    true,
         searching:      false,
         deferRender:    true,
-        scrollY:        550,
+        scrollY:        500,
         scrollCollapse: false,
         scroller:       false,
         pageLength:     10000,
@@ -311,7 +321,15 @@ function buildReport(){
         paging:         false,
         info:           false,
         order:          [[ 0, "asc" ]],
-        columnDefs: columns
+        columnDefs: columns,
+        dom: 'Bfrtip',
+        buttons: [
+        {
+            extend: "csv",
+            title: "lab test results",
+            footer: true 
+        }
+        ],
     } );
 }
 
@@ -405,6 +423,14 @@ function buildReportPatientLevel(){
       {"className": "dt-dates", "targets": 3},
       {"className": "dt-dates", "targets": 6},
       {"className": "dt-tests", "targets": 4}
+    ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "lab test results patient level",
+        footer: true 
+      }
     ],
     "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
       if(aData[4].match(/viral load/i)){
