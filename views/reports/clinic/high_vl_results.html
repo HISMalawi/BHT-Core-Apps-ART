@@ -9,6 +9,16 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
 
 <style>
 #clearButton, #cancelButton {
@@ -100,7 +110,7 @@ var tt_cancel_destination = "/";
 
 function changeFinishButton() {
   var b = document.getElementById('nextButton');
-  b.innerHTML = '<span>Back</span>';
+  b.innerHTML = '<span>Finish</span>';
   b.setAttribute('onmousedown','document.location="/";');
 }
 
@@ -227,7 +237,15 @@ function loadClients(data) {
       {"className": "dt-right results", "targets": 5},
       {"className": "dt-center", "targets": 6},
       {"className": "dt-btns", "targets": 7}
-    ]
+    ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "Clients with high VL",
+        footer: true 
+      }
+    ],
   } );
 
 }
