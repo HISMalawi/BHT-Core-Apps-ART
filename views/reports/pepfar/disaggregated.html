@@ -327,7 +327,7 @@ function parseColumnData(td) {
 
 function addMales() {
   var cells = document.getElementsByClassName('Male_row');
-  var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
+  // var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
   
   var num = { tx_new: [], tx_curr: [], tx_given_ipt: [], tx_screened_for_tb: [] }
 
@@ -350,15 +350,14 @@ function addMales() {
 
     if (tx_screened_for_tb_data) 
       num.tx_screened_for_tb = [...num.tx_screened_for_tb, ...tx_screened_for_tb_data]
-
-    tx_new += parseInt(tds[3].innerHTML);
-    tx_curr += parseInt(tds[4].innerHTML);
-    tx_given_ipt += parseInt(tds[5].innerHTML);
-    tx_screened_for_tb += parseInt(tds[6].innerHTML);
+    // tx_new += parseInt(tds[3].innerHTML);
+    // tx_curr += parseInt(tds[4].innerHTML);
+    // tx_given_ipt += parseInt(tds[5].innerHTML);
+    // tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
 
-  data_table.row.add([31,'All', 'Male', tx_new, tx_curr, 
-    tx_given_ipt, tx_screened_for_tb]).node().id = 'all-males'; 
+  data_table.row.add([31,'All', 'Male', num.tx_new.length, num.tx_curr.length, 
+    num.tx_given_ipt.length, num.tx_screened_for_tb.length]).node().id = 'all-males'; 
   data_table.draw();
 
   addClass('all-males');
@@ -421,8 +420,8 @@ function assignLink(tds, age, gender, num) {
     drillDownHash[age][gender] = {
       tx_new: num.tx_new,
       tx_curr: num.tx_curr,
-      tx_given_ipt: [],
-      tx_screened_for_tb: []
+      tx_given_ipt: num.tx_given_ipt || [],
+      tx_screened_for_tb: num.tx_screened_for_tb || []
     }
   }
   if(num.tx_new.length > 0){
@@ -590,11 +589,6 @@ function loadAllFemale(data, age_group) {
           tds[4].setAttribute("class", "disaggregated-numbers clickable");
         }
       }
-
-
-
-
-
     }
   }
 
