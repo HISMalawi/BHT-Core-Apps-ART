@@ -329,16 +329,27 @@ function addMales() {
   var cells = document.getElementsByClassName('Male_row');
   var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
   
-  var num = { tx_new: [], tx_curr: [] }
+  var num = { tx_new: [], tx_curr: [], tx_given_ipt: [], tx_screened_for_tb: [] }
 
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
     
     const tx_new_data = parseColumnData(tds[3])
     const tx_cur_data = parseColumnData(tds[4])
+    const tx_given_ipt_data = parseColumnData(tds[5])
+    const tx_screened_for_tb_data = parseColumnData(tds[6])
 
-    if (tx_new_data) num.tx_new = [...num.tx_new, ...tx_new_data]
-    if (tx_cur_data) num.tx_curr = [...num.tx_curr, ...tx_cur_data]
+    if (tx_new_data) 
+      num.tx_new = [...num.tx_new, ...tx_new_data]
+    
+    if (tx_cur_data) 
+      num.tx_curr = [...num.tx_curr, ...tx_cur_data]
+    
+    if (tx_given_ipt_data)
+      num.tx_given_ipt = [...num.tx_given_ipt, ...tx_given_ipt_data]
+
+    if (tx_screened_for_tb_data) 
+      num.tx_screened_for_tb = [...num.tx_screened_for_tb, ...tx_screened_for_tb_data]
 
     tx_new += parseInt(tds[3].innerHTML);
     tx_curr += parseInt(tds[4].innerHTML);
@@ -428,6 +439,19 @@ function assignLink(tds, age, gender, num) {
     tds[4].setAttribute("onclick", onclick);
   }
 
+  if (num.tx_given_ipt.length > 0) {
+    let onclick = `drillDown('${age}', '${gender}', 'tx_given_ipt');`;
+    tds[5].setAttribute("class", "disaggregated-numbers clickable");
+    tds[5].setAttribute("data", JSON.stringify(num.tx_given_ipt))
+    tds[5].setAttribute("onclick", onclick);
+  }
+
+  if (num.tx_screened_for_tb.length > 0) {
+    let onclick = `drillDown('${age}', '${gender}', 'tx_screened_for_tb');`;
+    tds[6].setAttribute("class", "disaggregated-numbers clickable");
+    tds[6].setAttribute("data", JSON.stringify(num.tx_screened_for_tb))
+    tds[6].setAttribute("onclick", onclick);
+  }
 }
 
 function addTableBody() {
@@ -806,6 +830,7 @@ function fetchTBscreenedClients(td) {
           gender = (gender.match(/female/i) ? "Female" : "Male");
           drillDownHash[age_group][gender].tx_screened_for_tb = obj;
           let onclick = `drillDown('${age_group}', '${gender}', 'tb_screened');`;
+          td.setAttribute('data', JSON.stringify(obj))
           td.setAttribute("onclick", onclick);
           td.setAttribute("class", "disaggregated-numbers clickable");
         }
@@ -855,6 +880,7 @@ function fetchIPTclients(td) {
           }
           let onclick = `drillDown('${age_group}', '${gender}', 'ipt_given');`;
           td.setAttribute("onclick", onclick);
+          td.setAttribute("data", JSON.stringify(obj))
           td.setAttribute("class", "disaggregated-numbers clickable");
         }
       }
