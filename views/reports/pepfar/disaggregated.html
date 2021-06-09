@@ -115,7 +115,6 @@ var on_art =  null; //10000; //url.searchParams.get('total_alive_and_on_art');
 
 var dataSet = [];
 var data_table;
-
 function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
@@ -320,12 +319,27 @@ function loadData(data, age_group) {
   }
 }
 
+function parseColumnData(td) {
+  const data = td.getAttribute('data')
+
+  if (data) return JSON.parse(data) 
+}
+
 function addMales() {
   var cells = document.getElementsByClassName('Male_row');
   var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
+  
+  var num = { tx_new: [], tx_curr: [] }
 
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
+    
+    const tx_new_data = parseColumnData(tds[3])
+    const tx_cur_data = parseColumnData(tds[4])
+
+    if (tx_new_data) num.tx_new = [...num.tx_new, ...tx_new_data]
+    if (tx_cur_data) num.tx_curr = [...num.tx_curr, ...tx_cur_data]
+
     tx_new += parseInt(tds[3].innerHTML);
     tx_curr += parseInt(tds[4].innerHTML);
     tx_given_ipt += parseInt(tds[5].innerHTML);
@@ -335,9 +349,16 @@ function addMales() {
   data_table.row.add([31,'All', 'Male', tx_new, tx_curr, 
     tx_given_ipt, tx_screened_for_tb]).node().id = 'all-males'; 
   data_table.draw();
+
   addClass('all-males');
-  
+  appendLinks('all-males', 'Male', num)
   getAllFemale('Pregnant');
+}
+
+function appendLinks(nodeId, gender, num) {
+  var tr = document.getElementById(nodeId);
+  var cells = tr.getElementsByTagName('td');
+  assignLink(cells, nodeId, gender, num)
 }
 
 function addClass(id) {
@@ -393,17 +414,18 @@ function assignLink(tds, age, gender, num) {
       tx_screened_for_tb: []
     }
   }
-
   if(num.tx_new.length > 0){
     let onclick = `drillDown('${age}', '${gender}', 'tx_new');`;
-    tds[3].setAttribute("onclick", onclick);
     tds[3].setAttribute("class", "disaggregated-numbers clickable");
+    tds[3].setAttribute("data", JSON.stringify(num.tx_new))
+    tds[3].setAttribute("onclick", onclick);
   }
 
   if(num.tx_curr.length > 0){
     let onclick = `drillDown('${age}', '${gender}', 'tx_curr');`;
-    tds[4].setAttribute("onclick", onclick);
     tds[4].setAttribute("class", "disaggregated-numbers clickable");
+    tds[4].setAttribute("data", JSON.stringify(num.tx_curr))
+    tds[4].setAttribute("onclick", onclick);
   }
 
 }
