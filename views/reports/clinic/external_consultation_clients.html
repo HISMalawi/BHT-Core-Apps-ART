@@ -1,0 +1,278 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+<style>
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+#spinner {
+  position: absolute;
+  top: 150px;
+  left: 40%;
+  z-index: 991;
+}
+
+#clearButton, #cancelButton {
+  display: none;
+}
+
+.btn-primary {
+  display: block;
+  width: 115px;
+  height: 25px;
+  background: #4E9CAF;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#clients th {
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+#clients td {
+  border-style: solid;
+  border-width: 0px 1px 1px 0px;
+}
+
+#clients {
+  border-collapse: collapse;
+}
+
+.dataTables_scrollBody {
+ overflow-x:hidden !important;
+ overflow-y:auto !important;
+}
+
+tfoot{
+  visibility: hidden;
+}
+
+.dt-arv-number {
+  text-align: center;
+  width: 10%;
+}
+
+.dt-npid {
+  text-align: center;
+  width: 10%;
+}
+
+.dt-name {
+  text-align: left;
+  width: 30%;
+}
+
+.dt-gender {
+  text-align: center;
+  width: 10%;
+}
+
+.dt-birthdate {
+  text-align: center;
+  width: 10%;
+}
+
+</style>
+
+
+<script>
+function changeFinishButton() {
+  var b = document.getElementById('nextButton');
+  b.innerHTML = '<span>Finish</span>';
+  b.setAttribute('onmousedown','back();');
+}
+
+function back() {
+  document.location = '/';
+}
+
+var href = window.location.href;
+var url = new URL(href);
+var start_date  = url.searchParams.get("start_date");
+var end_date    = url.searchParams.get("end_date");
+
+function buildList() {
+  var f = document.getElementById('inputFrame' + tstCurrentPage);
+  f.style = 'width: 96%; height: 89%;';
+  buildDataTable(f);
+  getList(start_date, end_date);
+}
+
+function buildDataTable(e) {
+  var table = document.createElement('table');
+  table.setAttribute('id','clients');
+  table.style = 'width: 100%;';
+  e.appendChild(table);
+
+  var theader = document.createElement('thead');
+  table.appendChild(theader);
+  var tr = document.createElement('tr');
+  theader.appendChild(tr);
+  var tfoot = document.createElement('tfoot');
+  var tfoot_tr = document.createElement('tr');
+  var tfoot_td = document.createElement('td');
+  tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
+  tfoot_tr.appendChild(tfoot_td);
+  tfoot.appendChild(tfoot_tr);
+  table.appendChild(tfoot);
+  var headers = ['ARV#','NPID', 'First name','Last name', 'Gender','DOB'];
+  
+  for(var i = 0 ; i < headers.length ; i++){
+    var th = document.createElement('th');
+    th.innerHTML = headers[i];
+    tr.appendChild(th);
+  }
+
+}
+
+function getList(sdate, edate) {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/external_consultation_clients?start_date=" + sdate + "&end_date=" + edate
+  url += "&program_id=" + sessionStorage.programID;
+  url += "&date=" + sessionStorage.sessionDate;
+  document.getElementById("helpText0").innerHTML += " (" +  moment(start_date).format('DD/MMM/YYYY');
+  document.getElementById("helpText0").innerHTML += " - " +  moment(end_date).format('DD/MMM/YYYY') + ")";
+
+  document.getElementById('spinner').style = 'display: inline;';
+  document.getElementById('report-cover').style = 'display: inline;';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      loadClients(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function loadClients(data) {
+  var formatted_data = [];
+
+  for (var i = 0; i < data.length; i++) {
+    var given_name = data[i].given_name;
+    var family_name = data[i].family_name;
+    var gender = data[i].gender;
+    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    var arv_number = data[i].arv_number;
+    var person_id = data[i].patient_id;
+    var npid = data[i].npid;
+    
+    formatted_data.push([arv_number, npid, given_name, family_name, gender, birthdate]);
+  }
+ 
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
+   
+  jQuery('#clients').DataTable( {
+    fixedHeader:    true,
+    searching:      false,
+    data:           formatted_data,
+    deferRender:    true,
+    scrollY:        460,
+    scrollCollapse: false,
+    scroller:       false,
+    pageLength:     10000,
+    lengthChange:   false,
+    paging:         false,
+    order:          [[ 0, "asc" ],[3, "asc"],[2, "asc"]],
+    /*dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'csv',
+        title: sessionStorage.currentLocation + ' ext consultation clients report ' + period,
+        footer: true 
+      },
+      {
+        extend: 'pdf',
+        title: sessionStorage.currentLocation + ' ext consultation clients report ' + period,
+      }
+    ],*/
+    columnDefs: [
+      {"className": "dt-arv-number", "targets": 0},
+      {"className": "dt-npid", "targets": 1},
+      {"className": "dt-name", "targets": 2},
+      {"className": "dt-name", "targets": 3},
+      {"className": "dt-gender", "targets": 4},
+      {"className": "dt-birthdate", "targets": 5}
+    ]
+  } );
+
+  document.getElementById('spinner').style = 'display: none;';
+  document.getElementById('report-cover').style = 'display: none;';
+}
+
+function addSelectButton(person_id) {
+  var span = document.createElement('span');
+  var button  = document.createElement('a');
+  button.setAttribute('onmousedown', 'selectClient(' + person_id + ')');
+  button.innerHTML = 'Select';
+  button.setAttribute('class','btn-primary');
+  button.setAttribute('href','#');
+  span.appendChild(button);
+  return span.innerHTML;
+}
+
+function selectClient(patient_id) {
+  document.location = '/views/confirm.html?person_id=' + patient_id;
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+
+      <form>
+
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
+          tt_pageStyleClass= "NoControls" helpText="External consultation clients <span id='end-date'></span>" optional = "true"/>
+
+      </form>
+
+   </div>
+ </div>
+</body>
+
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
