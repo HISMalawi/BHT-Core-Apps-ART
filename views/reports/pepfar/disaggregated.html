@@ -112,6 +112,7 @@ url = new URL(url);
 var start_date = url.searchParams.get("start_date");
 var end_date = url.searchParams.get("end_date");
 var on_art =  null; //10000; //url.searchParams.get('total_alive_and_on_art');
+var on_art_data = []
 
 var dataSet = [];
 var data_table;
@@ -228,6 +229,7 @@ function renegerateReport() {
   ageGroups();
   rebuild_outcome = true;
   on_art = 0;
+  on_art_data = []
   var table_body = document.getElementById('table-body');
   table_body.innerHTML = null;
   addTableBody();
@@ -289,11 +291,15 @@ function getData(age_group) {
 
       loadData(obj, age_group);
       try {
-        on_art += (obj[age_group]['F'].tx_curr.length)
+        const f_group_curr = obj[age_group]['F'].tx_curr
+        on_art_data = [...on_art_data, ...f_group_curr]
+        on_art += (f_group_curr.length)
       }catch(e){
       }
       try {
-        on_art += (obj[age_group]['M'].tx_curr.length)
+        const m_group_curr = obj[age_group]['M'].tx_curr
+        on_art_data = [...on_art_data, ...m_group_curr] 
+        on_art += (m_group_curr.length)
       }catch(e){
       }
     }
@@ -561,7 +567,7 @@ function loadAllFemale(data, age_group) {
 
         // if(drillDownHash[age_group] == undefined)
         //   drillDownHash[age_group] = {};
-
+        
         // if(drillDownHash[age_group][gender] == undefined){
         //   drillDownHash[age_group][gender] = {
         //     tx_new: [], tx_curr: [],
@@ -789,7 +795,17 @@ function validateReport() {
 
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
-  document.getElementById('on-art').innerHTML = on_art;
+  
+  var onArtNode =  document.getElementById('on-art')
+  onArtNode.innerHTML = on_art
+  onArtNode.setAttribute("class", "clickable");
+  onArtNode.setAttribute("onclick", "drillDown('art', 'total', 'tx_curr')");
+  drillDownHash['art'] = {
+    total: {
+      tx_curr: on_art_data
+    }
+  }
+  // document.getElementById('on-art').innerHTML = on_art;
 }
 
 var TXnew_initiated_on_art_first_time = 0;
