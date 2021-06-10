@@ -783,6 +783,11 @@ function updateFNProw() {
 var female_ipt_tds = [];
 var female_tb_tds  = [];
 
+function drillDown(data) {
+  sessionStorage.cohortDrillDown = JSON.parse(data).join(',')
+  window.location = "cohort_drilldown.html";
+}
+
 function updateRemainingCells() {
   var tr = document.getElementById("pregnant"); 
   female_tb_tds.push(tr.getElementsByTagName("td")[6]);
