@@ -438,14 +438,14 @@ function assignLink(tds, age, gender, num) {
     tds[4].setAttribute("onclick", onclick);
   }
 
-  if (num.tx_given_ipt.length > 0) {
+  if (num.tx_given_ipt && num.tx_given_ipt.length > 0) {
     let onclick = `drillDown('${age}', '${gender}', 'tx_given_ipt');`;
     tds[5].setAttribute("class", "disaggregated-numbers clickable");
     tds[5].setAttribute("data", JSON.stringify(num.tx_given_ipt))
     tds[5].setAttribute("onclick", onclick);
   }
 
-  if (num.tx_screened_for_tb.length > 0) {
+  if (num.tx_screened_for_tb && num.tx_screened_for_tb.length > 0) {
     let onclick = `drillDown('${age}', '${gender}', 'tx_screened_for_tb');`;
     tds[6].setAttribute("class", "disaggregated-numbers clickable");
     tds[6].setAttribute("data", JSON.stringify(num.tx_screened_for_tb))
@@ -544,12 +544,11 @@ function loadAllFemale(data, age_group) {
         var count = 34 ; var g = 'FBf'; 
       }
 
-
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
         tx_given_ipt, tx_screened_for_tb]).node().id = age_group.toLowerCase();
       data_table.draw();
       addClass(age_group.toLowerCase()); 
-    
+      
       if(age_group.toLowerCase() != 'all-males') {
         var tr = document.getElementById(age_group.toLowerCase());
         tds = tr.getElementsByTagName('td');
@@ -558,36 +557,37 @@ function loadAllFemale(data, age_group) {
         tds[6].setAttribute("column-name", "tb-" + age_group.toLowerCase());
         tds[6].setAttribute("column-age", "ipt-" + "all");
 
+        appendLinks(age_group.toLowerCase(), sex, gender[sex])
 
-        if(drillDownHash[age_group] == undefined)
-          drillDownHash[age_group] = {};
+        // if(drillDownHash[age_group] == undefined)
+        //   drillDownHash[age_group] = {};
 
-        if(drillDownHash[age_group][gender] == undefined){
-          drillDownHash[age_group][gender] = {
-            tx_new: [], tx_curr: [],
-            tx_given_ipt: [], tx_screened_for_tb: []
-          };
-        }
+        // if(drillDownHash[age_group][gender] == undefined){
+        //   drillDownHash[age_group][gender] = {
+        //     tx_new: [], tx_curr: [],
+        //     tx_given_ipt: [], tx_screened_for_tb: []
+        //   };
+        // }
 
 
-        drillDownHash[age_group][gender] = {
-          tx_new: data[age][sex].tx_new,
-          tx_curr:  data[age][sex].tx_curr,
-          tx_given_ipt: data[age][sex].tx_given_ipt,
-          tx_screened_for_tb: data[age][sex].tx_screened_for_tb
-        }
+        // drillDownHash[age_group][gender] = {
+        //   tx_new: data[age][sex].tx_new,
+        //   tx_curr:  data[age][sex].tx_curr,
+        //   tx_given_ipt: data[age][sex].tx_given_ipt,
+        //   tx_screened_for_tb: data[age][sex].tx_screened_for_tb
+        // }
 
-        if(data[age][sex].tx_new.length > 0){
-          let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
-          tds[3].setAttribute("onclick", onclick);
-          tds[3].setAttribute("class", "disaggregated-numbers clickable");
-        }
+        // if(data[age][sex].tx_new.length > 0){
+        //   let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
+        //   tds[3].setAttribute("onclick", onclick);
+        //   tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        // }
         
-        if(data[age][sex].tx_curr.length > 0){
-          onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
-          tds[4].setAttribute("onclick", onclick);
-          tds[4].setAttribute("class", "disaggregated-numbers clickable");
-        }
+        // if(data[age][sex].tx_curr.length > 0){
+        //   onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
+        //   tds[4].setAttribute("onclick", onclick);
+        //   tds[4].setAttribute("class", "disaggregated-numbers clickable");
+        // }
       }
     }
   }
@@ -616,6 +616,8 @@ function updateFNProw() {
   var fnp_row = document.getElementById('fnp');
   var bf_row = document.getElementById('breastfeeding');
 
+  var fp_bf_tx_new_data = []
+  var fp_bf_tx_curr_data = []
   var fp_bf_tx_new = 0;
   var fp_bf_tx_curr = 0;
   var fp_bf_tx_given_ipt = 0;
@@ -625,22 +627,41 @@ function updateFNProw() {
   
   for(var r = 0 ; r < rows.length; r++){
     var tds = rows[r].getElementsByTagName('td');
+    var tx_new_data = parseColumnData(tds[3])
+    var tx_cur_data = parseColumnData(tds[4])
+
+    if (tx_new_data)
+      fp_bf_tx_new_data = [...fp_bf_tx_new_data, ...tx_new_data]
+
+    if (tx_cur_data)
+      fp_bf_tx_curr_data = [...fp_bf_tx_curr_data, ...tx_cur_data]
+
     fp_bf_tx_new += parseInt(tds[3].innerHTML);
     fp_bf_tx_curr += parseInt(tds[4].innerHTML);
     fp_bf_tx_given_ipt += parseInt(tds[5].innerHTML);
     fp_bf_tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
 
+  var all_female_tx_new_data = []
+  var all_female_tx_curr_data = []
   var all_female_tx_new = 0;
   var all_female_tx_curr = 0;
   var all_female_tx_given_ipt = 0;
   var all_female_tx_screened_for_tb = 0;
   var female_rows = document.getElementsByClassName('Female_row');
-  
+
   for(var i = 0 ; i < female_rows.length; i++){
     var tds = female_rows[i].getElementsByTagName('td');
     
     if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+      var tx_new_data = parseColumnData(tds[3])
+      var tx_cur_data = parseColumnData(tds[4])
+
+      if (tx_new_data)
+        all_female_tx_new_data = [...all_female_tx_new_data, ...tx_new_data]
+      if (tx_cur_data)
+        all_female_tx_curr_data =[...all_female_tx_curr_data, ...tx_cur_data]
+      
       all_female_tx_new += parseInt(tds[3].innerHTML);
       all_female_tx_curr += parseInt(tds[4].innerHTML);
       all_female_tx_given_ipt += parseInt(tds[5].innerHTML);
@@ -649,11 +670,17 @@ function updateFNProw() {
   }
   
   var tds = fnp_row.getElementsByTagName('td');
+
   tds[3].innerHTML = (all_female_tx_new - fp_bf_tx_new);  
   tds[4].innerHTML = (all_female_tx_curr - fp_bf_tx_curr);  
   tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
   tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
 
+  const fnp_new = all_female_tx_new_data.filter(item => !fp_bf_tx_new_data.includes(item))
+  const fnp_curr = all_female_tx_curr_data.filter(item => !fp_bf_tx_curr_data.includes(item))
+
+  appendLinks('fnp', 'Female', {tx_new: fnp_new, tx_curr: fnp_curr})
+  
   /*data_table.destroy();
   initializeTable();
   validateReport(); */
