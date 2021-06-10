@@ -27,6 +27,12 @@
 <script type="text/javascript" src="/assets/js/core.js"></script>
 
 <style>
+.clickable {
+  text-decoration: underline;
+  color: blue;
+  text-align: right;
+  padding-right: 10px;
+}
 .disaggregated-numbers {
   text-align: right;
   padding-right: 10px;
@@ -291,6 +297,23 @@ function initializeReport() {
   xhttp.send();
 }
 
+function parseColumnData(node) {
+  const data = node.getAttribute("data")
+  
+  if (data) return JSON.parse(data)
+
+  return []
+}
+
+function assignLink(node, data) {
+  if (data && data.length > 0) {
+    const strData = JSON.stringify(data)
+    node.setAttribute("data", strData)
+    node.setAttribute("onclick", `drillDown("${strData}")`)
+    node.setAttribute("class", "clickable")
+  } 
+}
+
 function getData(age_group) {
 
   var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
@@ -336,12 +359,31 @@ function loadData(data, age_group) {
   }
 }
 
+function updateMaleTotals(nodeId, data) {
+  var tr = document.getElementById(nodeId);
+  var cells = tr.getElementsByTagName('td');
+  assignLink(cells[3], data.tx_new)
+  assignLink(cells[4], data.tx_curr)
+  assignLink(cells[5], data.tx_given_ipt)
+  assignLink(cells[6], data.tx_screened_for_tb)
+}
+
 function addMales() {
   var cells = document.getElementsByClassName('Male_row');
   var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
+  var num = { tx_new: [], tx_curr: [], tx_given_ipt: [], tx_screened_for_tb: [] }
 
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
+
+    num.tx_new = [...num.tx_new, ...parseColumnData(tds[3])];
+    
+    num.tx_curr = [...num.tx_curr, ...parseColumnData(tds[4])];
+    
+    num.tx_given_ipt = [...num.tx_given_ipt, ...parseColumnData(tds[5])];
+
+    num.tx_screened_for_tb = [...num.tx_screened_for_tb, ...parseColumnData(tds[6])];
+    
     tx_new += parseInt(tds[3].innerHTML);
     tx_curr += parseInt(tds[4].innerHTML);
     tx_given_ipt += parseInt(tds[5].innerHTML);
@@ -353,7 +395,7 @@ function addMales() {
     0,0,0,0,0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'all-males'; 
   data_table.draw();
   addClass('all-males');
-  
+  updateMaleTotals('all-males', num)
   getAllFemale('Pregnant');
 }
 
@@ -428,6 +470,7 @@ function fetchTBscreenedClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        assignLink(td, obj)
       }
   
      tb_tds.shift();
@@ -475,6 +518,7 @@ function fetchIPTclients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        assignLink(td, obj)
       }
   
      ipt_tds.shift();
@@ -530,6 +574,11 @@ function assignTD(tds, num, gender, age) {
 
   tds[6].setAttribute("column-name", "tb-" + gender.toLocaleLowerCase());
   tds[6].setAttribute("column-age", "tb-" + age);
+
+  assignLink(tds[3], num.tx_new)
+  assignLink(tds[4], num.tx_curr)
+  assignLink(tds[5], num.tx_given_ipt)
+  assignLink(tds[6], num.tx_screened_for_tb)
 }
 
 function addTableBody() {
@@ -635,8 +684,11 @@ function loadAllFemale(data, age_group) {
         tds[5].setAttribute("column-age", "ipt-" + "all");
         tds[6].setAttribute("column-name", "tb-" + age_group.toLowerCase());
         tds[6].setAttribute("column-age", "ipt-" + "all");
+        assignLink(tds[3], data[age][sex].tx_new)
+        assignLink(tds[4], data[age][sex].tx_curr)
+        assignLink(tds[5], data[age][sex].tx_given_ipt)
+        assignLink(tds[6], data[age][sex].tx_screened_for_tb)
       }
-
     }
   }
 
@@ -663,6 +715,11 @@ function updateFNProw() {
   var fnp_row = document.getElementById('fnp');
   var bf_row = document.getElementById('breastfeeding');
 
+  var fp_bf_tx_new_data = []
+  var fp_bf_tx_curr_data = []
+  var fp_bf_tx_given_ipt_data = [];
+  var fp_bf_tx_screened_for_tb_data = [];
+
   var fp_bf_tx_new = 0;
   var fp_bf_tx_curr = 0;
   var fp_bf_tx_given_ipt = 0;
@@ -672,11 +729,20 @@ function updateFNProw() {
   
   for(var r = 0 ; r < rows.length; r++){
     var tds = rows[r].getElementsByTagName('td');
+    fp_bf_tx_new_data = [...fp_bf_tx_new_data, ...parseColumnData(tds[3])]
+    fp_bf_tx_curr_data = [...fp_bf_tx_curr_data, ...parseColumnData(tds[4])]
+    fp_bf_tx_given_ipt_data = [...fp_bf_tx_given_ipt_data, ...parseColumnData(tds[5])]
+    fp_bf_tx_screened_for_tb_data = [...fp_bf_tx_screened_for_tb_data, ...parseColumnData(tds[6])]
+
     fp_bf_tx_new += parseInt(tds[3].innerHTML);
     fp_bf_tx_curr += parseInt(tds[4].innerHTML);
     fp_bf_tx_given_ipt += parseInt(tds[5].innerHTML);
     fp_bf_tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
+  var all_female_tx_new_data = []
+  var all_female_tx_curr_data = []
+  var all_female_tx_given_ipt_data = []
+  var all_female_tx_screened_for_tb_data = []
 
   var all_female_tx_new = 0;
   var all_female_tx_curr = 0;
@@ -688,6 +754,11 @@ function updateFNProw() {
     var tds = female_rows[i].getElementsByTagName('td');
     
     if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+      all_female_tx_new_data = [...all_female_tx_new_data, ...parseColumnData(tds[3])]
+      all_female_tx_curr_data =[...all_female_tx_curr_data, ...parseColumnData(tds[4])]
+      all_female_tx_given_ipt_data = [...all_female_tx_given_ipt_data, ...parseColumnData(tds[5])]
+      all_female_tx_screened_for_tb_data = [...all_female_tx_screened_for_tb_data, ...parseColumnData(tds[6])]
+
       all_female_tx_new += parseInt(tds[3].innerHTML);
       all_female_tx_curr += parseInt(tds[4].innerHTML);
       all_female_tx_given_ipt += parseInt(tds[5].innerHTML);
@@ -701,11 +772,21 @@ function updateFNProw() {
   tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
   tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
 
+  assignLink(tds[3], all_female_tx_new_data.filter(item => !fp_bf_tx_new_data.includes(item)))
+  assignLink(tds[4], all_female_tx_curr_data.filter(item => !fp_bf_tx_curr_data.includes(item)))
+  assignLink(tds[5], all_female_tx_given_ipt_data.filter(item => !fp_bf_tx_given_ipt_data.includes(item)))
+  assignLink(tds[6], all_female_tx_screened_for_tb_data.filter(item => !fp_bf_tx_screened_for_tb_data.includes(item)))
+  
   updateRemainingCells();
 }
 
 var female_ipt_tds = [];
 var female_tb_tds  = [];
+
+function drillDown(data) {
+  sessionStorage.cohortDrillDown = JSON.parse(data).join(',')
+  window.location = "cohort_drilldown.html";
+}
 
 function updateRemainingCells() {
   var tr = document.getElementById("pregnant"); 
@@ -805,6 +886,7 @@ function fetchTBscreenedFemaleClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        assignLink(td, obj)
       }
 
       female_tb_tds.shift();
@@ -854,6 +936,7 @@ function fetchIPTfemaleClients(td) {
       var obj = JSON.parse(this.responseText);
       if(obj) {
         td.innerHTML = obj.length;
+        assignLink(td, obj)
       }
   
      female_ipt_tds.shift();
@@ -917,93 +1000,146 @@ function fetchRegimens(row){
   xhttp.send();
 }
 
+
 function addRegimen(data, tds){
   allRows.shift();
   var total = 0;
-
+  var total_data = []
   for(var regimen in  data){
-    if(regimen == '0A')
+    if(regimen == '0A') {
       tds[7].innerHTML = data[regimen].length;
+      assignLink(tds[7], data[regimen]);
+    }
 
-    if(regimen == '2A')
+    if(regimen == '2A'){
       tds[8].innerHTML = data[regimen].length;
+      assignLink(tds[8], data[regimen]);
+    }
 
-    if(regimen == '4A')
+    if(regimen == '4A') {
       tds[9].innerHTML = data[regimen].length;
+      assignLink(tds[9], data[regimen])
+    }
 
-    if(regimen == '5A')
+    if(regimen == '5A'){
       tds[10].innerHTML = data[regimen].length;
-
-    if(regimen == '6A')
-      tds[11].innerHTML = data[regimen].length;
-
-    if(regimen == '7A')
-      tds[12].innerHTML = data[regimen].length;
-
-    if(regimen == '8A')
-      tds[13].innerHTML = data[regimen].length;
-
-    if(regimen == '9A')
-      tds[14].innerHTML = data[regimen].length;
-
-    if(regimen == '10A')
-      tds[15].innerHTML = data[regimen].length;
-
-    if(regimen == '11A')
-      tds[16].innerHTML = data[regimen].length;
-
-    if(regimen == '12A')
-      tds[17].innerHTML = data[regimen].length;
-
-    if(regimen == '13A')
-      tds[18].innerHTML = data[regimen].length;
-
-    if(regimen == '14A')
-      tds[19].innerHTML = data[regimen].length;
-
-    if(regimen == '15A')
-      tds[20].innerHTML = data[regimen].length;
-
-    if(regimen == '16A')
-      tds[21].innerHTML = data[regimen].length;
-
-    if(regimen == '17A')
-      tds[22].innerHTML = data[regimen].length;
-
-    if(regimen == '0P')
-      tds[23].innerHTML = data[regimen].length;
-
-    if(regimen == '2P')
-      tds[24].innerHTML = data[regimen].length;
-
-    if(regimen == '4P')
-      tds[25].innerHTML = data[regimen].length;
-
-    if(regimen == '9P')
-      tds[26].innerHTML = data[regimen].length;
-
-    if(regimen == '11P')
-      tds[27].innerHTML = data[regimen].length;
-
-    if(regimen == '14P')
-      tds[28].innerHTML = data[regimen].length;
-
-    if(regimen == '15P')
-      tds[29].innerHTML = data[regimen].length;
-
-    if(regimen == '16P')
-      tds[30].innerHTML = data[regimen].length;
-
-    if(regimen == '17P')
-      tds[31].innerHTML = data[regimen].length;
-
-    if(regimen == 'N/A')
-      tds[32].innerHTML = data[regimen].length;
-
+      assignLink(tds[10], data[regimen]);
+    }
     
+    if(regimen == '6A'){
+      tds[11].innerHTML = data[regimen].length;
+      assignLink(tds[11], data[regimen]);
+    }
+
+    if(regimen == '7A'){
+      tds[12].innerHTML = data[regimen].length;
+      assignLink(tds[12], data[regimen]);
+    }
+    
+    if(regimen == '8A') {
+      tds[13].innerHTML = data[regimen].length;
+      assignLink(tds[13], data[regimen]);
+    }
+    
+    if(regimen == '9A') {
+      tds[14].innerHTML = data[regimen].length;
+      assignLink(tds[14], data[regimen]);
+    }
+    
+    if(regimen == '10A') {
+      tds[15].innerHTML = data[regimen].length;
+      assignLink(tds[15], data[regimen]);
+    }
+    
+    if(regimen == '11A'){
+      tds[16].innerHTML = data[regimen].length;
+      assignLink(tds[16], data[regimen]);
+    }
+    
+    if(regimen == '12A'){
+      tds[17].innerHTML = data[regimen].length;
+      assignLink(tds[17], data[regimen]);
+    }
+    
+    if(regimen == '13A') {
+      tds[18].innerHTML = data[regimen].length;
+      assignLink(tds[18], data[regimen]);
+    }
+
+    if(regimen == '14A'){
+      tds[19].innerHTML = data[regimen].length;
+      assignLink(tds[19], data[regimen]);
+    }
+
+    if(regimen == '15A'){
+      tds[20].innerHTML = data[regimen].length;
+      assignLink(tds[20], data[regimen]);
+    }
+    
+    if(regimen == '16A'){
+      tds[21].innerHTML = data[regimen].length;
+      assignLink(tds[21], data[regimen]);
+    }
+    
+    if(regimen == '17A'){
+      tds[22].innerHTML = data[regimen].length;
+      assignLink(tds[22], data[regimen]);
+    }
+    
+    if(regimen == '0P'){
+      tds[23].innerHTML = data[regimen].length;
+      assignLink(tds[23], data[regimen]);
+    }
+    
+    if(regimen == '2P'){
+      tds[24].innerHTML = data[regimen].length;
+      assignLink(tds[24], data[regimen]);
+    }
+    
+    if(regimen == '4P'){
+      tds[25].innerHTML = data[regimen].length;
+      assignLink(tds[25], data[regimen]);
+    }
+    
+    if(regimen == '9P'){
+      tds[26].innerHTML = data[regimen].length;
+      assignLink(tds[26], data[regimen]);
+    }
+    
+    if(regimen == '11P'){
+      tds[27].innerHTML = data[regimen].length;
+      assignLink(tds[27], data[regimen]);
+    }
+    
+    if(regimen == '14P'){
+      tds[28].innerHTML = data[regimen].length;
+      assignLink(tds[28], data[regimen]);
+    }
+    
+    if(regimen == '15P'){
+      tds[29].innerHTML = data[regimen].length;
+      assignLink(tds[29], data[regimen]);
+    }
+    
+    if(regimen == '16P'){
+      tds[30].innerHTML = data[regimen].length;
+      assignLink(tds[30], data[regimen]);
+    }
+    
+    if(regimen == '17P'){
+      tds[31].innerHTML = data[regimen].length;
+      assignLink(tds[31], data[regimen]);
+    }
+    if(regimen == 'N/A'){
+      tds[32].innerHTML = data[regimen].length;
+      assignLink(tds[32], data[regimen]);
+    }
+    total_data = [...total_data, ...data[regimen]]
     total += data[regimen].length;
   }
+
   tds[33].innerHTML = total;
+  assignLink(tds[33], total_data)
 
   if(allRows.length > 0){
     fetchRegimens(allRows[0]);
