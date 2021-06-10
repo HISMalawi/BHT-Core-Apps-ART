@@ -162,9 +162,8 @@ function buildDataTable(e) {
 }
 
 function getList(sdate, edate) {
-  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/external_consultation_clients?start_date=" + sdate + "&end_date=" + edate
-  url += "&program_id=" + sessionStorage.programID;
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+  url += sessionStorage.programID + "/external_consultation_clients?start_date=" + sdate + "&end_date=" + edate
   url += "&date=" + sessionStorage.sessionDate;
   document.getElementById("helpText0").innerHTML += " (" +  moment(start_date).format('DD/MMM/YYYY');
   document.getElementById("helpText0").innerHTML += " - " +  moment(end_date).format('DD/MMM/YYYY') + ")";
