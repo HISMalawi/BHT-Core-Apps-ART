@@ -93,7 +93,7 @@
 .dt-age-groups {
     text-align: left;
     margin-left: 10px;
-    width: 30%;
+    width: 15%;
 }
 
 #report th, #report td {
@@ -130,6 +130,11 @@
 .warning {
   background-color: red !important;
   color: white !important;
+}
+
+.dt-age-gender {
+    text-align: center;
+    width: 10%;
 }
 
 </style>
@@ -277,7 +282,7 @@ function finishBTN(){
 function buildReport(){
     finishBTN();
     let report_table = `<table id='report'><thead>`;
-    report_table += `<tr><th>&nbsp;</th><th>Age group</th>`;
+    report_table += `<tr><th>&nbsp;</th><th>Age group</th><th>Gender</th>`;
 
     for(let num in selected_tests) {
         report_table += `<th>${selected_tests[num]}</th>`;
@@ -285,14 +290,19 @@ function buildReport(){
 
     report_table += '</tr></thead><tbody>';
     let counter = 1;
-    for(let i =0; i < age_groups.length; i++){
-        report_table += `<tr>
-            <td>${counter++}</td>
-            <td>${age_groups[i]}</td>`;
-        for(let num in selected_tests) {
-            report_table += `<td>${getNumber(age_groups[i], selected_tests[num])}</td>`
+    let genders = ['F','M'];
+
+    for(let g = 0; g < genders.length; g++){
+        for(let i =0; i < age_groups.length; i++){
+            report_table += `<tr>
+                <td>${counter++}</td>
+                <td>${age_groups[i]}</td>
+                <td>${genders[g]}</td>`;
+            for(let num in selected_tests) {
+                report_table += `<td>${getNumber(age_groups[i], selected_tests[num], genders[g])}</td>`
+            }
+            report_table += '</tr>';
         }
-        report_table += '</tr>';
     }
     report_table += '</tbody></table>';
     let inputFrame = document.getElementById('inputFrame' + tstCurrentPage);
@@ -301,10 +311,11 @@ function buildReport(){
 
     let columns = [
         {"className": "dt-numbers", "targets": 0},
-        {"className": "dt-age-groups", "targets": 1}
+        {"className": "dt-age-groups", "targets": 1},
+        {"className": "dt-age-gender", "targets": 2}
     ];
 
-    counter = 2;
+    counter = 3;
     for(let num in selected_tests){
         columns.push({"className": "dt-test-numbers", "targets": (counter++)})
     }
@@ -333,10 +344,13 @@ function buildReport(){
     } );
 }
 
-function getNumber(age_group, test_name){
+function getNumber(age_group, test_name, gender){
     let num = 0;
     for(let i = 0; i < fetched_samples.length; i++){
         let measures = fetched_samples[i].measures;
+        if(fetched_samples[i].gender != gender)
+            continue;
+
         for(let t = 0; t < measures.length; t++){
             if(age_group == fetched_samples[i].age_group && measures[t].name == test_name){
                 num++;
