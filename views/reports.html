@@ -99,7 +99,8 @@ function reportGrouping(group) {
       ["Clients due for VL","","/apps/ART/views/reports/clinic/report_dates.html?report=clients_due_vl",'link'],
       ["VL results","","/apps/ART/views/reports/clinic/report_dates.html?report=vl_results",'link'],
       ["High VL results","","/apps/ART/views/reports/clinic/report_dates.html?report=high_vl_results",'link'],
-      ["Lab results","","/apps/ART/views/reports/clinic/report_dates.html?report=lab_results",'link']
+      ["Lab results","","/apps/ART/views/reports/clinic/report_dates.html?report=lab_results",'link'],
+      ["External consultation clients","","/apps/ART/views/reports/clinic/report_dates.html?report=external_consultation_clients",'link']
     ];
   }else if(group == 'PEPFAR'){
       return [
@@ -122,7 +123,13 @@ function buildReportLinks(group) {
   var reportContainer = document.getElementById("reports-container");
   reportContainer.innerHTML = null;
   
+  
   var reports = reportGrouping(group);
+  if(reports.length > 0 && !reports[0][0].match(/MoH|Clinic|PEPFAR/i)){
+    reports = reports.sort(function(a, b) { 
+      return a[0] > b[0] ? 1 : -1;
+    });
+  }
 
   for(var i = 0 ; i < reports.length ; i++){
     if(counter == 0) {
