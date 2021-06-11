@@ -100,7 +100,7 @@ tfoot{
   width: 10%;
 }
 
-.dt-birthdate {
+.dt-date {
   text-align: center;
   width: 10%;
 }
@@ -141,7 +141,7 @@ function buildDataTable(e) {
   table.appendChild(theader);
   var tr = document.createElement('tr');
   theader.appendChild(tr);
-  var tfoot = document.createElement('tfoot');
+  /*var tfoot = document.createElement('tfoot');
   var tfoot_tr = document.createElement('tr');
   var tfoot_td = document.createElement('td');
   tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
@@ -150,8 +150,8 @@ function buildDataTable(e) {
                   API Version ${sessionStorage.apiVersion}`;
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
-  table.appendChild(tfoot);
-  var headers = ['ARV#','NPID', 'First name','Last name', 'Gender','DOB'];
+  table.appendChild(tfoot);*/
+  var headers = ['ARV#','NPID', 'First name','Last name', 'Gender','DOB','Date set'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -187,16 +187,18 @@ function getList(sdate, edate) {
 function loadClients(data) {
   var formatted_data = [];
 
-  for (var i = 0; i < data.length; i++) {
-    var given_name = data[i].given_name;
-    var family_name = data[i].family_name;
-    var gender = data[i].gender;
-    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    var arv_number = data[i].arv_number;
-    var person_id = data[i].patient_id;
-    var npid = data[i].npid;
+  for (let i = 0; i < data.length; i++) {
+    let given_name = data[i].given_name;
+    let family_name = data[i].family_name;
+    let gender = data[i].gender;
+    let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    let arv_number = data[i].arv_number;
+    let person_id = data[i].patient_id;
+    let npid = data[i].npid;
+    let date_set = moment(data[i].date_set).format('DD/MMM/YYYY');
     
-    formatted_data.push([arv_number, npid, given_name, family_name, gender, birthdate]);
+    formatted_data.push([arv_number, npid, given_name, family_name,
+     gender, birthdate, date_set]);
   }
  
   var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
@@ -206,7 +208,7 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        460,
+    scrollY:        510,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
@@ -231,7 +233,8 @@ function loadClients(data) {
       {"className": "dt-name", "targets": 2},
       {"className": "dt-name", "targets": 3},
       {"className": "dt-gender", "targets": 4},
-      {"className": "dt-birthdate", "targets": 5}
+      {"className": "dt-date", "targets": 5},
+      {"className": "dt-date", "targets": 6}
     ]
   } );
 
