@@ -212,7 +212,7 @@ function loadClients(visits) {
     var dates_html = [];
 
     for(var i = 0; i < dates.length; i++){
-      dates_html.push(dates[i]);
+      dates_html.push( moment(dates[i]).format('DD/MMM/YYYY'));
     }
 
     formatted_data.push([arv_num, npid, given_name, 
