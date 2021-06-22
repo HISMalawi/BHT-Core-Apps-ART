@@ -598,7 +598,7 @@ function addRow(data){
         if(drill_down_data[gender][ageGroups[0]]  == undefined)
           drill_down_data[gender][ageGroups[0]] = {}
 
-        if(prescribed_days < 60){
+        if(prescribed_days < 90){
           column_3[gender][ageGroups[0]]  += 1
           if(drill_down_data[gender][ageGroups[0]][1] == undefined)
             drill_down_data[gender][ageGroups[0]][1] = [];
@@ -607,7 +607,7 @@ function addRow(data){
           drill_down_data[gender][ageGroups[0]][1].push(patinet_id);
         }
 
-        if(prescribed_days >= 60 && prescribed_days <= 150){
+        if(prescribed_days >= 90 && prescribed_days <= 150){
           column_4[gender][ageGroups[0]]  += 1
           if(drill_down_data[gender][ageGroups[0]][2] == undefined)
             drill_down_data[gender][ageGroups[0]][2] = [];
