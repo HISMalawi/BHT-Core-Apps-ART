@@ -195,16 +195,18 @@ function useFilingNumbers() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 ) {
-        if (this.status == 201 || this.status == 200 ) {
-            var obj = JSON.parse(this.responseText);
-            var use_fn = obj['use.filing.numbers'];
-            try {
-                use_filing_numbers = (use_fn == 'true' ? true : false);
-            }catch(e) {
-                use_filing_numbers = false;
-            }
+          if (this.status == 404 ) {
             buildReportLinks('main');
-        }
+          }else if (this.status == 201 || this.status == 200 ) {
+              var obj = JSON.parse(this.responseText);
+              var use_fn = obj['use.filing.numbers'];
+              try {
+                  use_filing_numbers = (use_fn == 'true' ? true : false);
+              }catch(e) {
+                  use_filing_numbers = false;
+              }
+              buildReportLinks('main');
+          }
         }
     };
     xhttp.open("GET", url, true);
