@@ -25,6 +25,25 @@
       border-style: solid;
       border-width: 1px;
     }
+
+    #report-cover {
+      position: absolute;
+      background-color: black;
+      width: 100%;
+      height: 102%;
+      left: 0%;
+      top: 0%;
+      z-index: 990;
+      opacity: 0.65;
+    }
+
+    #spinner {
+      position: absolute;
+      top: 150px;
+      left: 40%;
+      z-index: 991;
+    }
+
   </style>
 
   <script>
@@ -141,6 +160,8 @@
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
           clients = JSON.parse(this.responseText);
+          document.getElementById("report-cover").style.display = "none";
+          document.getElementById("spinner").style.display = "none";
           addRows(clients);
         }
       };
@@ -238,11 +259,8 @@
  </div>
 </div>
 
-
-<!--<img src="../../../assets/images/formloader.gif" id="spinner" />
-<div id="report-cover"></div>-->
-
-
+<div id="report-cover"></div>
+<img src="/assets/images/formloader.gif" id="spinner" />
 </body>
 
 </html>
