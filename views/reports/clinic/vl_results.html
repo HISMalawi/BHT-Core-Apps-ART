@@ -9,6 +9,16 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
 
 <style>
 #clearButton, #cancelButton {
@@ -47,15 +57,6 @@
  overflow-y:auto !important;
 }
 
-.npid, .gender, .birthdate {
-  text-align: center;
-}
-
-.given_name, .family_name {
-  text-align: left;
-  padding-left: 5px;
-}
-
 #report-cover {
   position: absolute;
   background-color: black;
@@ -77,6 +78,16 @@
 .dt-right {
   text-align: right;
 }
+
+.dt-center {
+  text-align: center;
+}
+
+.warning {
+  background-color: red !important;
+  color: white !important;
+}
+
 </style>
 
 
@@ -85,7 +96,7 @@ var tt_cancel_destination = "/";
 
 function changeFinishButton() {
   var b = document.getElementById('nextButton');
-  b.innerHTML = '<span>Back</span>';
+  b.innerHTML = '<span>Finish</span>';
   b.setAttribute('onmousedown','document.location="/";');
 }
 
@@ -121,29 +132,13 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','First name','Last name', 'Gender',
-    'birthdate','Result date','Result modifier', 'Result'];
+  var headers = ['ARV#','Accession#', 'Gender',
+    'birthdate','Order date','Result date', 'Result'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
-    
-    if(i == 0) 
-      th.setAttribute('class', 'npid');
-
-    if(i == 1) 
-      th.setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      th.setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      th.setAttribute('class', 'gender');
-
-    if(i == 4) 
-      th.setAttribute('class', 'birthdate');
-  
   }
 
   initDataTable();
@@ -184,18 +179,19 @@ function loadClients(data) {
   var formatted_data = [];
 
   for (var i = 0; i < data.length; i++) {
-    let given_name = data[i].given_name;
-    let family_name = data[i].family_name;
+    let accession_number = data[i].accession_number;
     let gender = data[i].gender;
     let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
     let arv_number = data[i].arv_number;
     let person_id = data[i].patient_id;
-    let resul_date = moment(data[i].obs_datetime).format('DD/MMM/YYYY');
-    let result = data[i].test_result;
-    let result_modifier = data[i].value_modifier;
-    
-    formatted_data.push([arv_number, given_name, family_name, gender, 
-      birthdate, resul_date, result_modifier, result]); 
+    let result_date = moment(data[i].result_date).format('DD/MMM/YYYY');
+    let order_date = moment(data[i].order_date).format('DD/MMM/YYYY');
+    let result = data[i].result;
+    let result_modifier = data[i].result_modifier;
+   
+    formatted_data.push([arv_number, accession_number, gender, 
+      birthdate, order_date, result_date, `${result_modifier} ${result}`]);
+      
   }
   
   jQuery('#clients').DataTable( {
@@ -203,7 +199,7 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        485,
+    scrollY:        435,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
@@ -212,12 +208,31 @@ function loadClients(data) {
     order:          [[ 0, "asc" ], [5, "asc"]],
     columnDefs: [
       {"className": "dt-center", "targets": 0},
+      {"className": "dt-center", "targets": 1},
+      {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6},
-      {"className": "dt-right", "targets": 7}
-    ]
-  } );false
+      {"className": "dt-center", "targets": 5},
+      {"className": "dt-right", "targets": 6}
+    ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "VL results",
+        footer: true 
+      }
+    ],
+    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+      if (aData[6].match(/=|>/) && parseFloat(aData[6].replace("=","").replace(">","")) >= 1000) {
+        let class_name = nRow.getAttribute("class");
+        nRow.setAttribute("class", `${class_name} warning`);
+      }else if (aData[6].replace(/\s+/g, '').toUpperCase() == ">LDL") {
+        let class_name = nRow.getAttribute("class");
+        nRow.setAttribute("class", `${class_name} warning`);
+      }
+    }
+  } );
 
 }
 

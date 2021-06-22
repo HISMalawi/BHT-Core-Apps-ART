@@ -115,6 +115,11 @@ function buildReportLinks(group) {
   reportContainer.innerHTML = null;
 
   var reports = reportGrouping(group);
+  if(reports.length > 0){
+    reports = reports.sort(function(a, b) { 
+        return a[0] > b[0] ? 1 : -1;
+    });
+  }
 
   for(var i = 0 ; i < reports.sort().length ; i++){
     if(counter == 0) {

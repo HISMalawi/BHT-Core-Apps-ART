@@ -9,7 +9,6 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-
 <!-- pring report start .......................................................................... -->
 <script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
@@ -58,15 +57,6 @@
  overflow-y:auto !important;
 }
 
-.npid, .gender, .birthdate {
-  text-align: center;
-}
-
-.given_name, .family_name {
-  text-align: left;
-  padding-left: 5px;
-}
-
 #report-cover {
   position: absolute;
   background-color: black;
@@ -76,6 +66,7 @@
   top: 0%;
   z-index: 990;
   opacity: 0.65;
+  display: none;
 }
 
 #spinner {
@@ -83,17 +74,36 @@
   top: 150px;
   left: 40%;
   z-index: 991;
+  display: none;
 }
 
 .dt-right {
   text-align: right;
 }
 
-.warning {
-  background-color: red !important;
-  color: white !important;
+.dt-left{
+  text-align: left;
+  width: 15%;
 }
 
+.dt-center {
+  text-align: center;
+  width: 15%;
+}
+
+.dt-btns {
+  text-align: center;
+  vertical-align: middle !important;
+  width: 10%;
+}
+
+.gender {
+    width: 8%;
+}
+
+.results {
+    width: 16%;
+}
 </style>
 
 
@@ -113,15 +123,20 @@ function back() {
 function buildList() {
   var f = document.getElementById('inputFrame' + tstCurrentPage);
   f.style = 'width: 96%; height: 89%;';
-
   var href = window.location.href;
   var url = new URL(href);
   var start_date = url.searchParams.get("start_date");
   var end_date = url.searchParams.get("end_date");
-  
+
+  let vl_type = document.getElementById("result_type").value;
+ 
+  let helpText = document.getElementById('helpText' + tstCurrentPage);
+  let innerHTML = `${vl_type} VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
+  innerHTML += `&nbsp;and&nbsp;<b>${moment(end_date).format("DD/MMM/YYYY")}</b>)</span>`;
+  helpText.innerHTML = innerHTML;
   buildDataTable(f);
 
-  getList(start_date, end_date);
+  getList(start_date, end_date, vl_type);
 }
 
 function buildDataTable(e) {
@@ -135,34 +150,13 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  if(sessionStorage.filingNumnerAvailable == 'false'){
-    var headers = ['ARV#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
-  }else{
-    var headers = ['Filing#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
-  }
-
+  var headers = ['ARV#','Gender', 'Birthdate', 'Order date', 'Specimen drawn date',
+    'Result', 'Result date',''];
+  
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
-    
-   /* if(i == 0) 
-      th.setAttribute('class', 'npid');
-
-    if(i == 1) 
-      th.setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      th.setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      th.setAttribute('class', 'gender');
-
-    if(i == 4) 
-      th.setAttribute('class', 'birthdate');*/
-  
   }
 
   initDataTable();
@@ -178,11 +172,13 @@ function initDataTable() {
 }
 
 
-function getList(sdate, edate) {
+function getList(sdate, edate, vl_type) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/clients_due_vl?date=" + sessionStorage.sessionDate;
-  url += `&program_id=${sessionStorage.programID}`;
-  url += `&start_date=${sdate}&end_date=${edate}`; 
+  url += `/programs/${sessionStorage.programID}/reports/high_vl_patients?`;
+  url += `start_date=${sdate}&end_date=${edate}&range=${vl_type.toLowerCase()}`; 
+  
+  document.getElementById("report-cover").style.display = "inline";
+  document.getElementById("spinner").style.display = "inline";
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -190,7 +186,7 @@ function getList(sdate, edate) {
       var obj = JSON.parse(this.responseText);
       document.getElementById("report-cover").style.display = "none";
       document.getElementById("spinner").style.display = "none";
-      loadClients(obj);
+      loadClients(obj, vl_type);
     }
   };
   xhttp.open("GET", url, true);
@@ -199,27 +195,32 @@ function getList(sdate, edate) {
   xhttp.send();
 }
 
-function loadClients(data) {
+function buildViewBTN(patient_id){
+    return `<button id="view-${patient_id}" class="button blue navButton" 
+    onmousedown="gotoPatient(${patient_id});"><span>View</span></button>`
+}
+
+function gotoPatient(patient_id){
+    window.location = `/views/patient_dashboard.html?patient_id=${patient_id}`;
+}
+
+function loadClients(data, vl_type) {
   var formatted_data = [];
 
   for (var i = 0; i < data.length; i++) {
-    let given_name = data[i].given_name;
-    let family_name = data[i].family_name;
     let gender = data[i].gender;
     let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    let npid = data[i].arv_number;
+    let arv_number = data[i].arv_number;
     let person_id = data[i].patient_id;
-    let app_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
-    let art_start_date = moment(data[i].start_date).format('DD/MMM/YYYY');
-    let months_on_ART = data[i].months_on_art;
-    let mile_stone = moment(data[i].mile_stone).format('DD/MMM/YYYY');
-    let last_result = data[i].last_result;
-    let result_date = 'N/A'
-    if(data[i].last_result_date != 'N/A')
-      result_date = moment(data[i].last_result_date).format('DD/MMM/YYYY');
-
-    formatted_data.push([npid, gender, birthdate, app_date, art_start_date, 
-      months_on_ART, mile_stone, last_result, result_date]); //addSelectButton(person_id)]);
+    let result_date = moment(data[i].result_date).format('DD/MMM/YYYY');
+    let order_date = moment(data[i].order_date).format('DD/MMM/YYYY');
+    let specimen_drawn_date = moment(data[i].specimen_drawn_date).format('DD/MMM/YYYY');
+    let result = data[i].result;
+    let result_modifier = data[i].result_modifier;
+   
+    formatted_data.push([arv_number, gender, birthdate, order_date, specimen_drawn_date, 
+      `${result_modifier} ${result}`, result_date, buildViewBTN(person_id)]);
+      
   }
   
   jQuery('#clients').DataTable( {
@@ -227,37 +228,31 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        385,
+    scrollY:        435,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[0, "asc"],[ 5, "asc" ]],
+    order:          [[ 6, "asc" ]],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 1},
+      {"className": "dt-left", "targets": 0},
+      {"className": "dt-center gender", "targets": 1},
       {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
-      {"className": "dt-right", "targets": 5},
-      {"className": "dt-right", "targets": 7},
-      {"className": "dt-center", "targets": 8}
+      {"className": "dt-right results", "targets": 5},
+      {"className": "dt-center", type: 'date', "targets": 6},
+      {"className": "dt-btns", "targets": 7}
     ],
     dom: 'Bfrtip',
     buttons: [
       {
         extend: "csv",
-        title: "Clients due for VL",
+        title: `Clients with ${vl_type} VL results`,
         footer: true 
       }
     ],
-    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-      if (aData[7].match(/=|>/) && parseFloat(aData[7].replace("=","").replace(">","")) >= 1000) {
-        let class_name = nRow.getAttribute("class");
-        nRow.setAttribute("class", `${class_name} warning`);
-      }
-    }
   } );
 
 }
@@ -309,9 +304,18 @@ function addClassIMGcontainter(person_id) {
 
       <form>
 
+        <select allowFreeText="false" id="result_type" name="capture_art"
+          helpText="Select result type"
+          condition="" tt_onLoad="">
+            <option value=''></option>
+            <option value="High">High</option>
+            <option value="Low">Low</option>
+            <option value="Intermediate">Intermediate</option>
+        </select>
+
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText='Clients due for VL <span style="font-size: 16px;">(not based on their last VL result and <b>month(s)</b> on ART is between ART start and appointment date)</span>' optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="High VL results" optional = "true"/>
 
       </form>
 
