@@ -361,17 +361,18 @@ function initializePopUpTable() {
   function disaggregateData(data) {
     var age_groups = ageGroups();
     var genders = ["M", "F"];
-    const client_sex = ["F", "M", "Unknown"];
+    const client_sex = ["F", "M"];
 
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
+          if(element !== "Unknown") {
 
           if (gender === 'F') {
-            num = index + 1 ;
+            num = index ;
           } else if (gender === 'M') {
-            num = index + 17;
+            num = index + 15;
           }else{
-            num = index + 32;
+            num = index + 31;
           }
           rows.push({
             number: num,
@@ -388,6 +389,7 @@ function initializePopUpTable() {
 
           total_3hp_clients += data[element]["3HP"][gender].length;
           total_IPT_clients += data[element]["6H"][gender].length;
+          }
       });
     })
 
@@ -518,7 +520,7 @@ function initializePopUpTable() {
 
 
   function addTotals() {
-    var columns = ["new", "old", "art", "defaulter", "died", "stopped", "transfer_out", "unknown"];
+    var columns = ["new", "old", "art", "defaulter", "died", "stopped", "transfer_out", ];
 
     for (var i = 0; i < columns.length; i++) {
       var count = (i + 3);
