@@ -100,6 +100,10 @@ tfoot {
   visibility: hidden;
 }
 
+.age-groups {
+  width: 30%;
+}
+
 </style>
 
 <script>
@@ -108,10 +112,10 @@ url = new URL(url);
 var start_date = url.searchParams.get("start_date");
 var end_date = url.searchParams.get("end_date");
 var on_art =  null; //10000; //url.searchParams.get('total_alive_and_on_art');
+var on_art_data = []
 
 var dataSet = [];
 var data_table;
-
 function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
@@ -120,9 +124,10 @@ function initializeTable() {
     fixedHeader: true,
     searching: false,
     paging: false,
-    scrollY: 400,
+    scrollY: 335,
     Processing: true,
     ServerSide: true,
+    info:       false,
     scroller: {
       loadingIndicator: true
     },
@@ -137,6 +142,9 @@ function initializeTable() {
         extend: 'pdf',
         title: 'PEPFAR ' + sessionStorage.currentLocation + ': cohort disaggregated report: ' + date_title 
       }
+    ],
+    columnDefs: [
+      {"className": "age-groups", "targets": 1}
     ]
   });
 
@@ -212,7 +220,7 @@ function initializeTable() {
 
 <script>
 
-var rebuild_outcome = false;
+var rebuild_outcome = true;
 
 function renegerateReport() {
   document.getElementById('spinner').style = 'display: inline;';
@@ -221,6 +229,7 @@ function renegerateReport() {
   ageGroups();
   rebuild_outcome = true;
   on_art = 0;
+  on_art_data = []
   var table_body = document.getElementById('table-body');
   table_body.innerHTML = null;
   addTableBody();
@@ -267,6 +276,9 @@ function getData(age_group) {
   url += "&initialize=false";
   url += '&program_id=' + sessionStorage.programID;
 
+  if(rebuild_outcome)
+    TXnew_initiated_on_art_first_time = 0;
+
   rebuild_outcome = false;
 
   var xhttp = new XMLHttpRequest();
@@ -279,11 +291,15 @@ function getData(age_group) {
 
       loadData(obj, age_group);
       try {
-        on_art += (obj[age_group]['F'].tx_curr.length)
+        const f_group_curr = obj[age_group]['F'].tx_curr
+        on_art_data = [...on_art_data, ...f_group_curr]
+        on_art += (f_group_curr.length)
       }catch(e){
       }
       try {
-        on_art += (obj[age_group]['M'].tx_curr.length)
+        const m_group_curr = obj[age_group]['M'].tx_curr
+        on_art_data = [...on_art_data, ...m_group_curr] 
+        on_art += (m_group_curr.length)
       }catch(e){
       }
     }
@@ -309,24 +325,56 @@ function loadData(data, age_group) {
   }
 }
 
+function parseColumnData(td) {
+  const data = td.getAttribute('data')
+
+  if (data) return JSON.parse(data) 
+}
+
 function addMales() {
   var cells = document.getElementsByClassName('Male_row');
-  var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
+  // var tx_new = 0, tx_curr = 0, tx_screened_for_tb = 0, tx_given_ipt = 0;
+  
+  var num = { tx_new: [], tx_curr: [], tx_given_ipt: [], tx_screened_for_tb: [] }
 
   for(var i = 0 ; i < cells.length; i++){
     var tds = cells[i].getElementsByTagName('td');
-    tx_new += parseInt(tds[3].innerHTML);
-    tx_curr += parseInt(tds[4].innerHTML);
-    tx_given_ipt += parseInt(tds[5].innerHTML);
-    tx_screened_for_tb += parseInt(tds[6].innerHTML);
+    
+    const tx_new_data = parseColumnData(tds[3])
+    const tx_cur_data = parseColumnData(tds[4])
+    const tx_given_ipt_data = parseColumnData(tds[5])
+    const tx_screened_for_tb_data = parseColumnData(tds[6])
+
+    if (tx_new_data) 
+      num.tx_new = [...num.tx_new, ...tx_new_data]
+    
+    if (tx_cur_data) 
+      num.tx_curr = [...num.tx_curr, ...tx_cur_data]
+    
+    if (tx_given_ipt_data)
+      num.tx_given_ipt = [...num.tx_given_ipt, ...tx_given_ipt_data]
+
+    if (tx_screened_for_tb_data) 
+      num.tx_screened_for_tb = [...num.tx_screened_for_tb, ...tx_screened_for_tb_data]
+    // tx_new += parseInt(tds[3].innerHTML);
+    // tx_curr += parseInt(tds[4].innerHTML);
+    // tx_given_ipt += parseInt(tds[5].innerHTML);
+    // tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
 
-  data_table.row.add([31,'All', 'Male', tx_new, tx_curr, 
-    tx_given_ipt, tx_screened_for_tb]).node().id = 'all-males'; 
+  data_table.row.add([31,'All', 'Male', num.tx_new.length, num.tx_curr.length, 
+    num.tx_given_ipt.length, num.tx_screened_for_tb.length]).node().id = 'all-males'; 
   data_table.draw();
+
   addClass('all-males');
-  
+  appendLinks('all-males', 'Male', num)
   getAllFemale('Pregnant');
+}
+
+function appendLinks(nodeId, gender, num) {
+  var tr = document.getElementById(nodeId);
+  var cells = tr.getElementsByTagName('td');
+  assignLink(cells, nodeId, gender, num)
 }
 
 function addClass(id) {
@@ -366,6 +414,7 @@ function assignTD(tds, num, gender) {
   tds[6].setAttribute("column-age", "tb-" + age);
 
   assignLink(tds, age, gender, num);
+  TXnew_initiated_on_art_first_time += num.tx_new.length;
 }
 
 
@@ -377,24 +426,37 @@ function assignLink(tds, age, gender, num) {
     drillDownHash[age][gender] = {
       tx_new: num.tx_new,
       tx_curr: num.tx_curr,
-      tx_given_ipt: [],
-      tx_screened_for_tb: []
+      tx_given_ipt: num.tx_given_ipt || [],
+      tx_screened_for_tb: num.tx_screened_for_tb || []
     }
   }
-
   if(num.tx_new.length > 0){
     let onclick = `drillDown('${age}', '${gender}', 'tx_new');`;
-    tds[3].setAttribute("onclick", onclick);
     tds[3].setAttribute("class", "disaggregated-numbers clickable");
+    tds[3].setAttribute("data", JSON.stringify(num.tx_new))
+    tds[3].setAttribute("onclick", onclick);
   }
 
   if(num.tx_curr.length > 0){
     let onclick = `drillDown('${age}', '${gender}', 'tx_curr');`;
-    tds[4].setAttribute("onclick", onclick);
     tds[4].setAttribute("class", "disaggregated-numbers clickable");
+    tds[4].setAttribute("data", JSON.stringify(num.tx_curr))
+    tds[4].setAttribute("onclick", onclick);
   }
 
+  if (num.tx_given_ipt && num.tx_given_ipt.length > 0) {
+    let onclick = `drillDown('${age}', '${gender}', 'tx_given_ipt');`;
+    tds[5].setAttribute("class", "disaggregated-numbers clickable");
+    tds[5].setAttribute("data", JSON.stringify(num.tx_given_ipt))
+    tds[5].setAttribute("onclick", onclick);
+  }
 
+  if (num.tx_screened_for_tb && num.tx_screened_for_tb.length > 0) {
+    let onclick = `drillDown('${age}', '${gender}', 'tx_screened_for_tb');`;
+    tds[6].setAttribute("class", "disaggregated-numbers clickable");
+    tds[6].setAttribute("data", JSON.stringify(num.tx_screened_for_tb))
+    tds[6].setAttribute("onclick", onclick);
+  }
 }
 
 function addTableBody() {
@@ -488,12 +550,11 @@ function loadAllFemale(data, age_group) {
         var count = 34 ; var g = 'FBf'; 
       }
 
-
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
         tx_given_ipt, tx_screened_for_tb]).node().id = age_group.toLowerCase();
       data_table.draw();
       addClass(age_group.toLowerCase()); 
-    
+      
       if(age_group.toLowerCase() != 'all-males') {
         var tr = document.getElementById(age_group.toLowerCase());
         tds = tr.getElementsByTagName('td');
@@ -502,38 +563,38 @@ function loadAllFemale(data, age_group) {
         tds[6].setAttribute("column-name", "tb-" + age_group.toLowerCase());
         tds[6].setAttribute("column-age", "ipt-" + "all");
 
+        appendLinks(age_group.toLowerCase(), sex, gender[sex])
 
-        if(drillDownHash[age_group] == undefined)
-          drillDownHash[age_group] = {};
-
-        if(drillDownHash[age_group][gender] == undefined){
-          drillDownHash[age_group][gender] = {
-            tx_new: [], tx_curr: [],
-            tx_given_ipt: [], tx_screened_for_tb: []
-          };
-        }
-
-
-        drillDownHash[age_group][gender] = {
-          tx_new: data[age][sex].tx_new,
-          tx_curr:  data[age][sex].tx_curr,
-          tx_given_ipt: data[age][sex].tx_given_ipt,
-          tx_screened_for_tb: data[age][sex].tx_screened_for_tb
-        }
-
-        let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
-        tds[3].setAttribute("onclick", onclick);
-        tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        // if(drillDownHash[age_group] == undefined)
+        //   drillDownHash[age_group] = {};
         
-        onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
-        tds[4].setAttribute("onclick", onclick);
-        tds[4].setAttribute("class", "disaggregated-numbers clickable");
+        // if(drillDownHash[age_group][gender] == undefined){
+        //   drillDownHash[age_group][gender] = {
+        //     tx_new: [], tx_curr: [],
+        //     tx_given_ipt: [], tx_screened_for_tb: []
+        //   };
+        // }
+
+
+        // drillDownHash[age_group][gender] = {
+        //   tx_new: data[age][sex].tx_new,
+        //   tx_curr:  data[age][sex].tx_curr,
+        //   tx_given_ipt: data[age][sex].tx_given_ipt,
+        //   tx_screened_for_tb: data[age][sex].tx_screened_for_tb
+        // }
+
+        // if(data[age][sex].tx_new.length > 0){
+        //   let onclick = `drillDown('${age_group}', '${gender}', 'tx_new');`;
+        //   tds[3].setAttribute("onclick", onclick);
+        //   tds[3].setAttribute("class", "disaggregated-numbers clickable");
+        // }
+        
+        // if(data[age][sex].tx_curr.length > 0){
+        //   onclick = `drillDown('${age_group}', '${gender}', 'tx_curr');`;
+        //   tds[4].setAttribute("onclick", onclick);
+        //   tds[4].setAttribute("class", "disaggregated-numbers clickable");
+        // }
       }
-
-
-
-
-
     }
   }
 
@@ -561,6 +622,8 @@ function updateFNProw() {
   var fnp_row = document.getElementById('fnp');
   var bf_row = document.getElementById('breastfeeding');
 
+  var fp_bf_tx_new_data = []
+  var fp_bf_tx_curr_data = []
   var fp_bf_tx_new = 0;
   var fp_bf_tx_curr = 0;
   var fp_bf_tx_given_ipt = 0;
@@ -570,22 +633,41 @@ function updateFNProw() {
   
   for(var r = 0 ; r < rows.length; r++){
     var tds = rows[r].getElementsByTagName('td');
+    var tx_new_data = parseColumnData(tds[3])
+    var tx_cur_data = parseColumnData(tds[4])
+
+    if (tx_new_data)
+      fp_bf_tx_new_data = [...fp_bf_tx_new_data, ...tx_new_data]
+
+    if (tx_cur_data)
+      fp_bf_tx_curr_data = [...fp_bf_tx_curr_data, ...tx_cur_data]
+
     fp_bf_tx_new += parseInt(tds[3].innerHTML);
     fp_bf_tx_curr += parseInt(tds[4].innerHTML);
     fp_bf_tx_given_ipt += parseInt(tds[5].innerHTML);
     fp_bf_tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
 
+  var all_female_tx_new_data = []
+  var all_female_tx_curr_data = []
   var all_female_tx_new = 0;
   var all_female_tx_curr = 0;
   var all_female_tx_given_ipt = 0;
   var all_female_tx_screened_for_tb = 0;
   var female_rows = document.getElementsByClassName('Female_row');
-  
+
   for(var i = 0 ; i < female_rows.length; i++){
     var tds = female_rows[i].getElementsByTagName('td');
     
     if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+      var tx_new_data = parseColumnData(tds[3])
+      var tx_cur_data = parseColumnData(tds[4])
+
+      if (tx_new_data)
+        all_female_tx_new_data = [...all_female_tx_new_data, ...tx_new_data]
+      if (tx_cur_data)
+        all_female_tx_curr_data =[...all_female_tx_curr_data, ...tx_cur_data]
+      
       all_female_tx_new += parseInt(tds[3].innerHTML);
       all_female_tx_curr += parseInt(tds[4].innerHTML);
       all_female_tx_given_ipt += parseInt(tds[5].innerHTML);
@@ -594,11 +676,17 @@ function updateFNProw() {
   }
   
   var tds = fnp_row.getElementsByTagName('td');
+
   tds[3].innerHTML = (all_female_tx_new - fp_bf_tx_new);  
   tds[4].innerHTML = (all_female_tx_curr - fp_bf_tx_curr);  
   tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
   tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
 
+  const fnp_new = all_female_tx_new_data.filter(item => !fp_bf_tx_new_data.includes(item))
+  const fnp_curr = all_female_tx_curr_data.filter(item => !fp_bf_tx_curr_data.includes(item))
+
+  appendLinks('fnp', 'Female', {tx_new: fnp_new, tx_curr: fnp_curr})
+  
   /*data_table.destroy();
   initializeTable();
   validateReport(); */
@@ -670,24 +758,57 @@ function validateReport() {
     report_total += parseInt(tds[4].innerHTML);
   }
 
-  var valid_report = document.getElementById('valid-report');
+  let valid_report = document.getElementById('valid-report');
+  let cohort_report = sessionStorage.reportValidation;
   
-  /*if(parseInt(on_art) == report_total) {
-    valid_report.innerHTML = "<span style='color: green;'>Report is consistent</span>";
-  }else{
-    valid_report.innerHTML = "<span style='color: red;'>Report is <b>Not</b> consistent</span>";
-  }*/ 
+  if(cohort_report == undefined) {
+    valid_report.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+      reporting period and then run this report.</b>`;
+  }
+  
+  let tx_new_all_males = parseInt(document.getElementById("all-males").getElementsByTagName("td")[3].innerHTML);
+  let tx_new_pregnant = parseInt(document.getElementById("pregnant").getElementsByTagName("td")[3].innerHTML);
+  
+  if(cohort_report) {
+    cohort_report = JSON.parse(cohort_report);
+    let report_start_date = cohort_report.cohort.start_date;
+    let report_end_date = cohort_report.cohort.end_date;
+
+    if(report_start_date != start_date || report_end_date != end_date){
+      valid_report.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+        reporting period and then run this report.</b>`;
+    }else if(cohort_report.cohort.indicators.initiated_on_art_first_time != TXnew_initiated_on_art_first_time) {
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort initiated 
+        on ART first time (${cohort_report.cohort.indicators.initiated_on_art_first_time}) is not matching with TX new (${TXnew_initiated_on_art_first_time})</span>`;
+    }else if(cohort_report.cohort.indicators.initial_pregnant_females_all_ages != tx_new_pregnant) {
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort  
+        initial pregnant females all ages (${cohort_report.cohort.indicators.initial_pregnant_females_all_ages}) is not matching with TX new Pregnant women</span>`;
+    }else if(cohort_report.cohort.indicators.males_initiated_on_art_first_time != tx_new_all_males) {
+      valid_report.innerHTML = `<span style='color: red;'>Validation error:<b>Not</b> MoH cohort  
+        males initiated on ART first time (${cohort_report.cohort.indicators.males_initiated_on_art_first_time}) is not matching with TX new All males</span>`;
+    }else{
+      valid_report.innerHTML = `<span style='color: green;'>Report is consistent with MoH 
+        initiated on ART first time; ${cohort_report.cohort.indicators.initiated_on_art_first_time}</span>`;
+    }
+  }
+
+
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
-  document.getElementById('on-art').innerHTML = on_art;
+  
+  var onArtNode =  document.getElementById('on-art')
+  onArtNode.innerHTML = on_art
+  onArtNode.setAttribute("class", "clickable");
+  onArtNode.setAttribute("onclick", "drillDown('art', 'total', 'tx_curr')");
+  drillDownHash['art'] = {
+    total: {
+      tx_curr: on_art_data
+    }
+  }
+  // document.getElementById('on-art').innerHTML = on_art;
 }
 
-
-
-
-
-
-
+var TXnew_initiated_on_art_first_time = 0;
 
 
 
@@ -746,6 +867,7 @@ function fetchTBscreenedClients(td) {
           gender = (gender.match(/female/i) ? "Female" : "Male");
           drillDownHash[age_group][gender].tx_screened_for_tb = obj;
           let onclick = `drillDown('${age_group}', '${gender}', 'tb_screened');`;
+          td.setAttribute('data', JSON.stringify(obj))
           td.setAttribute("onclick", onclick);
           td.setAttribute("class", "disaggregated-numbers clickable");
         }
@@ -795,6 +917,7 @@ function fetchIPTclients(td) {
           }
           let onclick = `drillDown('${age_group}', '${gender}', 'ipt_given');`;
           td.setAttribute("onclick", onclick);
+          td.setAttribute("data", JSON.stringify(obj))
           td.setAttribute("class", "disaggregated-numbers clickable");
         }
       }

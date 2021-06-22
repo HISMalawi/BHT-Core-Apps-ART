@@ -27,7 +27,7 @@
 
 
             var pharmacy_items_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-            pharmacy_items_url += "/api/v1/pharmacy/items";
+            pharmacy_items_url += "/api/v1/pharmacy/items?paginate=false";
 
 
             var xhttp = new XMLHttpRequest();
@@ -51,7 +51,7 @@
                         var drug_id = pharmacy_items[key]["drug_id"];
                         var expiry_date = pharmacy_items[key]["expiry_date"];
                         expiry_date = moment(expiry_date).format("DD/MMM/YYYY");
-                        var drug_name = pharmacy_items[key]["drug_name"];
+                        var drug_name = pharmacy_items[key]["drug_name"] === null ? pharmacy_items[key]["drug_legacy_name"] : pharmacy_items[key]["drug_name"];
                         var pack_size = pharmacy_items[key]["pack_size"];
                         var current_quantity = pharmacy_items[key]["current_quantity"];
 

@@ -1,4 +1,3 @@
-
 <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
 
 <script type="text/javascript" src="/assets/js/moment.js"></script>
@@ -10,7 +9,6 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-
 <!-- pring report start .......................................................................... -->
 <script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
@@ -21,25 +19,8 @@
 <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
 <!-- pring report ends .......................................................................... -->
 
+
 <style>
-#report-cover {
-  position: absolute;
-  background-color: black;
-  width: 100%;
-  height: 102%;
-  left: 0%;
-  top: 0%;
-  z-index: 990;
-  opacity: 0.65;
-}
-
-#spinner {
-  position: absolute;
-  top: 150px;
-  left: 40%;
-  z-index: 991;
-}
-
 #clearButton, #cancelButton {
   display: none;
 }
@@ -76,41 +57,67 @@
  overflow-y:auto !important;
 }
 
-.npid, .gender, .birthdate {
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+#spinner {
+  position: absolute;
+  top: 150px;
+  left: 40%;
+  z-index: 991;
+}
+
+.dt-right {
+  text-align: right;
+}
+
+.dt-center {
   text-align: center;
 }
 
-.given_name, .family_name {
-  text-align: left;
-  padding-left: 5px;
-}
-tfoot {
-  visibility: hidden;
+.warning {
+  background-color: red !important;
+  color: white !important;
 }
 
 </style>
 
 
 <script>
+var tt_cancel_destination = "/";
+
 function changeFinishButton() {
   var b = document.getElementById('nextButton');
   b.innerHTML = '<span>Finish</span>';
-  b.setAttribute('onmousedown','back();');
+  b.setAttribute('onmousedown','document.location="/";');
 }
 
 function back() {
-  document.location = '/';
+  document.location = '/apps/ART/views/reports/clinic/appointments.html';
 }
-
-var href = window.location.href;
-var url = new URL(href);
-var start_date  = url.searchParams.get("start_date");
-var end_date    = url.searchParams.get("end_date");
 
 function buildList() {
   var f = document.getElementById('inputFrame' + tstCurrentPage);
   f.style = 'width: 96%; height: 89%;';
+  var href = window.location.href;
+  var url = new URL(href);
+  var start_date = url.searchParams.get("start_date");
+  var end_date = url.searchParams.get("end_date");
+ 
+  let helpText = document.getElementById('helpText' + tstCurrentPage);
+  let innerHTML = `VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
+  innerHTML += `&nbsp;and&nbsp;<b>${moment(end_date).format("DD/MMM/YYYY")}</b>)</span>`;
+  helpText.innerHTML = innerHTML;
   buildDataTable(f);
+
   getList(start_date, end_date);
 }
 
@@ -124,38 +131,14 @@ function buildDataTable(e) {
   table.appendChild(theader);
   var tr = document.createElement('tr');
   theader.appendChild(tr);
-  var tfoot = document.createElement('tfoot');
-  var tfoot_tr = document.createElement('tr');
-  var tfoot_td = document.createElement('td');
-  tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
-                  BHT-Core Version : ${sessionStorage.coreVersion} 
-                  ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
-  tfoot_tr.appendChild(tfoot_td);
-  tfoot.appendChild(tfoot_tr);
-  table.appendChild(tfoot);
-  var headers = ['ARV#','First name','Last name', 'Gender','birthdate','Date defaulted','Address'];
+
+  var headers = ['ARV#','Accession#', 'Gender',
+    'birthdate','Order date','Result date', 'Result'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
-    
-    if(i == 0) 
-      th.setAttribute('class', 'npid');
-
-    if(i == 1) 
-      th.setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      th.setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      th.setAttribute('class', 'gender');
-
-    if(i == 4) 
-      th.setAttribute('class', 'birthdate');
-  
   }
 
   initDataTable();
@@ -173,17 +156,16 @@ function initDataTable() {
 
 function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/defaulter_list?start_date=" + sdate + "&end_date=" + edate
-  url += "&program_id=" + sessionStorage.programID + "&pepfar=true";
-  url += "&date=" + sessionStorage.sessionDate;
-
-  document.getElementById('spinner').style = 'display: inline;';
-  document.getElementById('report-cover').style = 'display: inline;';
+  url += "/vl_results?date=" + sessionStorage.sessionDate;
+  url += `&program_id=${sessionStorage.programID}`;
+  url += `&start_date=${sdate}&end_date=${edate}`; 
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
+      document.getElementById("report-cover").style.display = "none";
+      document.getElementById("spinner").style.display = "none";
       loadClients(obj);
     }
   };
@@ -195,79 +177,63 @@ function getList(sdate, edate) {
 
 function loadClients(data) {
   var formatted_data = [];
+
   for (var i = 0; i < data.length; i++) {
-    var given_name = data[i].given_name;
-    var family_name = data[i].family_name;
-    var gender = data[i].gender;
-    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    var arv_num = data[i].arv_number;
-    var person_id = data[i].person_id;
-    var outcome_date = data[i].defaulter_date;
-    if(outcome_date)
-     outcome_date = moment(data[i].defaulter_date).format('DD/MMM/YYYY');
-
-    var contact = [];
-    if(data[i].cell_number)
-      contact.push("CELL: " + data[i].cell_number);
-
-    if(data[i].district)
-      contact.push("District: " + data[i].district);
-
-    if(data[i].ta)
-      contact.push("TA: " + data[i].ta);
-
-    if(data[i].village)
-      contact.push("Village: " + data[i].village);
-
-    var contact_details = '';
-    for(var j = 0; j < contact.length; j++) {
-      if(j > 0)
-        contact_details += '<br />';
-
-     contact_details += contact[j];
-    }
-
-    formatted_data.push([arv_num, given_name, 
-      family_name, gender, birthdate, outcome_date, contact_details]);
-  }
- 
-  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
+    let accession_number = data[i].accession_number;
+    let gender = data[i].gender;
+    let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    let arv_number = data[i].arv_number;
+    let person_id = data[i].patient_id;
+    let result_date = moment(data[i].result_date).format('DD/MMM/YYYY');
+    let order_date = moment(data[i].order_date).format('DD/MMM/YYYY');
+    let result = data[i].result;
+    let result_modifier = data[i].result_modifier;
    
+    formatted_data.push([arv_number, accession_number, gender, 
+      birthdate, order_date, result_date, `${result_modifier} ${result}`]);
+      
+  }
+  
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        450,
+    scrollY:        435,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 0, "asc" ]],
+    order:          [[ 0, "asc" ], [5, "asc"]],
+    columnDefs: [
+      {"className": "dt-center", "targets": 0},
+      {"className": "dt-center", "targets": 1},
+      {"className": "dt-center", "targets": 2},
+      {"className": "dt-center", "targets": 3},
+      {"className": "dt-center", "targets": 4},
+      {"className": "dt-center", "targets": 5},
+      {"className": "dt-right", "targets": 6}
+    ],
     dom: 'Bfrtip',
     buttons: [
       {
-        extend: 'csv',
-        title: 'PEPFAR ' + sessionStorage.currentLocation + ' defaulter list report ' + period,
+        extend: "csv",
+        title: "VL results",
         footer: true 
-      },
-      {
-        extend: 'pdf',
-        title: 'PEPFAR ' + sessionStorage.currentLocation + ' defaulter list report ' + period,
       }
     ],
-    columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6}
-    ]
+    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+      if (aData[6].match(/=|>/) && parseFloat(aData[6].replace("=","").replace(">","")) >= 1000) {
+        let class_name = nRow.getAttribute("class");
+        nRow.setAttribute("class", `${class_name} warning`);
+      }else if (aData[6].replace(/\s+/g, '').toUpperCase() == ">LDL") {
+        let class_name = nRow.getAttribute("class");
+        nRow.setAttribute("class", `${class_name} warning`);
+      }
+    }
   } );
 
-  __$('helpText' + tstCurrentPage).innerHTML = `Defaulter list (${formatted_data.length} defaulters)`;
-  document.getElementById('spinner').style = 'display: none;';
-  document.getElementById('report-cover').style = 'display: none;';
 }
 
 function addSelectButton(person_id) {
@@ -319,13 +285,13 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Defaulter list" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="hhhhhhhhh" optional = "true"/>
 
       </form>
 
    </div>
  </div>
-</body>
 
-<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
 <div id="report-cover"></div>
+<img src="/assets/images/formloader.gif" id="spinner" />
+</body>

@@ -84,7 +84,7 @@ function reportGrouping(group) {
       ["TPT new initiations","","/apps/ART/views/reports/moh/report_dates.html?report=tpt_new_initiations",'link']
     ];
   }else if(group == 'Clinic'){
-    return [
+    let links = [
       ['Appointments','','/apps/ART/views/reports/clinic/appointments.html', 'link'],
       ["Defaulter list","","/apps/ART/views/reports/clinic/report_dates.html?report=defaulter_list",'link'],
       ["Other outcome list","","/apps/ART/views/reports/clinic/report_dates.html?report=other_outcome_list",'link'],
@@ -96,8 +96,18 @@ function reportGrouping(group) {
       ["Pregnant Patients","","/apps/ART/views/reports/clinic/report_dates.html?report=pregnant_patients",'link'],
       ["Retention","","/apps/ART/views/reports/clinic/report_dates.html?report=retention",'link'],
       ["Stock card report", '', "/apps/ART/views/stock_management/stock_card_report.html", 'link'],
-      ["Client due VL ","","/apps/ART/views/reports/clinic/report_dates.html?report=clients_due_vl",'link']
+      ["Clients due for VL","","/apps/ART/views/reports/clinic/report_dates.html?report=clients_due_vl",'link'],
+      //["VL results","","/apps/ART/views/reports/clinic/report_dates.html?report=vl_results",'link'],
+      ["VL results","","/apps/ART/views/reports/clinic/report_dates.html?report=high_vl_results",'link'],
+      ["Lab results","","/apps/ART/views/reports/clinic/report_dates.html?report=lab_results",'link'],
+      ["External consultation clients","","/apps/ART/views/reports/clinic/report_dates.html?report=external_consultation_clients",'link']
     ];
+
+    if(use_filing_numbers){
+        links.push(["Active clients with adverse outcomes","","/apps/ART/views/reports/clinic/archiving_candidates.html",'link'])
+    }
+
+    return links;
   }else if(group == 'PEPFAR'){
       return [
         ["Disaggregated","","/apps/ART/views/reports/pepfar/report_dates.html?report=disaggregated",'link'],
@@ -119,7 +129,13 @@ function buildReportLinks(group) {
   var reportContainer = document.getElementById("reports-container");
   reportContainer.innerHTML = null;
   
+  
   var reports = reportGrouping(group);
+  if(reports.length > 0 && !reports[0][0].match(/MoH|Clinic|PEPFAR/i)){
+    reports = reports.sort(function(a, b) { 
+      return a[0] > b[0] ? 1 : -1;
+    });
+  }
 
   for(var i = 0 ; i < reports.length ; i++){
     if(counter == 0) {
@@ -171,9 +187,36 @@ function _testFunc(){
    window.top.location = newURL;
 }
 
+
+function useFilingNumbers() {
+    var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+    url += '/global_properties?property=use.filing.numbers';
+    
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 ) {
+        if (this.status == 201 || this.status == 200 ) {
+            var obj = JSON.parse(this.responseText);
+            var use_fn = obj['use.filing.numbers'];
+            try {
+                use_filing_numbers = (use_fn == 'true' ? true : false);
+            }catch(e) {
+                use_filing_numbers = false;
+            }
+            buildReportLinks('main');
+        }
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send();
+}
+
+var use_filing_numbers = false;
 </script>
 
 
 <div id="reports-container"></div>
 
-<script>buildReportLinks('main');</script>
+<script>useFilingNumbers();</script>

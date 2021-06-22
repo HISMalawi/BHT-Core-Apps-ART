@@ -266,6 +266,7 @@ function loadClients(data) {
     ]
   } );
 
+  __$('helpText' + tstCurrentPage).innerHTML = `Defaulter list (${formatted_data.length} defaulters)`;
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
 }

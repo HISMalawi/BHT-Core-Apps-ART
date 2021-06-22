@@ -250,6 +250,11 @@ function showDisaggregatedReport(){
   <div id="cum_gender_consistency"></div>
   <div id="age_consistency"></div>
   <div id="cum_age_consistency"></div>
+  
+  <div id="age_group_consistency"></div>
+  <div id="cum_age_group_consistency"></div>
+  
+  
   <div id="reasons_consistency"></div>
   <div id="cum_reasons_consistency"></div>
   <div id="conditions_consistency"></div>
@@ -1475,7 +1480,7 @@ function showDisaggregatedReport(){
     <td style="font-weight: normal; border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">0 – 3 doses missed</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_0_6_doses_missed_at_their_last_visit');"
-      class="adherence" id="patients_with_0_6_doses_missed_at_their_last_visit"><!-- patients_with_0_6_doses_missed_at_their_last_visit --></a></td>
+      class="adherence" id="patients_with_0_6_doses_missed_at_their_last_visit">0</a></td>
   </tr>
 
   <tr>
@@ -1488,7 +1493,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:0px;
       text-align:left; padding-left:10px;" colspan="2">4+ doses missed</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_7_plus_doses_missed_at_their_last_visit');"
-      class="adherence" id="patients_with_7_plus_doses_missed_at_their_last_visit"><!-- patients_with_7_plus_doses_missed_at_their_last_visit --></a></td>
+      class="adherence" id="patients_with_7_plus_doses_missed_at_their_last_visit">0</a></td>
   </tr>
 
   <tr>
@@ -1501,7 +1506,7 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;" colspan="2">Unknown (not circled)</td>
     <td colspan="2" style="font-weight: normal;"><a href="#" @click="drillDown('patients_with_unknown_adhrence');"
-      class="adherence" id="patients_with_unknown_adhrence"><!-- patients_with_unknown_adhrence --></a></td>
+      class="adherence" id="patients_with_unknown_adhrence">0</a></td>
   </tr>
 
   <tr class="horisonatl-separator">
@@ -1516,13 +1521,13 @@ function showDisaggregatedReport(){
       border-left-width:0px; border-bottom-width:1px;
       text-align:left; padding-left:10px;">Number of ART patients newly started on TB preventive therapy this quarter</td>
     <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
-      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_cpt');"
-      id="newly_initiated_on_ipt"><!-- total_patients_on_arvs_and_cpt --></a></td>
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('newly_initiated_on_ipt');"
+      id="newly_initiated_on_ipt">0<!-- total_patients_on_arvs_and_cpt --></a></td>
     <td style="font-weight:bold; order-top-width:1px; text-align:right;
       border-left-width:0px; border-bottom-width:1px; padding-right:5px;">6H</td>
     <td style="text-align:right; padding-left: 10px; border-bottom-width:1px;
-      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('total_patients_on_arvs_and_ipt');"
-      id="newly_initiated_on_3hp"><!-- total_patients_on_arvs_and_ipt --></a></td>
+      border-top-width: 1px; border-right-width:0px;"><a href="#" @click="drillDown('newly_initiated_on_3hp');"
+      id="newly_initiated_on_3hp">0<!-- total_patients_on_arvs_and_ipt --></a></td>
     <td style="font-weight:bold; order-top-width:1px; text-align: right;
       border-left-width:0px; border-bottom-width:1px; padding-right:5px;">3HP</td>
   </tr>
@@ -2258,6 +2263,38 @@ function validateReport() {
 
   /***************************************************************/
 
+
+  let children_below_24_months_at_art_initiation = document.getElementById('children_below_24_months_at_art_initiation').innerHTML;
+  let children_24_months_14_years_at_art_initiation = document.getElementById('children_24_months_14_years_at_art_initiation').innerHTML;
+  let adults_at_art_initiation =  document.getElementById('adults_at_art_initiation').innerHTML;
+
+  age_group_consistency = parseInt(children_below_24_months_at_art_initiation);
+  age_group_consistency += parseInt(children_24_months_14_years_at_art_initiation);
+  age_group_consistency += parseInt(adults_at_art_initiation);
+  if(age_group_consistency != total_registered){
+    report_inconsistency += 1;
+    document.getElementById('age_group_consistency').innerHTML = `Quarterly newly registered is not equal to 
+    (children_below_24_months_at_art_initiation) + (children_24_months_14_years_at_art_initiation) + 
+    (adults_at_art_initiation)`;
+  }
+
+
+
+  children_below_24_months_at_art_initiation = document.getElementById('cum_children_below_24_months_at_art_initiation').innerHTML;
+  children_24_months_14_years_at_art_initiation = document.getElementById('cum_children_24_months_14_years_at_art_initiation').innerHTML;
+  adults_at_art_initiation =  document.getElementById('cum_adults_at_art_initiation').innerHTML;
+
+  age_group_consistency = parseInt(children_below_24_months_at_art_initiation);
+  age_group_consistency += parseInt(children_24_months_14_years_at_art_initiation);
+  age_group_consistency += parseInt(adults_at_art_initiation);
+  if(age_group_consistency != cum_total_registered){
+    report_inconsistency += 1;
+    document.getElementById('cum_age_group_consistency').innerHTML = `Cumulative registered is not equal to 
+    (Cumulative children_below_24_months_at_art_initiation) + (Cumulative children_24_months_14_years_at_art_initiation) + 
+    (Cumulative adults_at_art_initiation)`;
+  }
+  /***************************************************************/
+
   if(report_inconsistency > 0){
     var title_div = document.getElementById("incosistence_title");
     if(title_div == null) {
@@ -2270,10 +2307,52 @@ function validateReport() {
     document.body.insertBefore(title_div, current_div);
   }
 
+  let report_start_date;
+  let report_end_date;
+
+  if(quarter_val == undefined){
+    report_start_date = start_date;
+    report_end_date = end_date;
+  }else{
+    report_dates = QuarterDates();
+    report_start_date = report_dates[0];
+    report_end_date = report_dates[1];
+  }
+  sessionStorage.reportValidation = JSON.stringify({
+    cohort: 
+      {
+          start_date: `${report_start_date}`,
+          end_date: `${report_end_date}`,
+          indicators: {
+            ever_registered: parseInt(`${document.getElementById('cum_total_registered').innerHTML}`),
+            initiated_on_art_first_time: parseInt(`${document.getElementById('initiated_on_art_first_time').innerHTML}`),
+            total_alive_and_on_art: parseInt(`${document.getElementById('total_alive_and_on_art').innerHTML}`),
+            newly_initiated_on_3hp: parseInt(`${document.getElementById('newly_initiated_on_3hp').innerHTML}`),
+            newly_initiated_on_ipt: parseInt(`${document.getElementById('newly_initiated_on_ipt').innerHTML}`),
+            males_initiated_on_art_first_time: parseInt(`${document.getElementById('males_initiated_on_art_first_time').innerHTML}`),
+            initial_pregnant_females_all_ages: parseInt(`${document.getElementById('initial_pregnant_females_all_ages').innerHTML}`)
+          }
+     }
+    });
+
+
+
 }
 
+function QuarterDates(){
+  let report_year = parseInt(quarter_val.split(" ")[1]);
+  let reportQ = quarter_val.split(" ")[0];
 
-  
+  if(reportQ.match(/Q4/i)){
+    return [`${report_year}-10-01`, `${report_year}-12-31`];
+  }else if(reportQ.match(/Q3/i)){
+    return [`${report_year}-07-01`, `${report_year}-09-30`];
+  }else if(reportQ.match(/Q2/i)){
+    return [`${report_year}-04-01`, `${report_year}-06-30`];
+  }else if(reportQ.match(/Q1/i)){
+    return [`${report_year}-01-01`, `${report_year}-03-31`];
+  }
+}
   
 
 </script>

@@ -4,6 +4,8 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <title>Encounters New</title>
+    <link rel="stylesheet" href="/assets/css/datatables/fixedHeader.dataTables.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/datatables/scroller.dataTables.min.css" type="text/css">
     <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
             defer="true"></script>
     <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
@@ -14,7 +16,8 @@
     <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
     <script type="text/javascript" src="/assets/js/moment.js"></script>
     <script type="text/javascript" src="./drug_cms.js"></script>
-
+    <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
     <script type="text/javascript">
         
 
@@ -45,17 +48,16 @@
                     html += "<th>Username</th>";
                     html += "<th>Reason</th>";
                     html += "</thead>";
-                    html += "<tbody>";
 
                     html += "<tbody>";
                     pharmacy_items.forEach(element => {
                         html += "<tr>";
-                        html += "<td class='medication'>" + element.drug_name + "</td>";
+                        html += "<td class='medication'>" + drugs[element.drug_id].short_name + ` (${drug_cms_packsizes[drugs[element.drug_id].short_name]})` + "</td>";
                         html += "<td class='expiry-date'>" + moment(element.transaction_date).format('DD/MMM/YYYY') + "</td>";
-                        html += "<td class='current-quantity' style='text-align: left;'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
+                        html += "<td class='medication'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
                         html += "<td class='current-quantity'>" + element.amount_committed_to_stock + "</td>";
-                        html += "<td class='current-quantity'>" + element.username + "</td>";
-                        html += "<td class='current-quantity'>" + element.transaction_reason + "</td>";
+                        html += "<td class='medication'>" + element.username + "</td>";
+                        html += "<td class='medication'>" + element.transaction_reason.replaceAll(/Drugs /ig, '')+ "</td>";
                         html += "</tr>";   
                     });
                     
@@ -63,6 +65,11 @@
                     html += "</table>";
                     html += "</div>";
                     jQuery(".inputFrameClass").append(html);
+                    jQuery('#stock').DataTable({
+                        fixedHeader: true,           
+                        searching: false,
+                        paging: false,
+                    }); 
                     // var pharmacyData = {};
                     // for (var key in pharmacy_items) {   // for ... of or just forEach???
                     //     var drug_id = pharmacy_items[key]["drug_id"];
@@ -196,8 +203,8 @@
     }
 
     .current-quantity {
-        text-align: right;
-        padding-right: 10px;
+        text-align: center;
+        /* padding-right: 10px; */
     }
 
     .medication {

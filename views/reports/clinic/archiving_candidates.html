@@ -9,7 +9,6 @@
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-
 <!-- pring report start .......................................................................... -->
 <script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
@@ -58,15 +57,6 @@
  overflow-y:auto !important;
 }
 
-.npid, .gender, .birthdate {
-  text-align: center;
-}
-
-.given_name, .family_name {
-  text-align: left;
-  padding-left: 5px;
-}
-
 #report-cover {
   position: absolute;
   background-color: black;
@@ -89,11 +79,37 @@
   text-align: right;
 }
 
-.warning {
-  background-color: red !important;
-  color: white !important;
+.dt-left{
+  text-align: left;
+  width: 15%;
 }
 
+.dt-center {
+  text-align: center;
+  width: 15%;
+}
+
+.dt-btns {
+  text-align: center;
+  vertical-align: middle !important;
+  width: 10%;
+}
+
+.gender {
+    width: 8%;
+}
+
+.results {
+    width: 16%;
+}
+
+.btn-container {
+  width: 100%
+}
+
+.btn-container td {
+  border-style: none !important;
+}
 </style>
 
 
@@ -113,15 +129,8 @@ function back() {
 function buildList() {
   var f = document.getElementById('inputFrame' + tstCurrentPage);
   f.style = 'width: 96%; height: 89%;';
-
-  var href = window.location.href;
-  var url = new URL(href);
-  var start_date = url.searchParams.get("start_date");
-  var end_date = url.searchParams.get("end_date");
-  
   buildDataTable(f);
-
-  getList(start_date, end_date);
+  getList();
 }
 
 function buildDataTable(e) {
@@ -135,54 +144,19 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  if(sessionStorage.filingNumnerAvailable == 'false'){
-    var headers = ['ARV#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
-  }else{
-    var headers = ['Filing#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
-  }
-
+  var headers = ['Filing#','Outcome', 'Outcome date'];
+  
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
-    
-   /* if(i == 0) 
-      th.setAttribute('class', 'npid');
-
-    if(i == 1) 
-      th.setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      th.setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      th.setAttribute('class', 'gender');
-
-    if(i == 4) 
-      th.setAttribute('class', 'birthdate');*/
-  
   }
 
-  initDataTable();
 }
-
-  var setDataTable = null;
-
-function initDataTable() {
-  /*setDataTable = jQuery('#clients').DataTable( {
-    fixedHeader: true,
-    searching: false
-  });*/
-}
-
 
 function getList(sdate, edate) {
-  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/clients_due_vl?date=" + sessionStorage.sessionDate;
-  url += `&program_id=${sessionStorage.programID}`;
-  url += `&start_date=${sdate}&end_date=${edate}`; 
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+  url += `programs/1/reports/archiving_candidates?start_date=${sessionStorage.sessionDate}`; 
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -199,105 +173,58 @@ function getList(sdate, edate) {
   xhttp.send();
 }
 
+function buildViewBTN(patient_id){
+    return `<table class="btn-container"><tr>
+	<td><button id="view-${patient_id}" class="button blue navButton" 
+    	onmousedown="gotoPatient(${patient_id});"><span>View</span></button></td>
+	<td><button id="view-${patient_id}" class="button red navButton" 
+    	onmousedown="archivePatient(${patient_id});"><span>Archive</span></button></td>
+	</tr></table>`
+}
+
+function gotoPatient(patient_id){
+    window.location = `/views/patient_dashboard.html?patient_id=${patient_id}`;
+}
+
 function loadClients(data) {
   var formatted_data = [];
 
   for (var i = 0; i < data.length; i++) {
-    let given_name = data[i].given_name;
-    let family_name = data[i].family_name;
-    let gender = data[i].gender;
-    let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    let npid = data[i].arv_number;
+    let outcome_date = moment(data[i].outcome_date).format('DD/MMM/YYYY');
+    let filing_number = data[i].filing_number;
     let person_id = data[i].patient_id;
-    let app_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
-    let art_start_date = moment(data[i].start_date).format('DD/MMM/YYYY');
-    let months_on_ART = data[i].months_on_art;
-    let mile_stone = moment(data[i].mile_stone).format('DD/MMM/YYYY');
-    let last_result = data[i].last_result;
-    let result_date = 'N/A'
-    if(data[i].last_result_date != 'N/A')
-      result_date = moment(data[i].last_result_date).format('DD/MMM/YYYY');
-
-    formatted_data.push([npid, gender, birthdate, app_date, art_start_date, 
-      months_on_ART, mile_stone, last_result, result_date]); //addSelectButton(person_id)]);
+    let outcome = data[i].outcome;
+   
+    formatted_data.push([filing_number, outcome, outcome_date, buildViewBTN(person_id)]);
   }
-  
+ 
   jQuery('#clients').DataTable( {
     fixedHeader:    true,
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        385,
+    scrollY:        435,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[0, "asc"],[ 5, "asc" ]],
+    order:          [[ 2, "asc" ]],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 1},
-      {"className": "dt-center", "targets": 2},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-right", "targets": 5},
-      {"className": "dt-right", "targets": 7},
-      {"className": "dt-center", "targets": 8}
+      {className: "dt-left", targets: 0},
+      {className: "dt-center", targets: 1},
+      {className: "dt-center", targets: 2, type: 'date'}
     ],
     dom: 'Bfrtip',
     buttons: [
       {
         extend: "csv",
-        title: "Clients due for VL",
+        title: "Active clients with adverse outcomes",
         footer: true 
       }
     ],
-    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-      if (aData[7].match(/=|>/) && parseFloat(aData[7].replace("=","").replace(">","")) >= 1000) {
-        let class_name = nRow.getAttribute("class");
-        nRow.setAttribute("class", `${class_name} warning`);
-      }
-    }
   } );
 
-}
-
-function addSelectButton(person_id) {
-  var span = document.createElement('span');
-  var button  = document.createElement('a');
-  button.setAttribute('onmousedown', 'selectClient(' + person_id + ')');
-  button.innerHTML = 'Select';
-  button.setAttribute('class','btn-primary');
-  button.setAttribute('href','#');
-  span.appendChild(button);
-  return span.innerHTML;
-}
-
-function selectClient(patient_id) {
-  document.location = '/views/confirm.html?person_id=' + patient_id;
-}
-
-function addClassIMGcontainter(person_id) {
-  var tr = document.getElementById('row-' + person_id);
-  var cells = tr.getElementsByTagName('td');
-
-  for(var i = 0 ; i < cells.length ; i++) {
-    if(i == 0) 
-      cells[i].setAttribute('class', 'npid');
-
-    if(i == 1) 
-      cells[i].setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      cells[i].setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      cells[i].setAttribute('class', 'gender');
-
-    if(i == 4) 
-      cells[i].setAttribute('class', 'birthdate');
-
-  }
 }
 
 </script>
@@ -311,7 +238,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText='Clients due for VL <span style="font-size: 16px;">(not based on their last VL result and <b>month(s)</b> on ART is between ART start and appointment date)</span>' optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="Active clients with adverse outcomes" optional = "true"/>
 
       </form>
 

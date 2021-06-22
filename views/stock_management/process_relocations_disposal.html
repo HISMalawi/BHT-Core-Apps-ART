@@ -39,7 +39,7 @@
                 var full_name = selected_drugs_hash[key]["full_name"];
                 var drug_id = selected_drugs_hash[key]["drug_id"];
                 var expiry_date = selected_drugs_hash[key]["expiry_date"];
-                var short_name_with_expiry_date = short_name + "::" + expiry_date;
+                var short_name_with_expiry_date = short_name + `(${drug_cms_packsizes[short_name]})` + "::" + expiry_date;
                 short_name_drug_id[short_name_with_expiry_date] = drug_id;
                 drugs.push(short_name_with_expiry_date);
                 selected.push(short_name_with_expiry_date);
@@ -277,10 +277,10 @@
                         var li = document.createElement("div");
                         li.id = all_drugs[k];
                         li.style.display = "table-cell";
-                        li.innerHTML = short_names[drug_name] + " :: " + expiry_date;
+                        li.innerHTML = drug_name + " :: " + expiry_date;
 
                         li.setAttribute("value", all_drugs[k]);
-                        li.setAttribute("cms_name", drug_cms_names[drug_name]);
+                        li.setAttribute("cms_name", drug_name);
 
                         li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                         li.className = (k % 2 == 0) ? "even" : "odd";
@@ -1370,7 +1370,12 @@
                         if (!row_complete(tabs_per_tin, total_tins, date_of_expiry, authorization_code)) {
                             error_messages.push("Incomplete entries for " + drugName);
                         }
-
+                        // if(authorization_code.length > 0) {
+                        //     if(isNaN(Number.parseInt(authorization_code, 30))) {
+                        //         error_messages.push("Invalid authorization code for " + drugName);
+                        //     }
+                        // }
+                        
                         if (parseInt(key.split("_")[1]) == 0) {
                             if (drugs_hash[key]["tabs_per_tin"].length == 0) {
                                 //The drug has not been clicked yet.
@@ -1473,7 +1478,7 @@
                         var label = document.createElement("div");
                         label.className = "drug-label scell";
                         label.style.display = "table-cell";
-                        label.innerHTML = drug_cms_names[drug];
+                        label.innerHTML = drug;
                         if (i == 0)
                             label.style.borderTop = "0.4px solid gray";
                         row.appendChild(label);
@@ -1619,7 +1624,7 @@
                     for (var i = 0; i <= processed_products.length - 1; i++) {
                         var authorization_code = processed_products[i]["authorization_code"];
                         var split_data = processed_products[i]["drug"].split("::");
-                        var shortName = split_data[0];
+                        var shortName = split_data[0].split("(")[0];
                         var expiryDate = split_data[1].split("_")[0];
                         var pharmacyBatchItemID = getPharmacyBatchItemID(shortName, expiryDate);
                         var totalTins = parseInt(processed_products[i]["total_tins"]);
@@ -1746,14 +1751,10 @@
         <div id="container">
             <form>
                 <input helpText="Relocation Details" id="input" name="information" optional="true"
-                       tt_onLoad="$('clearButton').style.display = 'none'; checkContainer(); updateNextButton();"
+                       tt_onLoad="$('clearButton').style.display = 'none'; checkContainer(); updateNextButton();setReasons()"
                        tt_pageStyleClass="NoKeyboard" type="text"/>
-                <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'">
-                        <option value=""></option>
-                        <option value="Transfer to another facility/relocation">Transfer to another facility/relocation</option>
-                        <option value="Expired">Expired</option>
-                        <option value="Damaged">Damaged</option>
-                        <option value="For trainings">For trainings</option>
+                <select helpText="Select reason" id="reason" name="reason" tt_onLoad="__$('keyboard').style.display = 'none'; ">
+                      
                 <input helpText="<span style='color: red;background: white;'>Confirm Entry (Touch row to change) </span>"
                        id="summary" name="showSummary" optional="true"
                        tt_onLoad="showSummary(); customizeFinishButton()"
@@ -1792,7 +1793,18 @@
                         };
                     }
                 }
-
+                function setReasons() {
+                    let reasons = [];
+                    if(JSON.parse(sessionStorage.relocation_or_disposal).relocation_or_disposal === "Relocations") {
+                        reasons = ["Transfer to another facility/relocation", "For trainings"];
+                    }else {
+                        reasons = ["Expired", "Damaged", "For trainings"];
+                    }
+                    let reasonsField = document.getElementById('reason');
+                    reasons.forEach(element => {
+                        reasonsField.innerHTML += `<option value='${element}' > ${element}</option>`;
+                    });
+                }
                 function updateDrugsHash() {
                     input_fields = document.getElementsByClassName("input-field");
                     if (input_fields.length > 0) {

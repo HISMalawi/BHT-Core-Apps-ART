@@ -210,6 +210,7 @@ function initializeTable() {
     scrollY: 380,
     Processing: true,
     ServerSide: true,
+    info: false,
     scroller: {
       loadingIndicator: true
     },
@@ -276,6 +277,9 @@ function initializeTable() {
           <th>Total clients:</th>
           <td id="total-clients">0<td>
         </tr>
+        <tr>
+          <td colspan="2" id="validation-message">&nbsp;<td>
+        </tr>
       </table>
     </div>
       </table>
@@ -316,7 +320,7 @@ function initializeTable() {
 
 
 <script>
-
+var patients = [];
 function initializeReport() {
   var min_age;
   var max_age;
@@ -348,6 +352,11 @@ function initializeReport() {
     document.getElementById('spinner').style = "display: none;";
     document.getElementById('report-cover').style = "display: none;";
     document.getElementById("total-clients").innerHTML = total_clients;
+    document.getElementById("total-clients").style = "text-decoration: underline;";
+    document.getElementById("total-clients").onclick =  function() {
+      getClients(patients);
+    };
+    validateReport()
     return;
   }
   var url_path = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1" 
@@ -361,12 +370,22 @@ function initializeReport() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       var obj = JSON.parse(this.responseText);
       addRow(obj);
+      try {
+        patients.push(...Object.keys(obj.Female));
+        patients.push(...Object.keys(obj.Male));
+      } catch (error) {
+        
+      }
     }
   };
   xhttp.open("GET", url_path, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send();
+}
+
+function showAllClients() {
+  console.log(patients);
 }
 
 function createLink(num, age_group, gender, colNum){
@@ -754,6 +773,14 @@ function initializePopUpTable() {
     scroller: {
       loadingIndicator: true
     },
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: "csv",
+        title: "tx_curr total drill down",
+        footer: true 
+      }
+    ],
     columnDefs: [
       {"className": "dt-arv-numbers", "targets": 0},
       {"className": "dt-date", "targets": 1},
@@ -769,6 +796,36 @@ function closeBox(){
   }catch(e){}
   
   document.getElementById("popupBox").style = "display: none;";
+}
+
+function validateReport(){
+  let cohort_report;
+  let validation_message = document.getElementById('validation-message');
+
+  if(sessionStorage.reportValidation == undefined){
+    validation_message.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+      reporting period and then run this report.</b>`
+    return;
+  }else{
+    cohort_report = JSON.parse(sessionStorage.reportValidation);
+    if(cohort_report.cohort.start_date != start_date || cohort_report.cohort.end_date != end_date){
+      validation_message.innerHTML = `<b style="color:red;">Report not validated. Run the MoH cohort report for similar 
+       reporting period and then run this report.</b>`
+      return;
+    }
+  }
+
+  let total_clients = parseInt(document.getElementById('total-clients').innerHTML);
+  let total_on_art = cohort_report.cohort.indicators.total_alive_and_on_art;
+
+  if(total_on_art != total_clients){
+    validation_message.innerHTML = `<b style="color:red;">Validation error: MoH cohort Alive and on ART clients (${total_on_art}) is not
+       not matching with total TX MMD clients.</b>`
+  }else{
+    validation_message.innerHTML = `<b style="color:green;">Report is consistent with MoH cohort Alive and on ART clients (${total_on_art}).</b>`
+  }
+
+
 }
 </script>
 

@@ -76,16 +76,33 @@
  overflow-y:auto !important;
 }
 
-.npid, .gender, .birthdate {
-  text-align: center;
+tfoot{
+  visibility: hidden;
 }
 
-.given_name, .family_name {
-  text-align: left;
-  padding-left: 5px;
+.dt-arv-number {
+  text-align: center;
+  width: 20%;
 }
-tfoot {
-  visibility: hidden;
+
+.dt-npid {
+  text-align: center;
+  width: 10%;
+}
+
+.dt-name {
+  text-align: left;
+  width: 25%;
+}
+
+.dt-gender {
+  text-align: center;
+  width: 10%;
+}
+
+.dt-date {
+  text-align: center;
+  width: 10%;
 }
 
 </style>
@@ -124,7 +141,7 @@ function buildDataTable(e) {
   table.appendChild(theader);
   var tr = document.createElement('tr');
   theader.appendChild(tr);
-  var tfoot = document.createElement('tfoot');
+  /*var tfoot = document.createElement('tfoot');
   var tfoot_tr = document.createElement('tr');
   var tfoot_td = document.createElement('td');
   tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
@@ -133,49 +150,23 @@ function buildDataTable(e) {
                   API Version ${sessionStorage.apiVersion}`;
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
-  table.appendChild(tfoot);
-  var headers = ['ARV#','First name','Last name', 'Gender','birthdate','Date defaulted','Address'];
+  table.appendChild(tfoot);*/
+  var headers = ['ARV#','NPID', 'First name','Last name', 'Gender','DOB','Date set'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
     th.innerHTML = headers[i];
     tr.appendChild(th);
-    
-    if(i == 0) 
-      th.setAttribute('class', 'npid');
-
-    if(i == 1) 
-      th.setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      th.setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      th.setAttribute('class', 'gender');
-
-    if(i == 4) 
-      th.setAttribute('class', 'birthdate');
-  
   }
 
-  initDataTable();
 }
-
-  var setDataTable = null;
-
-function initDataTable() {
-  /*setDataTable = jQuery('#clients').DataTable( {
-    fixedHeader: true,
-    searching: false
-  });*/
-}
-
 
 function getList(sdate, edate) {
-  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
-  url += "/defaulter_list?start_date=" + sdate + "&end_date=" + edate
-  url += "&program_id=" + sessionStorage.programID + "&pepfar=true";
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
+  url += sessionStorage.programID + "/external_consultation_clients?start_date=" + sdate + "&end_date=" + edate
   url += "&date=" + sessionStorage.sessionDate;
+  document.getElementById("helpText0").innerHTML += " (" +  moment(start_date).format('DD/MMM/YYYY');
+  document.getElementById("helpText0").innerHTML += " - " +  moment(end_date).format('DD/MMM/YYYY') + ")";
 
   document.getElementById('spinner').style = 'display: inline;';
   document.getElementById('report-cover').style = 'display: inline;';
@@ -195,40 +186,19 @@ function getList(sdate, edate) {
 
 function loadClients(data) {
   var formatted_data = [];
-  for (var i = 0; i < data.length; i++) {
-    var given_name = data[i].given_name;
-    var family_name = data[i].family_name;
-    var gender = data[i].gender;
-    var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    var arv_num = data[i].arv_number;
-    var person_id = data[i].person_id;
-    var outcome_date = data[i].defaulter_date;
-    if(outcome_date)
-     outcome_date = moment(data[i].defaulter_date).format('DD/MMM/YYYY');
 
-    var contact = [];
-    if(data[i].cell_number)
-      contact.push("CELL: " + data[i].cell_number);
-
-    if(data[i].district)
-      contact.push("District: " + data[i].district);
-
-    if(data[i].ta)
-      contact.push("TA: " + data[i].ta);
-
-    if(data[i].village)
-      contact.push("Village: " + data[i].village);
-
-    var contact_details = '';
-    for(var j = 0; j < contact.length; j++) {
-      if(j > 0)
-        contact_details += '<br />';
-
-     contact_details += contact[j];
-    }
-
-    formatted_data.push([arv_num, given_name, 
-      family_name, gender, birthdate, outcome_date, contact_details]);
+  for (let i = 0; i < data.length; i++) {
+    let given_name = data[i].given_name;
+    let family_name = data[i].family_name;
+    let gender = data[i].gender;
+    let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    let arv_number = data[i].arv_number;
+    let person_id = data[i].patient_id;
+    let npid = data[i].npid;
+    let date_set = moment(data[i].date_set).format('DD/MMM/YYYY');
+    
+    formatted_data.push([arv_number, npid, given_name, family_name,
+     gender, birthdate, date_set]);
   }
  
   var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
@@ -238,34 +208,36 @@ function loadClients(data) {
     searching:      false,
     data:           formatted_data,
     deferRender:    true,
-    scrollY:        450,
+    scrollY:        510,
     scrollCollapse: false,
     scroller:       false,
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 0, "asc" ]],
-    dom: 'Bfrtip',
+    order:          [[ 0, "asc" ],[3, "asc"],[2, "asc"]],
+    /*dom: 'Bfrtip',
     buttons: [
       {
         extend: 'csv',
-        title: 'PEPFAR ' + sessionStorage.currentLocation + ' defaulter list report ' + period,
+        title: sessionStorage.currentLocation + ' ext consultation clients report ' + period,
         footer: true 
       },
       {
         extend: 'pdf',
-        title: 'PEPFAR ' + sessionStorage.currentLocation + ' defaulter list report ' + period,
+        title: sessionStorage.currentLocation + ' ext consultation clients report ' + period,
       }
-    ],
+    ],*/
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-center", "targets": 6}
+      {"className": "dt-arv-number", "targets": 0},
+      {"className": "dt-npid", "targets": 1},
+      {"className": "dt-name", "targets": 2},
+      {"className": "dt-name", "targets": 3},
+      {"className": "dt-gender", "targets": 4},
+      {"className": "dt-date", "targets": 5},
+      {"className": "dt-date", "targets": 6}
     ]
   } );
 
-  __$('helpText' + tstCurrentPage).innerHTML = `Defaulter list (${formatted_data.length} defaulters)`;
   document.getElementById('spinner').style = 'display: none;';
   document.getElementById('report-cover').style = 'display: none;';
 }
@@ -285,29 +257,6 @@ function selectClient(patient_id) {
   document.location = '/views/confirm.html?person_id=' + patient_id;
 }
 
-function addClassIMGcontainter(person_id) {
-  var tr = document.getElementById('row-' + person_id);
-  var cells = tr.getElementsByTagName('td');
-
-  for(var i = 0 ; i < cells.length ; i++) {
-    if(i == 0) 
-      cells[i].setAttribute('class', 'npid');
-
-    if(i == 1) 
-      cells[i].setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      cells[i].setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      cells[i].setAttribute('class', 'gender');
-
-    if(i == 4) 
-      cells[i].setAttribute('class', 'birthdate');
-
-  }
-}
-
 </script>
 
 <body id="mateme">
@@ -319,7 +268,7 @@ function addClassIMGcontainter(person_id) {
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText="Defaulter list" optional = "true"/>
+          tt_pageStyleClass= "NoControls" helpText="External consultation clients <span id='end-date'></span>" optional = "true"/>
 
       </form>
 

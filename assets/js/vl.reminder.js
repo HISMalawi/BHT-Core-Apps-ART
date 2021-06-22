@@ -47,11 +47,13 @@ function prepareForVLcheck() {
       nextBtn.setAttribute('onmousedown', 'processVLalert();');
     }
   }
-  
-  var cover = document.getElementById('regimen-change-cover');
-  var loader = document.getElementsByClassName('loader')[0];
-  cover.style = 'display: none';
-  loader.style = 'display: none;'
+ 
+  try {
+    var cover = document.getElementById('regimen-change-cover');
+    var loader = document.getElementsByClassName('loader')[0];
+    cover.style = 'display: none';
+    loader.style = 'display: none;'
+  }catch(e){}
 
 }
 
@@ -63,9 +65,9 @@ function processVLalert() {
   VLmilestoneCheckDone = true;
 
   var eligibile = vl_info.eligibile;
-  var earliest_start_date = moment(vl_info.earliest_start_date).format('DD/MMM/YYYY');
+  /*var earliest_start_date = moment(vl_info.earliest_start_date).format('DD/MMM/YYYY');
   var milestone = vl_info.milestone;
-  var period_on_art = vl_info.period_on_art;
+  var period_on_art = vl_info.period_on_art;*/
   var skip_milestone = vl_info.skip_milestone;
   var message = vl_info.message;
 
@@ -225,7 +227,7 @@ function postVLalertResponses(responses, nextEncName) {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       res = JSON.parse(this.responseText);
       if(nextEncName.length > 0)
-        createEncounter();
+        createOrderEncounter();
 
     }
   };

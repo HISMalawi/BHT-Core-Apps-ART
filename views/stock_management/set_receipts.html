@@ -36,12 +36,12 @@
             var short_name = selected_drugs_hash[key]["short_name"];
             var full_name = selected_drugs_hash[key]["full_name"];
             var drug_id = selected_drugs_hash[key]["drug_id"];
+            var pack_size = selected_drugs_hash[key]["pack_size"];
             short_name_drug_id[short_name] = drug_id;
-            selected.push(short_name)
+            selected.push({short_name: short_name, pack_size: pack_size})
 
         }
 
-        console.log(selected_drugs_hash);
         var drugs = selected;
         var unfinished_drugs = [];
         var sieved = [];
@@ -135,6 +135,7 @@
         }
 
         var Entries = (function (jQ, data) {
+            console.log(data);
             function guiSetup() {
 
                 var style = document.createElement("style");
@@ -248,8 +249,8 @@
 
                 for (var k in all_drugs) {
 
-                    if (counts[all_drugs[k]] == undefined) {
-                        counts[all_drugs[k]] = 1;
+                    if (counts[all_drugs[k].short_name] == undefined) {
+                        counts[all_drugs[k].short_name] = 1;
                     }
                     var r = document.createElement("div");
                     r.className = "drug-row";
@@ -258,7 +259,7 @@
                     var div = document.createElement("div");
                     div.style.display = "table-cell";
                     var img = document.createElement("img");
-                    img.id = all_drugs[k] + "_img";
+                    img.id = all_drugs[k].short_name + "_img";
                     img.className = "img";
                     div.style.minWidth = "35px";
                     img.src = imgBlank;
@@ -268,15 +269,14 @@
                     r.appendChild(div);
                     var pli = document.createElement("div");
                     var li = document.createElement("div");
-                    li.id = all_drugs[k];
+                    li.id = all_drugs[k].short_name;
                     li.style.display = "table-cell";
-                    li.innerHTML = short_names[all_drugs[k]];
+                    li.innerHTML = all_drugs[k].short_name + `(${all_drugs[k].pack_size})`;
 
-                    li.setAttribute("value", all_drugs[k]);
-                    li.setAttribute("cms_name", drug_cms_names[all_drugs[k]]);
-                    console.log(drug_cms_names[all_drugs[k]])
-                    console.log(drug_cms_names)
-                    console.log(all_drugs[k])
+                    li.setAttribute("value", all_drugs[k].short_name);
+                    li.setAttribute("cms_name", drug_cms_names[all_drugs[k].short_name]);
+                    console.log(drug_cms_names[all_drugs[k].short_name])
+                    console.log(all_drugs[k].short_name)
                     li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                     li.className = (k % 2 == 0) ? "even" : "odd";
                     li.onmousedown = function () {
@@ -321,7 +321,7 @@
                 tbl.style.paddingTop = "35px";
                 tbl.style.paddingBottom = "20px";
 
-                table_headers = ["Tabs Per Tin", "Total tins", "Date Of Expiry"];
+                table_headers = ["Tabs Per Tin", "Total tins", "Date Of Expiry", "Batch Number"];
 
                 var th_row = document.createElement("tr");
                 drg = item.getAttribute("value");
@@ -330,9 +330,9 @@
                     rows_count = rows_count + parseInt(addedRowsHash[drg]);
                 }
 
-                for (var i = 0; i <= 2; i++) {
+                for (var i = 0; i <= 3; i++) {
                     var th = document.createElement("th");
-                    th.style.width = '10%';
+                    th.style.width = '5%';
                     var thText = document.createTextNode(table_headers[i]);
                     th.appendChild(thText);
                     th_row.appendChild(th);
@@ -343,9 +343,9 @@
                 for (var i = 0; i <= rows_count; i++) {
                     var row = document.createElement("tr");
                     var drug_name = item.getAttribute("value") + "_" + i;
-                    for (var j = 0; j <= 2; j++) {
+                    for (var j = 0; j <= 3; j++) {
                         var cell = document.createElement("td");
-                        cell.style.width = '80px';
+                        cell.style.width = '50px';
                         cell.style.textAlign = 'center';
                         var textField = document.createElement("input");
                         if (j == 0) {
@@ -364,7 +364,7 @@
                         if (j == 1) {
                             //var inputID = "Number of expiring tins";
                             var inputID = item.getAttribute("value") + "_" + i + "_total_tins";
-
+                            console.log(drug_name);
                             var inputValue = drugs_hash[drug_name]["total_tins"] //__$(item.getAttribute("value") + "_expire_amount_" + pos).value;
                             var field_type = "total_tins"
                         }
@@ -376,7 +376,13 @@
                             var inputValue = drugs_hash[drug_name]["date_of_expiry"]; //__$(item.getAttribute("value") + "_date_" + pos).value;
                             var field_type = "date_of_expiry"
                         }
+                        if (j == 3) {
+                            //var inputID = "Number of expiring tins";
+                            var inputID = item.getAttribute("value") + "_" + i + "_batch_number";
 
+                            var inputValue = drugs_hash[drug_name]["batch_number"] //__$(item.getAttribute("value") + "_expire_amount_" + pos).value;
+                            var field_type = "batch_number"
+                        }
                         textField.className = "input-field";
                         textField.id = inputID;
                         textField.value = inputValue;
@@ -384,7 +390,7 @@
                         textField.setAttribute("row", i);
                         textField.setAttribute("drug_name", item.getAttribute("value") + "_" + i)
                         textField.style.height = '35px';
-                        textField.style.width = '264px';
+                        textField.style.width = '154px';
                         textField.style.fontSize = '26px';
                         textField.style.marginLeft = '10px';
                         textField.style.textAlign = 'center';
@@ -685,16 +691,16 @@
                         var dg = node.getAttribute("value");
 
                         for (var v = 1; v <= counts[dg]; v++) {
-                            var sd = (sieved.indexOf(dg) >= 0);
-                            var am = __$(dg + "_amount_" + v).value;
-                            var ex_am = __$(dg + "_expire_amount_" + v).value;
-                            var dt = __$(dg + "_date_" + v).value;
+                            // var sd = (sieved.indexOf(dg) >= 0);
+                            // var am = __$(dg + "_amount_" + v).value;
+                            // var ex_am = __$(dg + "_expire_amount_" + v).value;
+                            // var dt = __$(dg + "_date_" + v).value;
 
-                            if (!((am.length > 0 && ex_am.length > 0 && dt.length > 0) ||
-                                (!sd && (am.length > 0 && ex_am.length == 0 && dt.length == 0)))) {
-                                p = v;
-                                break;
-                            }
+                            // if (!((am.length > 0 && ex_am.length > 0 && dt.length > 0) ||
+                            //     (!sd && (am.length > 0 && ex_am.length == 0 && dt.length == 0)))) {
+                            //     p = v;
+                            //     break;
+                            // }
                         }
 
                         loadControls(node, p);
@@ -990,27 +996,27 @@
                 unfinished_drugs = [];
                 for (var i in all_drugs) {
 
-                    var dname = all_drugs[i];
-                    backgroundc = __$(all_drugs[i]).style.background;
-                    coll_nodes = __$(all_drugs[i]).parentNode.getElementsByClassName("small");
+                    var dname = all_drugs[i].short_name;
+                    backgroundc = __$(all_drugs[i].short_name).style.background;
+                    coll_nodes = __$(all_drugs[i].short_name).parentNode.getElementsByClassName("small");
 
-                    if (counts[all_drugs[i]] > 1 && (coll_nodes.length == 0 ||
+                    if (counts[all_drugs[i].short_name] > 1 && (coll_nodes.length == 0 ||
                         (coll_nodes.length > 0 && !backgroundc.match("lightblue")))) {
 
                         if (coll_nodes.length > 0)
                             jQ(".small").remove();
 
-                        __$(all_drugs[i]).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i]] +
-                            "&nbsp</span> " + drug_short_names[all_drugs[i]];
-                        __$(all_drugs[i]).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i]] + "&nbsp</span> " + all_drugs[i];
-                        __$(all_drugs[i]).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i]] +
-                            "&nbsp</span> " + drug_short_names[all_drugs[i]];
-                        __$(all_drugs[i]).getElementsByTagName("span")[0].onmousedown = function () {
+                        __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] +
+                            "&nbsp</span> " + drug_short_names[all_drugs[i].short_name];
+                        __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] + "&nbsp</span> " + all_drugs[i].short_name;
+                        __$(all_drugs[i].short_name).innerHTML = "<span class = 'red' style='color: red'>&nbsp" + counts[all_drugs[i].short_name] +
+                            "&nbsp</span> " + drug_short_names[all_drugs[i].short_name];
+                        __$(all_drugs[i].short_name).getElementsByTagName("span")[0].onmousedown = function () {
                             collapse(this.parentNode);
                         }
                     }
 
-                    for (var pos = 1; pos <= counts[all_drugs[i]]; pos++) {
+                    for (var pos = 1; pos <= counts[all_drugs[i].short_name]; pos++) {
 
 
                         var amount = __$(dname + "_amount_" + pos).value.trim();
@@ -1094,9 +1100,10 @@
                 __$("data-pane").appendChild(div);
 
                 var keys = [
-                    [1, 2, 3, '&larr;'],
-                    [4, 5, 6, 0],
-                    [7, 8, 9, '.']
+                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z'],
+                        ['X', 'C', 'V', 'B', 'N', 'M', '&larr;']
                 ];
 
                 var table = document.createElement('div');
@@ -1364,7 +1371,7 @@
                     }
 
                     if (date_of_expiry) {
-                        if (!isDateValid("01/" + date_of_expiry)) {
+                        if (!isDateValid(date_of_expiry)) {
                             error_messages.push("Invalid expiry date for " + drugName);
                         }
                     }
@@ -1463,7 +1470,8 @@
                     var label = document.createElement("div");
                     label.className = "drug-label scell";
                     label.style.display = "table-cell";
-                    label.innerHTML = drug_cms_names[drug];
+                    // console.log()
+                    label.innerHTML = drug;
                     if (i == 0)
                         label.style.borderTop = "0.4px solid gray";
                     row.appendChild(label);
@@ -1473,6 +1481,7 @@
                     amount.style.display = "table-cell";
                     amount.innerHTML = tabs_per_tin;
                     amount.setAttribute("drug", drug);
+                    // amount.setAttribute("pack_size", drug);
                     //amount.setAttribute("pos", c);
                     var input_id = drug_name + "_number_of_tins";
 
@@ -1583,25 +1592,30 @@
                     "batch_number": barcode_value,
                     "items": []
                 };
-
+                var items = [];
                 for (var drug_name in drugs_hash) {
                     var drug = drug_name.split("_")[0];
                     var date_of_expiry = drugs_hash[drug_name]["date_of_expiry"];
                     var tabs_per_tin = drugs_hash[drug_name]["tabs_per_tin"];
                     var total_tins = drugs_hash[drug_name]["total_tins"];
+                    var bactch = drugs_hash[drug_name]["total_tins"];
                     var drug_id = short_name_drug_id[drug];
                     //amount = tabs_per_tin
                     //expire_amount = total_tins
                     //date = date_of_expiry
 
                     if (date_of_expiry.length > 0 && tabs_per_tin.length > 0 && total_tins.length > 0) {
-                        data["items"].push({
+                        items.push({
+                            batch_number: drugs_hash[drug_name]["batch_number"],
+                            items : [{
+                            barcode: barcode_value,
                             drug_id: drug_id,
                             expiry_date: date_of_expiry,
                             quantity: parseInt(tabs_per_tin) * parseInt(total_tins),
                             delivery_date: delivery_date,
                             pack_size: tabs_per_tin
-                        })
+                            }]
+                        });
                     }
                 }
 
@@ -1617,7 +1631,7 @@
                 xhttp.open("POST", create_stock_url, true);
                 xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
                 xhttp.setRequestHeader('Content-type', "application/json");
-                xhttp.send(JSON.stringify(data));
+                xhttp.send(JSON.stringify(items));
 
             }
         }
@@ -1898,8 +1912,8 @@
             for (var j in drugs) {
 
                 for (var i = 0; i <= total_rows; i++) {
-                    drug_name = drugs[j] + "_" + i;
-                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": ""}
+                    drug_name = drugs[j].short_name + "_" + i;
+                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": "", "batch_number": ""}
                 }
             }
 
@@ -1920,6 +1934,9 @@
                         }
                         if (field == 'date_of_expiry') {
                             drugs_hash[drug_name]["date_of_expiry"] = value;
+                        }
+                        if (field == 'batch_number') {
+                            drugs_hash[drug_name]["batch_number"] = value;
                         }
                     }
                 }
@@ -1950,6 +1967,7 @@
                     tabs_per_tin = drugs_hash[key]["tabs_per_tin"];
                     total_tins = drugs_hash[key]["total_tins"];
                     date_of_expiry = drugs_hash[key]["date_of_expiry"];
+                    batch_number = drugs_hash[key]["batch_number"];
 
                     if (!row_complete(tabs_per_tin, total_tins, date_of_expiry)) {
                         incomplete_rows.push([drugName, row_number]);
@@ -2010,11 +2028,11 @@
                     var drug = __$('data-pane').getAttribute("drug");
 
                     var drug_name = drug + "_" + i;
-                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": ""};
+                    drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": "", "batch_number": ""};
 
                     var row = document.createElement("tr");
 
-                    for (var j = 0; j <= 2; j++) {
+                    for (var j = 0; j <= 3; j++) {
                         var cell = document.createElement("td");
                         cell.style.width = '80px';
                         cell.style.textAlign = "center";
@@ -2041,6 +2059,12 @@
                             var field_type = "date_of_expiry"
                         }
 
+                        if (j == 3) {
+                            //var inputID = "Date of expiry";
+                            var inputID = drug + "_" + i + "_batch_number";
+                            var inputValue = drugs_hash[drug_name]["batch_number"];
+                            var field_type = "batch_number"
+                        }
                         textField.className = "input-field";
                         textField.id = inputID;
                         //textField.value = inputValue;
@@ -2048,7 +2072,7 @@
                         textField.setAttribute("row", i);
                         textField.setAttribute("drug_name", drug + "_" + i);
                         textField.style.height = '35px';
-                        textField.style.width = '264px';
+                        textField.style.width = '154px';
                         textField.style.fontSize = '26px';
                         textField.style.marginLeft = '10px';
                         textField.style.textAlign = 'center';
