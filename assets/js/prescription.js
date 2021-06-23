@@ -145,22 +145,33 @@ function buildRegimenPage() {
 }
 
 function loadRegimens() {
+    let regimen_keys = [];
     for (var regimen in givenRegimens) {
-        var regimen_num = parseInt(regimen.split(' ')[0]);
-        var side = (regimen_num < 10 ? "left" : "right");
-        var table = document.getElementById("regimen-table-" + side);
+        regimen_keys.push(regimen.split(" ")[0]);
+        regimen_keys = regimen_keys.sort();
+    }
 
-        var tr = document.createElement("tr");
-        table.appendChild(tr);
+    for(let i = 0; i < regimen_keys.length; i++){
+        for (var regimen in givenRegimens) {
+            if(regimen_keys[i] != regimen.split(" ")[0])
+                continue;
 
-        var td = document.createElement("td");
-        td.setAttribute("class", "regimen-names");
-        td.setAttribute("selected-regimen", regimen);
-        td.setAttribute("id", regimen);
-        //td.innerHTML = regimen;
-        td.setAttribute("onmousedown", "selectRegimen(this);checkIfSwitchingRegimen(this);");
-        addPrettyPrint(td, regimen);
-        tr.appendChild(td);
+            var regimen_num = parseInt(regimen.split(' ')[0]);
+            var side = (regimen_num < 10 ? "left" : "right");
+            var table = document.getElementById("regimen-table-" + side);
+
+            var tr = document.createElement("tr");
+            table.appendChild(tr);
+
+            var td = document.createElement("td");
+            td.setAttribute("class", "regimen-names");
+            td.setAttribute("selected-regimen", regimen);
+            td.setAttribute("id", regimen);
+            //td.innerHTML = regimen;
+            td.setAttribute("onmousedown", "selectRegimen(this);checkIfSwitchingRegimen(this);");
+            addPrettyPrint(td, regimen);
+            tr.appendChild(td);
+        }
     }
 
 }
@@ -787,7 +798,7 @@ function getRegimens() {
                     alternative_name = alternative_name == null ? concept_name : alternative_name;
                     concept_names.push(alternative_name);
                 }
-                regimen_name += " (" + concept_names.join(" + ") + ")";
+                regimen_name += " (" + concept_names.sort().join(" + ") + ")";
                 givenRegimens[regimen_name] = passedRegimens[key];
             }
 
