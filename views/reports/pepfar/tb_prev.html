@@ -26,6 +26,9 @@
 <script type="text/javascript" src="/assets/js/core.js"></script>
 
 <style>
+  .hide-brackets {
+    display: none;
+  }
 .disaggregated-numbers {
   text-align: right;
   padding-right: 10px;
@@ -250,14 +253,14 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th>3HP</th>
-        <th>6H</th>
-        <th>3HP</th>
-        <th>6H</th>
-        <th>3HP</th>
-        <th>6H</th>
-        <th>3HP</th>
-        <th>6H</th>
+        <th>3HP<span class="hide-brackets">(Started New on ART)</span></th>
+        <th>6H<span class="hide-brackets">(Started New on ART)</span></th>
+        <th>3HP<span class="hide-brackets">(Started Previously on ART)</span></th>
+        <th>6H<span class="hide-brackets">(Started Previously on ART)</span></th>
+        <th>3HP<span class="hide-brackets">(Completed New on ART)</span></th>
+        <th>6H<span class="hide-brackets">(Completed New on ART)</span></th>
+        <th>3HP<span class="hide-brackets">(Completed Previously on ART)</span></th>
+        <th>6H<span class="hide-brackets">(Completed Previously on ART)</span></th>
       </tr>
     </thead>
     <tfoot>
