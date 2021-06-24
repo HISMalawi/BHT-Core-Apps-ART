@@ -127,11 +127,10 @@ function buildList() {
   var url = new URL(href);
   var start_date = url.searchParams.get("start_date");
   var end_date = url.searchParams.get("end_date");
-
   let vl_type = document.getElementById("result_type").value;
  
   let helpText = document.getElementById('helpText' + tstCurrentPage);
-  let innerHTML = `${vl_type} VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
+  let innerHTML = `${reportTitle(vl_type)} VL results&nbsp;<span style="font-size: 16px;">(between the period of: <b>${moment(start_date).format("DD/MMM/YYYY")}</b>`;
   innerHTML += `&nbsp;and&nbsp;<b>${moment(end_date).format("DD/MMM/YYYY")}</b>)</span>`;
   helpText.innerHTML = innerHTML;
   buildDataTable(f);
@@ -150,8 +149,8 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','Gender', 'Birthdate', 'Order date', 'Specimen drawn date',
-    'Result', 'Result date',''];
+  var headers = ['ARV#','Gender', 'Birthdate', 'Order date', 'Specimen',
+   'Specimen drawn date', 'Result', 'Result date',''];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -217,9 +216,10 @@ function loadClients(data, vl_type) {
     let specimen_drawn_date = moment(data[i].specimen_drawn_date).format('DD/MMM/YYYY');
     let result = data[i].result;
     let result_modifier = data[i].result_modifier;
+    let specimen = data[i].specimen;
    
-    formatted_data.push([arv_number, gender, birthdate, order_date, specimen_drawn_date, 
-      `${result_modifier} ${result}`, result_date, buildViewBTN(person_id)]);
+    formatted_data.push([arv_number, gender, birthdate, order_date, specimen, 
+      specimen_drawn_date, `${result_modifier} ${result}`, result_date, buildViewBTN(person_id)]);
       
   }
   
@@ -234,22 +234,23 @@ function loadClients(data, vl_type) {
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 6, "asc" ]],
+    order:          [[ 7, "asc" ]],
     columnDefs: [
       {"className": "dt-left", "targets": 0},
       {"className": "dt-center gender", "targets": 1},
       {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-right results", "targets": 5},
-      {"className": "dt-center", type: 'date', "targets": 6},
-      {"className": "dt-btns", "targets": 7}
+      {"className": "dt-left", "targets": 4},
+      {"className": "dt-center", type: 'date', "targets": 5},
+      {"className": "dt-right results", "targets": 6},
+      {"className": "dt-center", type: 'date', "targets": 7},
+      {"className": "dt-btns", "targets": 8}
     ],
     dom: 'Bfrtip',
     buttons: [
       {
         extend: "csv",
-        title: `Clients with ${vl_type} VL results`,
+        title: `Clients with ${reportTitle(vl_type)} VL results`,
         footer: true 
       }
     ],
@@ -295,6 +296,15 @@ function addClassIMGcontainter(person_id) {
   }
 }
 
+function reportTitle(vl_type){
+  if(vl_type == 'viraemia-1000'){
+    return 'Viraemia 1000+';
+  }else if(vl_type == 'suppressed'){
+    return 'Suppressed';
+  }else{
+    return 'Low level viraemia';
+  }
+}
 </script>
 
 <body id="mateme">
@@ -308,9 +318,9 @@ function addClassIMGcontainter(person_id) {
           helpText="Select result type"
           condition="" tt_onLoad="">
             <option value=''></option>
-            <option value="High">High (1000+ copies)</option>
-            <option value="Low">Low (less than 50 copies)</option>
-            <option value="Intermediate">Intermediate (50 - 900 copies)</option>
+            <option value="viraemia-1000">Viraemia 1000+</option>
+            <option value="suppressed">Suppressed</option>
+            <option value="low-level-viraemia">Low level viraemia</option>
         </select>
 
         <input type="text" name="summary"

@@ -20,6 +20,7 @@
 <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
 <!-- pring report ends .......................................................................... -->
 
+<script type="text/javascript" src="/assets/js/datatables/sort.natural.js"></script>
 
 <style>
 #clearButton, #cancelButton {
@@ -136,11 +137,11 @@ function buildDataTable(e) {
   theader.appendChild(tr);
 
   if(sessionStorage.filingNumnerAvailable == 'false'){
-    var headers = ['ARV#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
+    var headers = ['ARV#','Gender','birthdate','App.date','ART start date',
+   'Months on ART', 'Milestone', "Ordered","Result", "Release date"];
   }else{
-    var headers = ['Filing#','Gender','birthdate','App date','ART start date',
-   'Months on ART', 'Milestone', "Last result", "Result date"];
+    var headers = ['Filing#','Gender','birthdate','App.date','ART start date',
+   'Months on ART', 'Milestone', "Ordered", "Result", "Release date"];
   }
 
   for(var i = 0 ; i < headers.length ; i++){
@@ -218,8 +219,12 @@ function loadClients(data) {
     if(data[i].last_result_date != 'N/A')
       result_date = moment(data[i].last_result_date).format('DD/MMM/YYYY');
 
+    let last_result_order_date = data[i].last_result_order_date;
+    if(last_result_order_date != 'N/A')
+      last_result_order_date = moment(data[i].last_result_order_date).format('DD/MMM/YYYY');
+
     formatted_data.push([npid, gender, birthdate, app_date, art_start_date, 
-      months_on_ART, mile_stone, last_result, result_date]); //addSelectButton(person_id)]);
+      months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); //addSelectButton(person_id)]);
   }
   
   jQuery('#clients').DataTable( {
@@ -233,16 +238,17 @@ function loadClients(data) {
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[0, "asc"],[ 5, "asc" ]],
+    order:          [[0, "asc"]],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
+      {"className": "dt-center",type: 'natural', "targets": 0},
       {"className": "dt-center", "targets": 1},
       {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
       {"className": "dt-right", "targets": 5},
-      {"className": "dt-right", "targets": 7},
-      {"className": "dt-center", "targets": 8}
+      {"className": "dt-center", "targets": 7},
+      {"className": "dt-right", "targets": 8},
+      {"className": "dt-center", "targets": 9}
     ],
     dom: 'Bfrtip',
     buttons: [
