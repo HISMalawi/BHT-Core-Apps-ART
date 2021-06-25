@@ -88,6 +88,12 @@
 
 .dt-right {
   text-align: right;
+  padding-right: 5px;
+}
+
+.dt-left {
+  text-align: left;
+  padding-left: 5px;
 }
 
 .warning {
@@ -206,7 +212,7 @@ function loadClients(data) {
     let family_name = data[i].family_name;
     let gender = data[i].gender;
     let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    let npid = data[i].arv_number;
+    let npid = (data[i].arv_number || '');
     let person_id = data[i].patient_id;
     let app_date = moment(data[i].appointment_date).format('DD/MMM/YYYY');
     let art_start_date = moment(data[i].start_date).format('DD/MMM/YYYY');
@@ -221,8 +227,8 @@ function loadClients(data) {
     if(last_result_order_date != 'N/A')
       last_result_order_date = moment(data[i].last_result_order_date).format('DD/MMM/YYYY');
 
-    formatted_data.push([npid, app_date, art_start_date, 
-      months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); //addSelectButton(person_id)]);
+    formatted_data.push([addClientLink(npid, data[i].patient_id), app_date, art_start_date, 
+      months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); 
   }
   
   jQuery('#clients').DataTable( {
@@ -238,12 +244,11 @@ function loadClients(data) {
     paging:         false,
     order:          [[0, "asc"]],
     columnDefs: [
-      {"className": "dt-center",type: 'natural', "targets": 0},
-      /*{"className": "dt-center", "targets": 1},
-      {"className": "dt-center", "targets": 2},*/
+      {"className": "dt-left",type: 'natural', "targets": 0},
+      {"className": "dt-center", "targets": 1},
       {"className": "dt-center", "targets": 2},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-right", "targets": 4},
+      {"className": "dt-right", "targets": 3},
+      {"className": "dt-center", "targets": 4},
       {"className": "dt-center", "targets": 5},
       {"className": "dt-right", "targets": 6},
       {"className": "dt-center", "targets": 7}
@@ -257,7 +262,7 @@ function loadClients(data) {
       }
     ],
     "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-      if (aData[5].match(/=|>/) && parseFloat(aData[5].replace("=","").replace(">","")) >= 1000) {
+      if (aData[6].match(/=|>/) && parseFloat(aData[6].replace("=","").replace(">","")) >= 1000) {
         let class_name = nRow.getAttribute("class");
         nRow.setAttribute("class", `${class_name} warning`);
       }
@@ -266,42 +271,18 @@ function loadClients(data) {
 
 }
 
-function addSelectButton(person_id) {
+function addClientLink(identifier, person_id) {
   var span = document.createElement('span');
-  var button  = document.createElement('a');
-  button.setAttribute('onmousedown', 'selectClient(' + person_id + ')');
-  button.innerHTML = 'Select';
-  button.setAttribute('class','btn-primary');
-  button.setAttribute('href','#');
-  span.appendChild(button);
+  var a  = document.createElement('a');
+  a.setAttribute('onmousedown', 'selectClient(' + person_id + ')');
+  a.setAttribute('href','#');
+  a.innerHTML = identifier;
+  span.appendChild(a);
   return span.innerHTML;
 }
 
 function selectClient(patient_id) {
   document.location = '/views/confirm.html?person_id=' + patient_id;
-}
-
-function addClassIMGcontainter(person_id) {
-  var tr = document.getElementById('row-' + person_id);
-  var cells = tr.getElementsByTagName('td');
-
-  for(var i = 0 ; i < cells.length ; i++) {
-    if(i == 0) 
-      cells[i].setAttribute('class', 'npid');
-
-    if(i == 1) 
-      cells[i].setAttribute('class', 'given_name');
-
-    if(i == 2) 
-      cells[i].setAttribute('class', 'family_name');
-
-    if(i == 3) 
-      cells[i].setAttribute('class', 'gender');
-
-    if(i == 4) 
-      cells[i].setAttribute('class', 'birthdate');
-
-  }
 }
 
 var use_filing_numbers = false;
