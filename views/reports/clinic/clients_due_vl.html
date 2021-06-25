@@ -120,9 +120,7 @@ function buildList() {
   var start_date = url.searchParams.get("start_date");
   var end_date = url.searchParams.get("end_date");
   
-  buildDataTable(f);
-
-  getList(start_date, end_date);
+  isFilingNumverEnabled(start_date, end_date, f);
 }
 
 function buildDataTable(e) {
@@ -136,11 +134,11 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  if(sessionStorage.filingNumnerAvailable == 'false'){
-    var headers = ['ARV#','Gender','birthdate','App.','ART started',
+  if(use_filing_numbers == false ){
+    var headers = ['ARV#','App.','ART started',
    'Months on ART', 'Milestone', "Ordered","Result", "Released"];
   }else{
-    var headers = ['Filing#','Gender','birthdate','App.','ART started',
+    var headers = ['Filing#','App.','ART started',
    'Months on ART', 'Milestone', "Ordered", "Result", "Released"];
   }
 
@@ -223,7 +221,7 @@ function loadClients(data) {
     if(last_result_order_date != 'N/A')
       last_result_order_date = moment(data[i].last_result_order_date).format('DD/MMM/YYYY');
 
-    formatted_data.push([npid, gender, birthdate, app_date, art_start_date, 
+    formatted_data.push([npid, app_date, art_start_date, 
       months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); //addSelectButton(person_id)]);
   }
   
@@ -241,14 +239,14 @@ function loadClients(data) {
     order:          [[0, "asc"]],
     columnDefs: [
       {"className": "dt-center",type: 'natural', "targets": 0},
-      {"className": "dt-center", "targets": 1},
+      /*{"className": "dt-center", "targets": 1},
+      {"className": "dt-center", "targets": 2},*/
       {"className": "dt-center", "targets": 2},
       {"className": "dt-center", "targets": 3},
-      {"className": "dt-center", "targets": 4},
-      {"className": "dt-right", "targets": 5},
-      {"className": "dt-center", "targets": 7},
-      {"className": "dt-right", "targets": 8},
-      {"className": "dt-center", "targets": 9}
+      {"className": "dt-right", "targets": 4},
+      {"className": "dt-center", "targets": 5},
+      {"className": "dt-right", "targets": 6},
+      {"className": "dt-center", "targets": 7}
     ],
     dom: 'Bfrtip',
     buttons: [
@@ -259,7 +257,7 @@ function loadClients(data) {
       }
     ],
     "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-      if (aData[7].match(/=|>/) && parseFloat(aData[7].replace("=","").replace(">","")) >= 1000) {
+      if (aData[5].match(/=|>/) && parseFloat(aData[5].replace("=","").replace(">","")) >= 1000) {
         let class_name = nRow.getAttribute("class");
         nRow.setAttribute("class", `${class_name} warning`);
       }
@@ -304,6 +302,37 @@ function addClassIMGcontainter(person_id) {
       cells[i].setAttribute('class', 'birthdate');
 
   }
+}
+
+var use_filing_numbers = false;
+
+function isFilingNumverEnabled(start_date, end_date, f){
+  var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+  url += '/global_properties?property=use.filing.numbers';
+    
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 ) {
+        if (this.status == 404 ) {
+          buildDataTable(f);
+          getList(start_date, end_date);
+        }else if (this.status == 201 || this.status == 200 ) {
+            var obj = JSON.parse(this.responseText);
+            var use_fn = obj['use.filing.numbers'];
+            try {
+                use_filing_numbers = (use_fn == 'true' ? true : false);
+            }catch(e) {
+                use_filing_numbers = false;
+            }
+            buildDataTable(f);
+            getList(start_date, end_date);
+        }
+      }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
 }
 
 </script>
