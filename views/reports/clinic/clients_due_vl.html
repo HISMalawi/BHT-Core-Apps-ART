@@ -137,11 +137,11 @@ function buildDataTable(e) {
   theader.appendChild(tr);
 
   if(sessionStorage.filingNumnerAvailable == 'false'){
-    var headers = ['ARV#','Gender','birthdate','App.date','ART start date',
-   'Months on ART', 'Milestone', "Ordered","Result", "Release date"];
+    var headers = ['ARV#','Gender','birthdate','App.','ART started',
+   'Months on ART', 'Milestone', "Ordered","Result", "Released"];
   }else{
-    var headers = ['Filing#','Gender','birthdate','App.date','ART start date',
-   'Months on ART', 'Milestone', "Ordered", "Result", "Release date"];
+    var headers = ['Filing#','Gender','birthdate','App.','ART started',
+   'Months on ART', 'Milestone', "Ordered", "Result", "Released"];
   }
 
   for(var i = 0 ; i < headers.length ; i++){
