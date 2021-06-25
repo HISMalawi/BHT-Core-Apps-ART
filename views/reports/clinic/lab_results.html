@@ -137,6 +137,21 @@
     width: 10%;
 }
 
+.dt-specimen {
+    text-align: left;
+    padding-left: 2px;
+}
+
+.dt-tests {
+    text-align: left;
+    padding-left: 2px;
+}
+
+.dt-results {
+    text-align: right;
+    padding-right: 2px;
+}
+
 </style>
 
 <script>
@@ -400,10 +415,10 @@ function buildReportPatientLevel(){
             let result = measures[t].value;
             let modifier = measures[t].modifier;
             let reason_for_test = fetched_samples[i].reason_for_test;
+            let specimen = fetched_samples[i].test;
             
-            formatted_data.push([arv_number, gender, 
-            birthdate, order_date, test, `${modifier} ${result}`,
-            result_date, reason_for_test]); 
+            formatted_data.push([arv_number, gender, birthdate, order_date, 
+            specimen, test, `${modifier} ${result}`, result_date]); 
         }
     }
    }
@@ -413,8 +428,8 @@ function buildReportPatientLevel(){
   let report_table = `<table id="report">
     <thead><tr>
         <th>ARV#</th><th>Gender</th><th>Birthdate</th>
-        <th>Order date</th><th>Test</th>
-        <th>Result</th><th>Result date</th><th>Reason</th>
+        <th>Ordered</th><th>Specimen</th><th>Test</th>
+        <th>Result</th><th>Released</th>
     </tr><tbody></tbody></table>`;
   inputFrame.innerHTML = report_table;
 
@@ -435,8 +450,10 @@ function buildReportPatientLevel(){
       {"className": "dt-gender", "targets": 1},
       {"className": "dt-dates", "targets": 2},
       {"className": "dt-dates", "targets": 3},
-      {"className": "dt-dates", "targets": 6},
-      {"className": "dt-tests", "targets": 4}
+      {"className": "dt-specimen", "targets": 4},
+      {"className": "dt-tests", "targets": 5},
+      {"className": "dt-results", "targets": 6},
+      {"className": "dt-dates", "targets": 7}
     ],
     dom: 'Bfrtip',
     buttons: [

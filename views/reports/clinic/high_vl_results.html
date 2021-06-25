@@ -149,8 +149,8 @@ function buildDataTable(e) {
   var tr = document.createElement('tr');
   theader.appendChild(tr);
 
-  var headers = ['ARV#','Gender', 'Birthdate', 'Order date', 'Specimen',
-   'Specimen drawn date', 'Result', 'Result date',''];
+  var headers = ['ARV#','Gender', 'Birthdate', 'Specimen',
+   'Ordered', 'Result', 'Released',''];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -218,7 +218,7 @@ function loadClients(data, vl_type) {
     let result_modifier = data[i].result_modifier;
     let specimen = data[i].specimen;
    
-    formatted_data.push([arv_number, gender, birthdate, order_date, specimen, 
+    formatted_data.push([arv_number, gender, birthdate, specimen, 
       specimen_drawn_date, `${result_modifier} ${result}`, result_date, buildViewBTN(person_id)]);
       
   }
@@ -234,17 +234,16 @@ function loadClients(data, vl_type) {
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
-    order:          [[ 7, "asc" ]],
+    order:          [[ 6, "asc" ]],
     columnDefs: [
       {"className": "dt-left", "targets": 0},
       {"className": "dt-center gender", "targets": 1},
       {"className": "dt-center", "targets": 2},
-      {"className": "dt-center", "targets": 3},
-      {"className": "dt-left", "targets": 4},
-      {"className": "dt-center", type: 'date', "targets": 5},
-      {"className": "dt-right results", "targets": 6},
-      {"className": "dt-center", type: 'date', "targets": 7},
-      {"className": "dt-btns", "targets": 8}
+      {"className": "dt-left", "targets": 3},
+      {"className": "dt-center", type: 'date', "targets": 4},
+      {"className": "dt-right results", "targets": 5},
+      {"className": "dt-center", type: 'date', "targets": 6},
+      {"className": "dt-btns", "targets": 7}
     ],
     dom: 'Bfrtip',
     buttons: [
