@@ -189,7 +189,7 @@
         
         if(series_name.match(/trans/i)) {
           data_table.row.add([data["identifier"], data["given_name"], data["family_name"],
-            birthdate, data["gender"], "", outcome_date, actionBTN(data["patient_id"])]).draw();
+            birthdate, data["gender"], data["transferred_out_to"], outcome_date, actionBTN(data["patient_id"])]).draw();
         }else{
           data_table.row.add([data["identifier"], data["given_name"], data["family_name"],
             birthdate, data["gender"], outcome_date, actionBTN(data["patient_id"])]).draw();
