@@ -2399,10 +2399,10 @@
                 if(offerCxCa()){
                     let offer_cxca_screening = __$('offer_cxca_screening').value.toLowerCase();
                     obs.observations.push({
-                      concept_id: 9992, value_coded: (offer_cxca_screening == 'Yes' ? 1065 : 1066)
+                      concept_id: 9992, value_coded: (offer_cxca_screening.toUpperCase() == 'YES' ? 1065 : 1066)
                     });
 
-                    if(offer_cxca_screening == 'no'){
+                    if(offer_cxca_screening.toUpperCase() == 'NO'){
                         let reason_for_no_cxca = setReasonForNoCxCa(__$('reason_for_no_cxca').value);
 
                         obs.observations.push({
