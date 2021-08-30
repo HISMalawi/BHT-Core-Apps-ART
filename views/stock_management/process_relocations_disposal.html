@@ -1686,7 +1686,8 @@
                         window.location = "/";
                     }
                     else {
-                        showMessage('There are some errors, look at console for more information');
+                        var err = errors.join('<br>')
+                        showMessage('There are some errors<br>' + err);
                         errors.forEach(element => {
                             console.log(element);
                         });
