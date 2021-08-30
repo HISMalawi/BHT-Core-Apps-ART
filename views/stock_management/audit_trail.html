@@ -56,7 +56,7 @@
                         html += "<td class='medication'>" + drugs[element.drug_id].short_name + ` (${drug_cms_packsizes[drugs[element.drug_id].short_name]})` + "</td>";
                         html += "<td class='expiry-date'>" + moment(element.transaction_date).format('DD/MMM/YYYY') + "</td>";
                         html += "<td class='medication'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
-                        html += "<td class='current-quantity'>" + element.amount_committed_to_stock + "</td>";
+                        html += "<td class='current-quantity'>" + calulateTins(element.drug_id,element.amount_committed_to_stock) + "</td>";
                         html += "<td class='medication'>" + element.username + "</td>";
                         html += "<td class='medication'>" + element.transaction_reason.replaceAll(/Drugs /ig, '')+ "</td>";
                         html += "</tr>";   
@@ -128,6 +128,10 @@
             __$("nextButton").onmousedown = function () {
                 window.location = "/";
             }
+        }
+        function calulateTins(batch_id, quantity) {
+            var f = finalList.filter(a => a.drug_id === batch_id);
+            return quantity / f[0].pack_sizes[0];
         }
 
     </script>
