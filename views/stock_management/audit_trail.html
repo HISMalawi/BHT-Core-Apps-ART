@@ -19,6 +19,15 @@
     <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
     <link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
     <script type="text/javascript">
         
 
@@ -65,11 +74,24 @@
                     html += "</tbody>";
                     html += "</table>";
                     html += "</div>";
+                    var day = sessionStorage.sessionDate;
                     jQuery(".inputFrameClass").append(html);
                     jQuery('#stock').DataTable({
                         fixedHeader: true,           
                         searching: false,
                         paging: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'csv',
+                                title: sessionStorage.currentLocation + ' drug audit trail as of ' + day,
+                                footer: true,
+                            },
+                            {
+                                extend: 'pdf',
+                                title: sessionStorage.currentLocation + ' drug audit trail as of ' + day,
+                            }
+                        ],
                     }); 
                     // var pharmacyData = {};
                     // for (var key in pharmacy_items) {   // for ... of or just forEach???
