@@ -1799,12 +1799,25 @@
                     if(JSON.parse(sessionStorage.relocation_or_disposal).relocation_or_disposal === "Relocations") {
                         reasons = ["Transfer to another facility/relocation", "For trainings"];
                     }else {
-                        reasons = ["Expired", "Damaged", "For trainings"];
+                        var drg = JSON.parse(sessionStorage.relocation_or_disposal).drugs;
+                        if(checkDates(drg)) {
+                            reasons = ["Damaged", "For trainings"];
+                        }else {
+                            reasons = ["Expired", "Damaged", "For trainings"];
+                        }
                     }
+                    
                     let reasonsField = document.getElementById('reason');
                     reasons.forEach(element => {
                         reasonsField.innerHTML += `<option value='${element}' > ${element}</option>`;
                     });
+                }
+                function checkDates(drugs) {
+                    var f = drugs.filter(drug => {
+                        return moment(drug.expiry_date).diff(moment(drug.disposal_date)) >= 1;
+                    })
+                    return f.length > 0
+
                 }
                 function updateDrugsHash() {
                     input_fields = document.getElementsByClassName("input-field");
