@@ -226,7 +226,9 @@ var drug_cms_packsizes  = {};
 finalList.forEach(element => {
     drug_cms_packsizes[element.short_name] = element.pack_sizes[0];
 });
-
+function getPackSize(drug_id) {
+    return finalList.filter(drug => drug.drug_id === drug_id)[0].pack_sizes[0];
+}
 var drug_weights = {
     "16": ["Lamivudine / Tenofovir disoproxil fumarate 300 / 300mg, tin of 30 tablets", "TDF/3TC (Tenofavir and Lamivudine 300/300mg tablet", "TDF / 3TC ", "30 tabs", 30, 0, "300 / 300mg"],
     "5": ["Zidovudine / lamivudine /Nevirapine 30 / 60 / 50mg, tin of 60 tablets", "AZT/3TC/NVP (60/30/50mg tablet)", "AZT / 3TC / NVP", "60 tabs", 60, 0, "60 / 30 /50mg"],
