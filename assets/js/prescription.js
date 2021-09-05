@@ -211,6 +211,10 @@ function selectRegimen(e) {
     //checkForPossibleSideEffects(e);
 }
 
+const MILLIS_IN_SECOND = 1000;
+const SECONDS_IN_HOUR = 60 * 60;
+const MILLIS_IN_DAY = MILLIS_IN_SECOND * 24;
+
 function calculateEstimatedNextApp() {
     if (patient_is_fast_track) {
         var selectedMeds = medication_orders;
@@ -234,9 +238,7 @@ function calculateEstimatedNextApp() {
 
     set_date += "-" + day;
 
-    var appDate = new Date(set_date);
-    appDate.setDate(appDate.getDate() + parseInt(setSelectedInterval));
-
+    const appDate = new Date(new Date(set_date).getTime() + (setSelectedInterval * MILLIS_IN_DAY));
     var estimated_packs = [];
 
     for (var i = 0; i < selectedMeds.length; i++) {
