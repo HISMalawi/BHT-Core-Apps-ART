@@ -153,7 +153,7 @@
         }
         function calulateTins(batch_id, quantity) {
             var f = finalList.filter(a => a.drug_id === batch_id);
-            return quantity / f[0].pack_sizes[0];
+            return  (quantity / f[0].pack_sizes[0]).toFixed(1);
         }
 
     </script>
