@@ -286,6 +286,7 @@
             ordersTableCell.setAttribute('drug_id', medication[i].drug.drug_id);
             ordersTableCell.setAttribute('start_date', medication[i].order.start_date);
             ordersTableCell.setAttribute('equivalent_daily_dose', medication[i].equivalent_daily_dose);
+            ordersTableCell.setAttribute('frequency', medication[i].frequency);
             ordersTableCell.setAttribute('onmousedown', 'enterPillsRemaining(this);');
             ordersTableCell.style = "font-weight: bold;font-size: 1.3em;text-align: center; width: 20%; float: right;";
             ordersTableRow.appendChild(ordersTableCell)
@@ -400,7 +401,8 @@
                 start_date: cell.getAttribute('start_date'),
                 equivalent_daily_dose: cell.getAttribute('equivalent_daily_dose'),
                 pill_count: inputBox.value,
-                adherence: null, drug_id: cell.getAttribute('drug_id')
+                adherence: null, drug_id: cell.getAttribute('drug_id'),
+                frequency: cell.getAttribute('frequency')
             };
         }
 
@@ -479,7 +481,8 @@
                 start_date: medicationPillCounts[order_id].start_date,
                 drug_name: medicationPillCounts[order_id].drug_name,
                 pill_count: medicationPillCounts[order_id].pill_count,
-                equivalent_daily_dose: medicationPillCounts[order_id].equivalent_daily_dose
+                equivalent_daily_dose: medicationPillCounts[order_id].equivalent_daily_dose,
+                frequency: medicationPillCounts[order_id].frequency
             });
 
             var start_date = medicationPillCounts[order_id].start_date;
@@ -535,7 +538,8 @@
             var dose = medicationPillCountsArray[i].equivalent_daily_dose;
             var start_date = medicationPillCountsArray[i].start_date;
             var pill_count = medicationPillCountsArray[i].pill_count;
-            var expected = calculateExpected(given, dose, start_date);
+            var frequency = medicationPillCountsArray[i].frequency;
+            var expected = calculateExpected(given, dose, start_date, frequency);
 
             var exp = (parseFloat(expected) - parseFloat(pill_count));
             expected_str = (exp < 0 ? ((exp * -1) + ' missed') : (exp + ' unacc'));
@@ -561,7 +565,8 @@
             var given = medicationPillCountsArray[i].quantity;
             var pill_count = medicationPillCountsArray[i].pill_count;
             var dose = medicationPillCountsArray[i].equivalent_daily_dose;
-            var expected = calculateExpected(given, dose, start_date);
+            var frequency = medicationPillCountsArray[i].frequency;
+            var expected = calculateExpected(given, dose, start_date, frequency);
             var adherence = calculateAdherence(given, pill_count, expected);
             td.innerHTML = adherence + '%';
             medicationPillCounts[medicationPillCountsArray[i].order_id].adherence = adherence;
@@ -587,7 +592,8 @@
             var given = medicationPillCountsArray[i].quantity;
             var pill_count = medicationPillCountsArray[i].pill_count;
             var dose = medicationPillCountsArray[i].equivalent_daily_dose;
-            var expected = calculateExpected(given, dose, start_date);
+            var frequency = medicationPillCountsArray[i].frequency;
+            var expected = calculateExpected(given, dose, start_date, frequency);
             var adherence = calculateAdherence(given, pill_count, expected);
             if (adherence >= 95 && adherence <= 105) {
                 td.innerHTML = '<span style="color: green; font-style: italic;font-weight: bold;">Good adherence</span>';
@@ -637,7 +643,8 @@
             var given = medicationPillCountsArray[i].quantity;
             var dose = medicationPillCountsArray[i].equivalent_daily_dose;
             var start_date = medicationPillCountsArray[i].start_date;
-            var expected = calculateExpected(given, dose, start_date);
+            var frequency = medicationPillCountsArray[i].frequency;
+            var expected = calculateExpected(given, dose, start_date, frequency);
             expected = (expected < 0 ? 0 : expected);
             td.innerHTML = expected;
             td.setAttribute('class', 'data-row');
@@ -715,10 +722,11 @@
         return Math.round(100 * (given - pill_count) / (given - expected));
     }
 
-    function calculateExpected(given, equivalent_daily_dose, start_date) {
-        var date1 = new Date(sessionStorage.sessionDate);
-        var date2 = new Date(start_date);
-        var days_gone = dateDiffInDays(date2, date1);
+    function calculateExpected(given, equivalent_daily_dose, start_date, frequency) {
+        const date1 = new moment(sessionStorage.sessionDate);
+        const date2 = new moment(start_date);
+        let modifier = frequency.match(/Weekly/i) ? 'weeks' : 'days';
+        const days_gone = date1.diff(date2, modifier);
 
         return (given - (days_gone * parseFloat(equivalent_daily_dose)));
     }
