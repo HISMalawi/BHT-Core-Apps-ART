@@ -118,7 +118,7 @@
       "activitiesName": "Demographics (Edit)",
       "available": false,
       "activitiesIcon": "/assets/images/edit.png",
-      "url": "/views/patient/edit_demographics.html",
+      "url": "/views/patient/edit_demographics.html?source=Patient Dashboard",
       "activitiesDescription": "Print Patient Demographics",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
     },
