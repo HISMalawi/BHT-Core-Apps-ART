@@ -1790,7 +1790,7 @@ function prepareForSubmitting() {
     var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/";
     url += '/observations?person_id=' + sessionStorage.patientID;
     url += '&date=' + moment(order_date).format('YYYY-MM-DD') + '&page_size=1';
-    url += '&concept_id=6987';
+    url += '&concept_id=2540';
 
 
     var xhttp = new XMLHttpRequest();
@@ -1809,7 +1809,9 @@ function prepareForSubmitting() {
                       var pillCountDrugID = 0;
                     }
                     if (pillCountDrugID == selectedARV_id) {
-                        showSuggestion = true;
+                        if(parseFloat(data[x].value_numeric) > 0) {
+                            showSuggestion = true;
+                        }
                         break;
                     }
                 }
