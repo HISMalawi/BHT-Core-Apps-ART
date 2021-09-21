@@ -238,7 +238,7 @@ function calculateEstimatedNextApp() {
 
     set_date += "-" + day;
 
-    const appDate = new Date(new Date(set_date).getTime() + (setSelectedInterval * MILLIS_IN_DAY));
+    const appDate = moment(sessionStorage.sessionDate).add(setSelectedInterval, 'days');
     var estimated_packs = [];
 
     for (var i = 0; i < selectedMeds.length; i++) {
@@ -279,7 +279,7 @@ function calculateEstimatedNextApp() {
         if (packs_rounded > packs) {
             packs = packs_rounded;
         } else {
-            packs = packs_rounded + 1; //parseInt(selectedMeds[i].pack_size)
+            packs = packs_rounded + 1; 
         }
 
 
@@ -287,8 +287,7 @@ function calculateEstimatedNextApp() {
     }
 
     var td = document.getElementById("estimated-next-appointment-date");
-    td.innerHTML = appDate.getDate() + "/" + getFullMonth(appDate.getMonth()) + "/" + appDate.getFullYear();
-
+    td.innerHTML = appDate.format('DD/MMM/YYYY'); 
 
     var td = document.getElementById("estimated-packs");
     var innerHTML = "";
