@@ -231,7 +231,8 @@
             var currentMonth = moment(tstCurrentDate).format("MM");
             var selected_stage_conditions = {};
             var selected_stage_conditions_copy = {}
-
+            var age = parseInt(sessionStorage.patientAge);
+            var ageInMonths = age * 12
             var firstPositiveHivTestType = "UNKNOWN";
 
             function getFirstPositiveHivTestTypeObservation() {
@@ -1876,6 +1877,8 @@
                     day_started_art = __$('touchscreenInput' + tstCurrentPage).value;
 
                     art_start_date = year_started_art + "-" + month_started_art + "-" + day_started_art
+                    var roundedAge = Math.round(moment(art_start_date).diff(sessionStorage.birthdate, 'years', true));
+                    ageInMonths = age * 12
                     answers_hash[key] = art_start_date;
                     gotoNextPage();
                 }
