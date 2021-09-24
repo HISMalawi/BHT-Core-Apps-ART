@@ -60,23 +60,74 @@ function prepareForVLcheck() {
 var VLmilestoneCheckDone = false;
 
 function processVLalert() {
-  var nextBtn = document.getElementById('nextButton');
+  let nextBtn = document.getElementById('nextButton');
   nextBtn.setAttribute('onmousedown', nextButtonVL);
   VLmilestoneCheckDone = true;
 
-  var eligibile = vl_info.eligibile;
+  let eligibile = vl_info.eligibile;
   /*var earliest_start_date = moment(vl_info.earliest_start_date).format('DD/MMM/YYYY');
   var milestone = vl_info.milestone;
   var period_on_art = vl_info.period_on_art;*/
-  var skip_milestone = vl_info.skip_milestone;
-  var message = vl_info.message;
+  let skip_milestone = vl_info.skip_milestone;
+  let message = vl_info.message;
 
   if(eligibile == false) {
-    if(vl_info.message) {
-      if(vl_info.message.match(/VL is due in a month time/i))
-        milestoneMessage(message);
-    
-      return;
+    if(message) {
+      if(message.match(/Viral load due in/i)) {
+        let days_left = parseInt(message.replace(/\D+/g, ''));
+        if (days_left <= 30){
+          let current_regimen = vl_info.current_regimen;
+          current_regimen = current_regimen ? `${current_regimen.name} - ${moment(current_regimen.date_started).format("DD/MMM/YYYY")}` : 'N/A';
+          let previous_regimen = vl_info.previous_regimen;
+          previous_regimen = previous_regimen ? `${previous_regimen.name} - ${moment(previous_regimen.date_completed).format("DD/MMM/YYYY")}` : 'N/A';
+          let months_after_swith;
+
+          if(vl_info.current_regimen.name != vl_info.previous_regimen.name){
+            let start_date = moment(vl_info.current_regimen.date_started);
+            let end_date = moment(sessionStorage.sessionDate);
+            months_after_swith = end_date.diff(start_date, "months");
+          }
+        
+          if(months_after_swith){
+            let reason_for_regimen_switch = vl_info.previous_regimen.reason_for_regimen_switch;
+
+            months_after_swith = `<tr>
+              <td>Month(s) after regimen switch:</td>
+              <th>${months_after_swith}</th>
+            </tr>
+            <tr>
+              <td>Switch reason:</td>
+              <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+            </tr>`;
+          }
+
+          let popup_message = `Viral load is due in ${days_left} day(s)
+          <table class="vl-reminder-table">
+            <tr>
+              <td>ART start date:</td>
+              <th>${moment(vl_info.earliest_start_date).format("DD/MMM/YYYY")}</th>
+            </tr>
+            <tr>
+              <td>Months on ART:</td><th>${vl_info.period_on_art}</th>
+            </tr>
+            <tr>
+              <td>Last VL order date:</td>
+              <th>${vl_info.last_order_date ? moment(vl_info.last_order_date).format("DD/MMM/YYYY") : 'N/A'}</th>
+            </tr>
+            <tr>
+              <td>Current regimen / start date:</td>
+              <th>${current_regimen}</th>
+            </tr>
+            <tr>
+              <td>Previous regimen / date completed:</td>
+              <th>${previous_regimen}</th>
+            </tr>${months_after_swith}
+          </table>`;
+          milestoneMessage(popup_message);
+          return;
+        }
+      }
+
     }
 
     gotoNextPage();
@@ -110,7 +161,7 @@ function milestoneAlert() {
   popUpBox.style  = 'display: inline;top: 10px;';
   popUpBox.innerHTML = null;
 
-  var months = vl_info.period_on_art;
+  /*var months = vl_info.period_on_art;
   var arv_earliest_start_date = vl_info.earliest_start_date;
 
   var message = "VL milestone has been reached<br />";
@@ -122,8 +173,74 @@ function milestoneAlert() {
   p.innerHTML = message;
   cssText = 'text-align: center;color: green; font-weight: bold; font-size: 2.3em;';
   cssText += 'margin-top: 10%;';
-  p.style = cssText;
-  popUpBox.appendChild(p);
+
+
+  p.style = cssText;*/
+
+
+  let current_regimen = vl_info.current_regimen;
+  current_regimen = current_regimen ? `${current_regimen.name} - ${moment(current_regimen.date_started).format("DD/MMM/YYYY")}` : 'N/A';
+  let previous_regimen = vl_info.previous_regimen;
+  previous_regimen = previous_regimen ? `${previous_regimen.name} - ${moment(previous_regimen.date_completed).format("DD/MMM/YYYY")}` : 'N/A';
+  let months_after_swith;
+
+  if(vl_info.current_regimen.name != vl_info.previous_regimen.name){
+    let start_date = moment(vl_info.current_regimen.date_started);
+    let end_date = moment(sessionStorage.sessionDate);
+    months_after_swith = end_date.diff(start_date, "months");
+  }
+
+  if(months_after_swith){
+    let reason_for_regimen_switch = vl_info.previous_regimen.reason_for_regimen_switch;
+    months_after_swith = `<tr>
+      <td>Month(s) after regimen switch:</td>
+      <th>${months_after_swith}</th>
+    </tr>
+    <tr>
+      <td>Switch reason:</td>
+      <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+    </tr>`;
+  }
+
+  let popup_message = `<table class="vl-reminder-table">
+      <caption style="text-align: center;color: green; font-weight: bold; font-size: 30px;padding: 30px 0px 30px 0px;">
+        VL milestone has been reached
+      </caption>
+    <tr>
+      <td>ART start date:</td>
+      <th>${moment(vl_info.earliest_start_date).format("DD/MMM/YYYY")}</th>
+    </tr>
+    <tr>
+      <td>Months on ART:</td><th>${vl_info.period_on_art}</th>
+    </tr>
+    <tr>
+      <td>Last VL order date:</td>
+      <th>${vl_info.last_order_date ? moment(vl_info.last_order_date).format("DD/MMM/YYYY") : 'N/A'}</th>
+    </tr>
+    <tr>
+      <td>Current regimen / start date:</td>
+      <th>${current_regimen}</th>
+    </tr>
+    <tr>
+      <td>Previous regimen / date completed:</td>
+      <th>${previous_regimen}</th>
+    </tr>${months_after_swith}
+  </table>`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //popUpBox.appendChild(p);
+  popUpBox.innerHTML = popup_message;
 
   /* ............... buttons ............................... */
   var buttonContainer = document.createElement('div');
