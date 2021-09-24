@@ -80,9 +80,9 @@ function processVLalert() {
           current_regimen = current_regimen ? `${current_regimen.name} - ${moment(current_regimen.date_started).format("DD/MMM/YYYY")}` : 'N/A';
           let previous_regimen = vl_info.previous_regimen;
           previous_regimen = previous_regimen ? `${previous_regimen.name} - ${moment(previous_regimen.date_completed).format("DD/MMM/YYYY")}` : 'N/A';
-          let months_after_swith;
+          let months_after_swith = '&nbsp;';
 
-          if(vl_info.current_regimen.name != vl_info.previous_regimen.name){
+          if(vl_info.previous_regimen.name && vl_info.current_regimen.name != vl_info.previous_regimen.name){
             let start_date = moment(vl_info.current_regimen.date_started);
             let end_date = moment(sessionStorage.sessionDate);
             months_after_swith = end_date.diff(start_date, "months");
@@ -91,13 +91,23 @@ function processVLalert() {
           if(months_after_swith){
             let reason_for_regimen_switch = vl_info.previous_regimen.reason_for_regimen_switch;
 
-            months_after_swith = `<tr>
-              <td>Month(s) after regimen switch:</td>
-              <th>${months_after_swith}</th>
-            </tr>
-            <tr>
-              <td>Switch reason:</td>
-              <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+            if(reason_for_regimen_switch){
+              months_after_swith = `<tr>
+                <td>Month(s) after regimen switch:</td>
+                <th>${months_after_swith}</th>
+              </tr>
+              <tr>
+                <td>Switch reason:</td>
+                <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+              </tr>`;
+            }
+          }
+
+          let previous_regimen_info = '&nbsp;';
+          if(vl_info.previous_regimen.name){
+            previous_regimen_info = `<tr>
+              <td>Previous regimen / date completed:</td>
+              <th>${previous_regimen}</th>
             </tr>`;
           }
 
@@ -118,10 +128,8 @@ function processVLalert() {
               <td>Current regimen / start date:</td>
               <th>${current_regimen}</th>
             </tr>
-            <tr>
-              <td>Previous regimen / date completed:</td>
-              <th>${previous_regimen}</th>
-            </tr>${months_after_swith}
+            ${previous_regimen_info}
+            ${months_after_swith}
           </table>`;
           milestoneMessage(popup_message);
           return;
@@ -161,23 +169,6 @@ function milestoneAlert() {
   popUpBox.style  = 'display: inline;top: 10px;';
   popUpBox.innerHTML = null;
 
-  /*var months = vl_info.period_on_art;
-  var arv_earliest_start_date = vl_info.earliest_start_date;
-
-  var message = "VL milestone has been reached<br />";
-  message += "It has been <b style='color: red;'>" + months + " </b>months since ART treatment<br />"
-  message += "was started on the <b style='color: black;'>";
-  message += moment(arv_earliest_start_date).format('DD/MMM/YYYY') + '</b>';
-
-  var p = document.createElement('p');
-  p.innerHTML = message;
-  cssText = 'text-align: center;color: green; font-weight: bold; font-size: 2.3em;';
-  cssText += 'margin-top: 10%;';
-
-
-  p.style = cssText;*/
-
-
   let current_regimen = vl_info.current_regimen;
   current_regimen = current_regimen ? `${current_regimen.name} - ${moment(current_regimen.date_started).format("DD/MMM/YYYY")}` : 'N/A';
   let previous_regimen = vl_info.previous_regimen;
@@ -192,13 +183,26 @@ function milestoneAlert() {
 
   if(months_after_swith){
     let reason_for_regimen_switch = vl_info.previous_regimen.reason_for_regimen_switch;
-    months_after_swith = `<tr>
-      <td>Month(s) after regimen switch:</td>
-      <th>${months_after_swith}</th>
-    </tr>
-    <tr>
-      <td>Switch reason:</td>
-      <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+
+    if(reason_for_regimen_switch) {
+      months_after_swith = `<tr>
+        <td>Month(s) after regimen switch:</td>
+        <th>${months_after_swith}</th>
+      </tr>
+      <tr>
+        <td>Switch reason:</td>
+        <th>${reason_for_regimen_switch ? reason_for_regimen_switch : 'N/A'}</th>
+      </tr>`;
+    }else{
+      months_after_swith = "&nbsp;"
+    }
+  }
+
+  let previous_regimen_info = '&nbsp;';
+  if(vl_info.previous_regimen.name){
+    previous_regimen_info = `<tr>
+      <td>Previous regimen / date completed:</td>
+      <th>${previous_regimen}</th>
     </tr>`;
   }
 
@@ -221,10 +225,8 @@ function milestoneAlert() {
       <td>Current regimen / start date:</td>
       <th>${current_regimen}</th>
     </tr>
-    <tr>
-      <td>Previous regimen / date completed:</td>
-      <th>${previous_regimen}</th>
-    </tr>${months_after_swith}
+   ${previous_regimen_info} 
+    ${months_after_swith}
   </table>`;
 
 
