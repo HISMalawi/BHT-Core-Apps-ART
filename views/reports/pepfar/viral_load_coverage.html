@@ -1,0 +1,268 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+
+
+
+<link rel="stylesheet" href="../../../assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="../../../assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+
+<style>
+	#cancelButton, #clearButton {
+		display: none;
+	}
+
+	#report-cover {
+		position: absolute;
+		background-color: black;
+		width: 100%;
+		height: 102%;
+		left: 0%;
+		top: 0%;
+		z-index: 990;
+		opacity: 0.65;
+	}
+
+	#spinner {
+		position: absolute;
+		top: 150px;
+		left: 40%;
+		z-index: 991;
+	}
+
+	#vl-coverage {
+		width: 100%;
+		border-collapse: separate !important;
+	}
+
+	.dt-center {
+		text-align: center;
+	}
+
+	.dt-right {
+		text-align: right;
+	}
+
+	#vl-coverage td {
+		border-style: solid !important;
+		border-width: 0px 0px 1px 1px !important;
+	}
+</style>
+
+<script>
+var href = window.location.href;
+var url = new URL(href);
+var start_date  = url.searchParams.get("start_date");
+var end_date    = url.searchParams.get("end_date");
+var dataTable;
+
+function changeFinishButton() {
+	let btn = document.getElementById('nextButton');
+	let loc = "javascript:document.location='/'";
+  btn.setAttribute('onmousedown', loc);
+}
+
+function initTable(rows){
+	let period = `${moment(start_date).format('DDMMMYYYY')} - ${moment(end_date).format('DDMMMYYYY')}`;
+
+	dataTable = jQuery('#vl-coverage').DataTable( {
+    fixedHeader:    true,
+    searching:      false,
+    //deferRender:    true,
+    scrollY:        400,
+    scrollCollapse: false,
+    scroller:       false,
+    pageLength:     10000,
+    lengthChange:   false,
+    paging:         false,
+		data: 					rows,
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'csv',
+        title:'PEPFAR ' + sessionStorage.currentLocation + ' Viral load coverage: ' + period,
+        footer: true
+      },
+      {
+        extend: 'pdf',
+        title:'PEPFAR ' + sessionStorage.currentLocation + ' Viral load coverage: ' + period,
+      }
+    ],
+    columnDefs: [
+      {"className": "dt-center", "targets": 0},
+      {"className": "dt-right", "targets": 1},
+      {"className": "dt-right", "targets": 2},
+      {"className": "dt-right", "targets": 3},
+      {"className": "dt-right", "targets": 4},
+      {"className": "dt-right", "targets": 5},
+      {"className": "dt-right", "targets": 6},
+      {"className": "dt-right", "targets": 7}
+    ]
+  } );
+	__$(`helpText${tstCurrentPage}`).innerHTML += `: ${period}`;
+}
+
+function fetchData(){
+	let inputFrame = __$(`inputFrame${tstCurrentPage}`);
+	inputFrame.style = "height: 90%; width: 95.5%;";
+
+
+	const tableHeaders = [
+		"&nbsp;", "Age group", "Gender", "TX CURR", 
+		"Due for VL", "Tested", "High VL","Low VL"
+	];
+	let table_html = "<table id='vl-coverage'><thead><tr>";
+	
+	for(const th of tableHeaders){
+		table_html += `<th>${th}</th>`;
+	}
+	table_html += "</tr></thead></tbody></tbody></table>";
+	inputFrame.innerHTML = table_html;
+
+	let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/programs/1/reports/viral_load_coverage?start_date=";
+	url += `${start_date}&end_date=${end_date}&rebuild_outcomes=true`;
+
+  document.getElementById('spinner').style = 'display: inline;';
+  document.getElementById('report-cover').style = 'display: inline;';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      loadData(JSON.parse(this.responseText));
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+var drillDownClients = {};
+
+function processData(data, name, sex, age_group){
+	let empy_arr = [];
+	for(const tx of data[`${name}`]){
+		let processed_gender = tx.gender.match(/F/i) ? "Female" : (tx.gender.substr(0,1).toUpperCase() == 'M' ? "Male" : "Unknown");
+		if(processed_gender != sex)
+			continue;
+
+			empy_arr.push(tx);
+	}
+	if(empy_arr.length > 0){
+		if(drillDownClients[sex] == undefined)
+			drillDownClients[sex] = {};
+
+		if(drillDownClients[sex][age_group] == undefined)
+			drillDownClients[sex][age_group] = {};
+		
+		drillDownClients[sex][age_group][name] = empy_arr;
+		return `<a href="javascript:showClients('${sex}','${age_group}','${name}');">${empy_arr.length}</a>`;
+	}
+	return empy_arr.length;
+}
+
+function showClients(sex, age_group, name){
+	let records = drillDownClients[sex][age_group][name]; 
+	let patient_ids = [];
+
+	for(const r of records){
+		patient_ids.push(r.patient_id);
+	}
+	sessionStorage.pepfarDrillDown = patient_ids.join(",");
+  location = "pepfar_drill_down.html";
+}
+
+
+function loadData(data){
+  document.getElementById('spinner').style = 'display: none;';
+  document.getElementById('report-cover').style = 'display: none;';
+
+	let data_arry = [];
+	let age_groups = [
+    "0-5 months",
+    "6-11 months",
+    "12-23 months",
+    "2-4 years",
+    "5-9 years",
+    "10-14 years",
+    "15-17 years",
+    "18-19 years",
+    "20-24 years",
+    "25-29 years",
+    "30-34 years",
+    "35-39 years",
+    "40-44 years",
+    "45-49 years",
+    "50 plus years",
+		"Unknown"
+	];
+
+	let row_count = 1;
+	const gender = ["Female", "Male"];
+
+	for(const sex of gender){
+		for(const age_group of age_groups){
+			for(const api_age_group in data){
+				if(age_group != api_age_group)
+					continue;
+
+				data_arry.push([
+					row_count++, 
+					age_group,
+					sex,
+					processData(data[api_age_group], "tx_curr", sex, age_group),
+					processData(data[api_age_group], "due_for_vl", sex, age_group),
+					processData(data[api_age_group], "tested", sex, age_group),
+					processData(data[api_age_group], "high_vl", sex, age_group),
+					processData(data[api_age_group], "low_vl", sex, age_group)
+				]);
+			}
+		}
+	}
+
+	initTable(data_arry);
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+
+      <form>
+
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none';changeFinishButton();fetchData();" 
+          tt_pageStyleClass= "NoControls" helpText="VL coverage" optional = "true"/>
+
+
+      </form>
+
+   </div>
+ </div>
+
+ <img src="../../../assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
+
+</body>
