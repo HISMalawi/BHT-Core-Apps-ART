@@ -163,9 +163,9 @@
           <tr>     
             <th>ARV number</th>
             <th>Name</th>
-            <th>Patient Id</th>
             <th>Gender</th>
             <th>Birth Date</th>
+            <th>Visit date</th>
             <th>Action</th>
          </tr>
         </thead>
@@ -244,16 +244,18 @@ report_period.innerHTML += ' ' + moment(end_date).format('DD/MMM/YYYY');
         tr.appendChild(td); 
 
         var td = document.createElement("td");
-        td.innerHTML = obj[index].patient_id;
-        tr.appendChild(td);
-
-        var td = document.createElement("td");
         td.innerHTML = obj[index].gender;
         tr.appendChild(td);
 
         var td = document.createElement("td");
-        td.innerHTML = obj[index].birthdate;
+        td.innerHTML = obj[index].birthdate ? moment(obj[index].birthdate).format("DD/MMM/YYYY") : 'N/A';
         tr.appendChild(td);
+
+
+        var td = document.createElement("td");
+        td.innerHTML = moment(obj[index].visit_date).format("DD/MMM/YYYY");
+        tr.appendChild(td);
+
 
         var td = document.createElement("td");
         tr.appendChild(td);

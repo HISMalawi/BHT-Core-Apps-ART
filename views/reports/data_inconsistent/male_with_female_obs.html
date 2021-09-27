@@ -163,6 +163,7 @@
           <th>Patient Id</th>
           <th>Gender</th>
           <th>Birth Date</th>
+          <th>Visit date</th>
           <th>Action</th>
          </tr>
         </thead>
@@ -240,6 +241,10 @@ report_period.innerHTML += ' ' + moment(end_date).format('DD/MMM/YYYY');
 
         var td = document.createElement("td");
         td.innerHTML = obj[index].birthdate;
+        tr.appendChild(td);
+
+        var td = document.createElement("td");
+        td.innerHTML = moment(obj[index].visit_date).format("DD/MMM/YYYY");
         tr.appendChild(td);
 
         var td = document.createElement("td");
