@@ -275,7 +275,7 @@ function showDisaggregatedReport(){
 <table>
   <tr id="version-row">
     <td class="numbers">&nbsp;</td>
-    <td colspan="4" id="version">Version 26</td>
+    <td colspan="4" id="version">Version 27</td>
   </tr>
   <tr>
     <td class="numbers">1.</td>
@@ -1249,7 +1249,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">14</td>
-    <td><a class="regimen" href="#" @click="drillDown('fourteen_p');" id="fourteen_p"><!-- fourteen_p --></a></td>
+    <td>
+      <div class="granules">
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><span>P</span></div>
+          <div class="granules-cell"><span>PP</span></div>
+        </div>
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('fourteen_p');" id="fourteen_p">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fourteen_pp');" id="fourteen_pp">0</a></div>
+        </div>
+      </div>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('fourteen_a');" id="fourteen_a"><!-- fourteen_a --></a></td>
   </tr>
   
@@ -1264,7 +1275,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">15</td>
-    <td><a class="regimen" href="#" @click="drillDown('fifteen_p');" id="fifteen_p"><!-- fifteen_p --></a></td>
+    <td>
+      <div class="granules">
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><span>P</span></div>
+          <div class="granules-cell"><span>PP</span></div>
+        </div>
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('fifteen_p');" id="fifteen_p">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fifteen_pp');" id="fifteen_pp">0</a></div>
+        </div>
+      </div>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('fifteen_a');" id="fifteen_a"><!-- fifteen_a --></a></td>
   </tr>
   
