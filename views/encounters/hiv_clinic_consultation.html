@@ -1961,7 +1961,7 @@
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
-                if(sessionStorage.guardianOnly === "true") {
+                if(sessionStorage.guardianOnly === "true" || sessionStorage.patient_type === "Drug refill") {
                     var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
@@ -2897,6 +2897,14 @@
                     return false;
                 }
             }
+
+            function changeNextBTN(){
+                let nextButton = __$('nextButton');
+                nextButton.innerHTML = "<span>Finish</span>";
+
+                let backButton = __$('backButton');
+                backButton.style = "display:none;";
+            }
         </script>
 
         <form action="#" method='post'>
@@ -2907,14 +2915,16 @@
                    tt_pageStyleClass="NoControls" optional="true"/>
 
             <input allowFreeText="false" id="breastfeeding" name="observations[][value_coded_or_text]" type="hidden"
-                   condition=""/>
+            condition=""/>
+
+
 
             <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
             name="observations[][value_coded_or_text]"
-            condition="sessionStorage.guardianOnly === 'true'"
+            condition="sessionStorage.guardianOnly === 'true' || sessionStorage.patient_type === 'Drug refill'"
             tt_pageStyleClass="NoKeyboard" multiple="multiple"
             tt_onUnLoad="removeAllergicToCPT();"
-            tt_onLoad="controlNoneSelection(); setFunctionForSubmittingForm(); 
+            tt_onLoad="changeNextBTN();controlNoneSelection(); setFunctionForSubmittingForm(); 
             controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
@@ -2922,6 +2932,11 @@
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
+
+
+
+
+
             <input type="text" name="lab-summary"
                    tt_onLoad="removeAttrFromNextBTN();__$('keyboard').style.display = 'none';buildLabOrderDisplay();changeNextButtonForLabOrders();"
                    tt_onUnload="removeOrderBtn();"
@@ -4148,7 +4163,7 @@
                     }
                 }
 
-                if(sessionStorage.guardianOnly === "true")
+                if(sessionStorage.guardianOnly === "true" || sessionStorage.patient_type === 'Drug refill')
                     closeCover();
 
                     
