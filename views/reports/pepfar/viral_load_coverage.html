@@ -62,10 +62,20 @@
 		text-align: right;
 	}
 
+	.dt-left {
+		text-align: left;
+	}
+
 	#vl-coverage td {
 		border-style: solid !important;
 		border-width: 0px 0px 1px 1px !important;
 	}
+	
+	.main-headers th {
+		border-style: solid !important;
+		border-width: 1px 1px 0px 0px !important;
+	}
+
 </style>
 
 <script>
@@ -82,7 +92,7 @@ function changeFinishButton() {
 }
 
 function initTable(rows){
-	let period = `${moment(start_date).format('DDMMMYYYY')} - ${moment(end_date).format('DDMMMYYYY')}`;
+	let period = `${moment(start_date).format('DD/MMM/YYYY')} - ${moment(end_date).format('DD/MMM/YYYY')}`;
 
 	dataTable = jQuery('#vl-coverage').DataTable( {
     fixedHeader:    true,
@@ -109,13 +119,16 @@ function initTable(rows){
     ],
     columnDefs: [
       {"className": "dt-center", "targets": 0},
-      {"className": "dt-right", "targets": 1},
-      {"className": "dt-right", "targets": 2},
+      {"className": "dt-left", "targets": 1},
+      {"className": "dt-center", "targets": 2},
       {"className": "dt-right", "targets": 3},
       {"className": "dt-right", "targets": 4},
       {"className": "dt-right", "targets": 5},
       {"className": "dt-right", "targets": 6},
-      {"className": "dt-right", "targets": 7}
+      {"className": "dt-right", "targets": 7},
+      {"className": "dt-right", "targets": 8},
+      {"className": "dt-right", "targets": 9},
+      {"className": "dt-right", "targets": 10}
     ]
   } );
 	__$(`helpText${tstCurrentPage}`).innerHTML += `: ${period}`;
@@ -128,9 +141,19 @@ function fetchData(){
 
 	const tableHeaders = [
 		"&nbsp;", "Age group", "Gender", "TX CURR", 
-		"Due for VL", "Tested", "High VL","Low VL"
+		"Due for VL", "Routine","Targeted", "Routine",
+		"Targeted", "Routine","Targeted"
 	];
-	let table_html = "<table id='vl-coverage'><thead><tr>";
+
+	let table_html = `<table id='vl-coverage'>
+		<thead>
+			<tr class="main-headers">
+				<th colspan="5">&nbsp;</th>
+				<th colspan="2">Drawn</th>
+				<th colspan="2">High VL</th>
+				<th colspan="2">Low VL</th>
+			</tr><tr class="main-headers">
+	`;
 	
 	for(const th of tableHeaders){
 		table_html += `<th>${th}</th>`;
@@ -159,15 +182,20 @@ function fetchData(){
 
 var drillDownClients = {};
 
-function processData(data, name, sex, age_group){
+function processData(data, name, sex, age_group, reason = null){
 	let empy_arr = [];
-	for(const tx of data[`${name}`]){
+	let processing_data =  reason ? data[`${name}`][reason] : data[`${name}`];
+
+	for(const tx of processing_data){
 		let processed_gender = tx.gender.match(/F/i) ? "Female" : (tx.gender.substr(0,1).toUpperCase() == 'M' ? "Male" : "Unknown");
 		if(processed_gender != sex)
 			continue;
 
 			empy_arr.push(tx);
 	}
+
+	let reason_for_test = reason ? reason : "Not applicable";
+
 	if(empy_arr.length > 0){
 		if(drillDownClients[sex] == undefined)
 			drillDownClients[sex] = {};
@@ -175,14 +203,17 @@ function processData(data, name, sex, age_group){
 		if(drillDownClients[sex][age_group] == undefined)
 			drillDownClients[sex][age_group] = {};
 		
-		drillDownClients[sex][age_group][name] = empy_arr;
-		return `<a href="javascript:showClients('${sex}','${age_group}','${name}');">${empy_arr.length}</a>`;
+		if(drillDownClients[sex][age_group][name] == undefined)
+			drillDownClients[sex][age_group][name] = {};
+		
+		drillDownClients[sex][age_group][name][reason_for_test] = empy_arr;
+		return `<a href="javascript:showClients('${sex}','${age_group}','${name}', '${reason_for_test}');">${empy_arr.length}</a>`;
 	}
 	return empy_arr.length;
 }
 
-function showClients(sex, age_group, name){
-	let records = drillDownClients[sex][age_group][name]; 
+function showClients(sex, age_group, name, reason_for_test){
+	let records = drillDownClients[sex][age_group][name][reason_for_test]; 
 	let patient_ids = [];
 
 	for(const r of records){
@@ -232,9 +263,12 @@ function loadData(data){
 					sex,
 					processData(data[api_age_group], "tx_curr", sex, age_group),
 					processData(data[api_age_group], "due_for_vl", sex, age_group),
-					processData(data[api_age_group], "tested", sex, age_group),
-					processData(data[api_age_group], "high_vl", sex, age_group),
-					processData(data[api_age_group], "low_vl", sex, age_group)
+					processData(data[api_age_group], "drawn", sex, age_group, "routine"),
+					processData(data[api_age_group], "drawn", sex, age_group, "targeted"),
+					processData(data[api_age_group], "high_vl", sex, age_group, "routine"),
+					processData(data[api_age_group], "high_vl", sex, age_group, "targeted"),
+					processData(data[api_age_group], "low_vl", sex, age_group, "routine"),
+					processData(data[api_age_group], "low_vl", sex, age_group, "targeted")
 				]);
 			}
 		}
