@@ -145,10 +145,12 @@
     function changeNextButton() {
         var nextButton = document.getElementById('nextButton');
         nextButton.setAttribute("onmousedown", "checkIfPatientHasARTNumber();")
+        checkPatientType();
     }
 
     function checkIfPatientHasARTNumber() {
         if (patient_has_art_number) {
+            document.getElementById('nextButton').innerHTML = "<span>Finish</span>";
             submitHIVreception();
         } else {
             gotoNextPage();
@@ -191,6 +193,21 @@
         }
     }
 
+    function checkPatientType(){
+        let nextButton = __$('nextButton');
+        console.log(sessionStorage.patient_type);
+        let patient_type = 'NEW';
+        
+        if(sessionStorage.patient_type)
+            patient_type = sessionStorage.patient_type.toUpperCase();
+        
+
+        if(patient_type != "NEW PATIENT"){
+            nextButton.innerHTML = "<span>Finish</span>";
+            nextButton.setAttribute("onmousedown", "submitHIVreception();")
+        }
+    }
+
 </script>
 
 <body id="mateme">
@@ -204,7 +221,7 @@
 
             <select allowFreeText="false" id="art_optional_question" name="capture_art"
                     helpText="Do you want to capture ARV number?"
-                    condition="patient_has_art_number == false" tt_onLoad="submitIfNoARTNumberCaptureIsSelected()">
+                    condition="patient_has_art_number == false" tt_onLoad="submitIfNoARTNumberCaptureIsSelected();">
                 <option value=''></option>
                 <option value="YES">Yes</option>
                 <option value="NO">No</option>
