@@ -149,9 +149,9 @@ function fetchData(){
 		<thead>
 			<tr class="main-headers">
 				<th colspan="5">&nbsp;</th>
-				<th colspan="2">Drawn</th>
-				<th colspan="2">High VL</th>
-				<th colspan="2">Low VL</th>
+				<th colspan="2">Sample Drawn</th>
+				<th colspan="2">VL <1000 copies</th>
+				<th colspan="2">VL >=1000 copies</th>
 			</tr><tr class="main-headers">
 	`;
 	
@@ -184,12 +184,18 @@ var drillDownClients = {};
 
 function processData(data, name, sex, age_group, reason = null){
 	let empy_arr = [];
-	let processing_data =  reason ? data[`${name}`][reason] : data[`${name}`];
+	let processing_data =  reason ? data[name][reason] : data[name];
 
 	for(const tx of processing_data){
 		let processed_gender = tx.gender.match(/F/i) ? "Female" : (tx.gender.substr(0,1).toUpperCase() == 'M' ? "Male" : "Unknown");
 		if(processed_gender != sex)
 			continue;
+
+		if(tx.reason_for_test && reason){
+			if(tx.reason_for_test.match(/routine/i) && reason != "routine")
+				continue;
+
+		}
 
 			empy_arr.push(tx);
 	}
