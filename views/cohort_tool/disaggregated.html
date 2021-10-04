@@ -243,7 +243,9 @@ function initializeTable() {
         <th class="disaggregated-numbers">4P</th>
         <th class="disaggregated-numbers">9P</th>
         <th class="disaggregated-numbers">11P</th>
+        <th class="disaggregated-numbers">14PP</th>
         <th class="disaggregated-numbers">14P</th>
+        <th class="disaggregated-numbers">15PP</th>
         <th class="disaggregated-numbers">15P</th>
         <th class="disaggregated-numbers">16P</th>
         <th class="disaggregated-numbers">17P</th>
@@ -398,7 +400,7 @@ function addMales() {
 
   data_table.row.add([31,'All', 'Male', tx_new, tx_curr, 
     tx_given_ipt, tx_screened_for_tb,
-    0,0,0,0,0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'all-males'; 
+    0,0,0,0,0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0]).node().id = 'all-males'; 
   data_table.draw();
   addClass('all-males');
   updateMaleTotals('all-males', num)
@@ -609,7 +611,7 @@ function addTableBody() {
       table_body.appendChild(tr);
       var td_count = 0;
 
-      while (td_count < 34) {
+      while (td_count < 36) {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
@@ -679,7 +681,7 @@ function loadAllFemale(data, age_group) {
 
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
         tx_given_ipt, tx_screened_for_tb,
-        0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = age_group.toLowerCase();
+        0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0]).node().id = age_group.toLowerCase();
       data_table.draw();
       addClass(age_group.toLowerCase()); 
 
@@ -699,7 +701,7 @@ function loadAllFemale(data, age_group) {
   }
 
   if(age_group == 'Pregnant') {
-    data_table.row.add([33,'All', 'FNP', 0,0,0,0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'fnp';
+    data_table.row.add([33,'All', 'FNP', 0,0,0,0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'fnp';
     data_table.draw();
 
     var tr = document.getElementById("fnp");;
@@ -1117,35 +1119,45 @@ function addRegimen(data, tds){
       assignLink(tds[27], data[regimen]);
     }
     
-    if(regimen == '14P'){
+    if(regimen == '14PP'){
       tds[28].innerHTML = data[regimen].length;
       assignLink(tds[28], data[regimen]);
     }
     
-    if(regimen == '15P'){
+    if(regimen == '14P'){
       tds[29].innerHTML = data[regimen].length;
       assignLink(tds[29], data[regimen]);
     }
     
-    if(regimen == '16P'){
+    if(regimen == '15PP'){
       tds[30].innerHTML = data[regimen].length;
       assignLink(tds[30], data[regimen]);
     }
     
-    if(regimen == '17P'){
+    if(regimen == '15P'){
       tds[31].innerHTML = data[regimen].length;
       assignLink(tds[31], data[regimen]);
     }
-    if(regimen == 'N/A'){
+    
+    if(regimen == '16P'){
       tds[32].innerHTML = data[regimen].length;
       assignLink(tds[32], data[regimen]);
+    }
+    
+    if(regimen == '17P'){
+      tds[33].innerHTML = data[regimen].length;
+      assignLink(tds[33], data[regimen]);
+    }
+    if(regimen == 'N/A'){
+      tds[34].innerHTML = data[regimen].length;
+      assignLink(tds[34], data[regimen]);
     }
     total_data = [...total_data, ...data[regimen]]
     total += data[regimen].length;
   }
 
-  tds[33].innerHTML = total;
-  assignLink(tds[33], total_data)
+  tds[35].innerHTML = total;
+  assignLink(tds[35], total_data)
 
   if(allRows.length > 0){
     fetchRegimens(allRows[0]);
