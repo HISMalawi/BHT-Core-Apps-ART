@@ -2327,6 +2327,7 @@
                     reasons_for_not_using['Not sexually active'] = 3211;
                     reasons_for_not_using['Not needed for medical reasons'] = 9187;
                     reasons_for_not_using['At risk of unplanned pregnancy'] = 9188;
+                    reasons_for_not_using['Menopause'] = 2317;
 
                     obs.observations.push({
                         concept_id: 6195,
@@ -2905,6 +2906,38 @@
                 let backButton = __$('backButton');
                 backButton.style = "display:none;";
             }
+
+            var started_menopause = false;
+
+            function fetchReasonForNoFP(){
+                let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += `/observations?person_id=${sessionStorage.patientID}&start_date=2000-01-01`
+                url += `&end_date=${sessionStorage.sessionDate}&concept_id=6195`;
+
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        let for_not_using_fpm = JSON.parse(this.responseText);
+                        for(const reason of for_not_using_fpm){
+                            if(reason.value_coded == 2317)
+                                started_menopause = true;
+
+                        }    
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+
+            if(sessionStorage.gender.match(/F/i))
+                fetchReasonForNoFP();
+
+
+    
         </script>
 
         <form action="#" method='post'>
@@ -2948,7 +2981,7 @@
 
 
             <input type="text" name="pregnant-breastfeeding-questions"
-                   condition="sessionStorage.showPregnantQuestion === 'true'&& sessionStorage.patientGender === 'F' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && tubal_ligation == false"
+                   condition="sessionStorage.showPregnantQuestion === 'true'&& sessionStorage.patientGender === 'F' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && tubal_ligation == false && started_menopause == false"
                    validationCode="checkPregnancyAndAge() == 'false'"
                    validationMessage="Patient is 25 years old. Is she pregnant / Breastfeeding?"
                    tt_onLoad="__$('keyboard').style.display = 'none';addPregBreastFeedingYesNo(); showCategory2('Clinic consultation');"
@@ -2962,7 +2995,7 @@
             <input allowFreeText="false" id="on_fpm" name="observations[][value_coded_or_text]" type="hidden" value=""/>
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
+                    condition="started_menopause == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
                     helpText="What method are you currently on?" id="fpm_used" multiple="multiple"
                     name="observations[][value_coded_or_text_multiple][]"
                     tt_onLoad="setNextButtonToGetInputValue('current_fpm'); showCategory2('Clinic consultation'); fpm_used=false; startFamilyPlanningTimer(); window.setTimeout('controlNoneSelectionForFamilyPlanning(); setOptionsForSafeFamilyPlanningMethodsPopup();', 300);"
@@ -2981,7 +3014,7 @@
             </select>
 
             <select allowFreeText="false"
-                    condition="setOnTubal() == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
+                    condition="started_menopause == false && setOnTubal() == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && (tubal_ligation != true) && switchedFromANC() == false"
                     helpText="What method are you providing today?" id="session_fpm_used" multiple="multiple"
                     name="observations[][value_coded_or_text_multiple][]"
                     tt_onLoad="setNextButtonToGetInputValue('todays_fpm'); showCategory2('Clinic consultation'); fpm_used=false; startFamilyPlanningTimer(); window.setTimeout('controlNoneSelectionForFamilyPlanning(); setOptionsForSafeFamilyPlanningMethodsPopup();', 300)"
@@ -3000,7 +3033,7 @@
 
             <input type="text" name="tubal_ligation"
                    tt_onLoad="formatNoControlInput(); jQuery('#keyboard').hide();"
-                   condition="tubal_ligation == true"
+                   condition="started_menopause == false && tubal_ligation == true"
                    helpText="This patient is on Tubal Ligation method"
                    tt_pageStyleClass="NoControls"
                    optional="true"/>
@@ -3008,9 +3041,9 @@
             <!-- Extended family assessment -->
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                    condition="started_menopause == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
                         && parseInt(sessionStorage.patientAge) <= 55 && $('session_fpm_used').value == 'NONE' 
-                            && (!$('fpm_used').value.match(/DEPO-PROVERA/))"
+                            && (!$('fpm_used').value.match(/DEPO-PROVERA|PILLS|LOOP|IMPLANT/i))"
                     helpText="Main reason for not using family planning methods"
                     id="reason_for_not_using_fpm"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -3022,11 +3055,12 @@
                 <option value="Patient wants to get pregnant">Patient wants to get pregnant</option>
                 <option value="Not needed for medical reasons">Not needed for medical reasons</option>
                 <option value="At risk of unplanned pregnancy">At risk of unplanned pregnancy</option>
+                <option value="Menopause">Menopause</option>
             </select>
 
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
+                    condition="started_menopause == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 
                         && parseInt(sessionStorage.patientAge) <= 55 
                             && $('reason_for_not_using_fpm').value.toLowerCase() == 'at risk of unplanned pregnancy'"
                     helpText="Specific reason for not using family planning methods"
@@ -3046,7 +3080,7 @@
             </select>
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('specific_reason_for_not_using_fpm').value.length > 0"
+                    condition="started_menopause == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('specific_reason_for_not_using_fpm').value.length > 0"
                     helpText="Offer contraceptive"
                     id="offer_contraceptive"
                     name="observations[][value_coded_or_text_multiple][]"
@@ -3060,7 +3094,7 @@
             </select>
 
             <select allowFreeText="false"
-                    condition="patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('offer_contraceptive').value == 'Accepted'"
+                    condition="started_menopause == false && patientGender == 'F' && $('pregnant').value != 'YES' && parseInt(sessionStorage.patientAge) >= 9 && parseInt(sessionStorage.patientAge) <= 55 && $('offer_contraceptive').value == 'Accepted'"
                     helpText="Offered intervention"
                     multiple="multiple"
                     id="offered_intervention"
