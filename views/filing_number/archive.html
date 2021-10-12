@@ -448,7 +448,7 @@ function getFilingNumber(filing_number){
 
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
   url += '/search/patients/by_identifier';
-  url += '?type_id=18&identifier=' + dormantPrefix + filing_number;
+  url += '?type_id=17&identifier=' + activePrefix + filing_number;
   
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
