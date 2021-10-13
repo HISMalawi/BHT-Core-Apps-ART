@@ -286,6 +286,7 @@ function vlOrdered() {
   };
 
   postEncounter(encounter, passedObs, 'createEncounter');
+  getARTstartedDate();
 }
 
 function waitTillNextMilestone() {
