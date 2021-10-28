@@ -853,7 +853,6 @@ function fetchTBscreenedClients(td) {
   url += "&end_date=" + end_date;
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
-  url += "&outcome_table=temp_pepfar_patient_outcomes";
   url += "&age_group=" + age_group;
   url += '&program_id=' + sessionStorage.programID;
 
@@ -902,7 +901,6 @@ function fetchIPTclients(td) {
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
-  url += "&outcome_table=temp_pepfar_patient_outcomes";
   url += '&program_id=' + sessionStorage.programID;
 
   var xhttp = new XMLHttpRequest();
@@ -952,7 +950,6 @@ function fetchTBscreenedFemaleClients(td) {
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
-  url += "&outcome_table=temp_pepfar_patient_outcomes";
   url += '&program_id=' + sessionStorage.programID;
 
   var xhttp = new XMLHttpRequest();
@@ -1009,7 +1006,6 @@ function fetchIPTfemaleClients(td) {
   url += "&gender=" + gender;
   url += "&date=" + sessionStorage.sessionDate;
   url += "&age_group=" + age_group;
-  url += "&outcome_table=temp_pepfar_patient_outcomes";
   url += '&program_id=' + sessionStorage.programID;
 
   var xhttp = new XMLHttpRequest();
