@@ -65,7 +65,7 @@
       finishBTN.setAttribute("onmousedown","javascript:location='/'");
       let to_location = "&nbsp;";
       if(series_name.match(/trans/i))
-        to_location = "<th class='text-left'>TO location</th>";
+        to_location = "<th class='text-left'>Location</th>";
         
       tableHTML = `
       <table id="clients">
@@ -76,7 +76,7 @@
           <th class="text-center">Birthdate</th>
           <th class="text-center">Gender</th>
           ${to_location}
-          <th class="text-center">Outcome date</th>
+          <th class="text-center">Date</th>
           <th class="action-btns" style="width: 120px; text-align: center;">&nbsp;</th>
         </thead>
       </table>`;
@@ -119,9 +119,9 @@
         scrollY:        480,
         scrollCollapse: false,
         scroller:       false,
-        pageLength:     10000,
+        pageLength:     20,
         lengthChange:   false,
-        paging:         false,
+        paging:         true,
         columnDefs: [{
           targets: 0, type: 'natural'
         } ],
@@ -173,26 +173,26 @@
 
      
     function addRows(clients){
-      for(let i = 0; i < clients.length; i++){
-        let data = clients[i];
+      for(let data of clients){
         try {
-          var birthdate = moment(data["birthdate"]).format("DD/MMM/YYYY");
+          var birthdate = moment(data.birthdate).format("DD/MMM/YYYY");
         }catch(e){
           var birthdate = "N/A";
         }
           
         try {
-          var outcome_date = moment(data["start_date"]).format("DD/MMM/YYYY");
+          var outcome_date = moment(data.outcome_date).format("DD/MMM/YYYY");
         }catch(e){
           var outcome_date = "N/A";
         }
         
         if(series_name.match(/trans/i)) {
-          data_table.row.add([data["identifier"], data["given_name"], data["family_name"],
-            birthdate, data["gender"], data["transferred_out_to"], outcome_date, actionBTN(data["patient_id"])]).draw();
+          data_table.row.add([data.identifier, data.given_name, data.family_name,
+            birthdate, data.gender,  data.transferred_out_to, 
+            outcome_date, actionBTN(data.patient_id)]).draw();
         }else{
-          data_table.row.add([data["identifier"], data["given_name"], data["family_name"],
-            birthdate, data["gender"], outcome_date, actionBTN(data["patient_id"])]).draw();
+          data_table.row.add([data.identifier, data.given_name, data.family_name,
+            birthdate, data.gender, outcome_date,  actionBTN(data.patient_id)]).draw();
         }
       }
 
