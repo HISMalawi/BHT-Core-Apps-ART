@@ -323,6 +323,7 @@ function initializeTable() {
 
 <script>
 var patients = [];  
+var initialize_tables = true;
 
 function initializeReport() {
   var min_age;
@@ -365,7 +366,11 @@ function initializeReport() {
   url_path += '/arv_refill_periods?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
   url_path += "&end_date=" + end_date + "&program_id=1&org=pepfar";
   url_path += "&min_age=" + min_age;
-  url_path += "&max_age=" + max_age
+  url_path += "&max_age=" + max_age;
+  url_path += "&initialize_tables=" + initialize_tables;
+
+  //We only initialize once.
+  initialize_tables = false;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {

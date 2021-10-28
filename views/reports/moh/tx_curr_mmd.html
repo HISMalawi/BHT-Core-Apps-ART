@@ -194,6 +194,7 @@ var start_date = url.searchParams.get("start_date");
 var end_date = url.searchParams.get("end_date");
 var dataSet = [];
 var data_table;
+var initialize_tables = true;
 
 function initializeTable() {
   var date_title = moment(start_date).format('DD/MMM/YYYY');
@@ -363,7 +364,11 @@ function initializeReport() {
   url_path += '/arv_refill_periods?start_date=' + start_date + "&date=" + moment().format('YYYY-MM-DD');
   url_path += "&end_date=" + end_date + "&program_id=1&org=moh";
   url_path += "&min_age=" + min_age;
-  url_path += "&max_age=" + max_age
+  url_path += "&max_age=" + max_age;
+  url_path += "&initialize_tables=" + initialize_tables;
+
+  //We only initialize once.
+  initialize_tables = false;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
