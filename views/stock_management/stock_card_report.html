@@ -13,23 +13,23 @@
     <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
     <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
     <script type="text/javascript" src="/assets/js/moment.js"></script>
+    <script type="text/javascript" src="./drug_cms.js"></script>
     <!-- <script type="text/javascript" src="./drug_cms.js"></script> -->
 
     <script type="text/javascript">
-        
+        var rows = 'Medication, Earliest expiry date, Stock on hand (Tins),\n';        
 
         function initializeVariables() {
             jQuery(".loader").show();
             jQuery('#keyboard').hide();
-            jQuery("#clearButton").hide();
+            // jQuery("#clearButton").hide();
             jQuery("#cancelButton").hide();
             //jQuery("#inputFrame" + tstCurrentPage).hide();
-
 
             var pharmacy_items_url = apiProtocol + "://" + apiURL + ":" + apiPort;
             pharmacy_items_url += "/api/v1/pharmacy/items?paginate=false";
 
-
+            
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
@@ -52,7 +52,7 @@
                         var expiry_date = pharmacy_items[key]["expiry_date"];
                         expiry_date = moment(expiry_date).format("DD/MMM/YYYY");
                         var drug_name = pharmacy_items[key]["drug_name"] === null ? pharmacy_items[key]["drug_legacy_name"] : pharmacy_items[key]["drug_name"];
-                        var pack_size = pharmacy_items[key]["pack_size"];
+                        var pack_size = getPackSize(drug_id);
                         var current_quantity = pharmacy_items[key]["current_quantity"];
 
                         if (!pharmacyData[drug_id]) {
@@ -93,6 +93,10 @@
                         html += "<td class='expiry-date'>" + expiry_date + "</td>";
                         html += "<td class='current-quantity'>" + current_quantity + "</td>";
                         html += "</tr>";
+                        rows += "" + drug_short_name + " (" +pack_size +")";
+                        rows += "," + expiry_date + "";
+                        rows += "," + current_quantity + "\n";
+
                     }
 
                     html += "</tbody>";
@@ -112,8 +116,22 @@
             __$("nextButton").onmousedown = function () {
                 window.location = "/";
             }
+            var btn  = document.querySelector("#clearButton > span");
+            btn.innerHTML = "CSV";
+            btn.onmousedown = function() {
+                toCsv();
+            }
         }
-
+function toCsv() {
+    var csvData = new Blob([rows], { type: "text/csv;charset=utf-8;" });
+    var link = document.createElement("a");
+    link.setAttribute('id', 'csv')
+    link.href = window.URL.createObjectURL(csvData);
+    link.setAttribute("download", `stock card.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove()
+}
     </script>
 </head>
 
