@@ -4075,7 +4075,10 @@
             }
 
             function offerCxCa() {
-                if(sessionStorage.gender != 'F' || !activateCxCascreening)
+                if(!sessionStorage.patientGender.match(/F/i))
+                    return false;
+
+                if(!activateCxCascreening)
                     return false;
 
                 if(clientWithinCxCaRange() && clientCxCaDue()){
