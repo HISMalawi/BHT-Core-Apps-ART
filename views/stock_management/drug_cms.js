@@ -195,7 +195,7 @@ const finalList = [
         "drug_id": 983,
         "short_name": "TDF 300 / 3TC 300 / DTG 50mg",
         "full_name": "Tenofovir Disoproxil Fumarate/Lamivudine/Dolutegravir (TDF/3TC /DTG), 300/300/50mg, pack of 90 tablets"
-        ,"pack_sizes": [90]
+        ,"pack_sizes": [90, 30]
     }
 ]
 var drugs = {};

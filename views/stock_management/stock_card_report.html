@@ -52,22 +52,23 @@
                         var expiry_date = pharmacy_items[key]["expiry_date"];
                         expiry_date = moment(expiry_date).format("DD/MMM/YYYY");
                         var drug_name = pharmacy_items[key]["drug_name"] === null ? pharmacy_items[key]["drug_legacy_name"] : pharmacy_items[key]["drug_name"];
-                        var pack_size = getPackSize(drug_id);
+                        var pack_size = pharmacy_items[key]["pack_size"] ? pharmacy_items[key]["pack_size"]: getPackSize(drug_id);
                         var current_quantity = pharmacy_items[key]["current_quantity"];
+                        var full_name = `${drug_name}(${pack_size})`
 
-                        if (!pharmacyData[drug_id]) {
-                            pharmacyData[drug_id] = {};
-                            pharmacyData[drug_id]["current_quantity"] = 0;
-                            pharmacyData[drug_id]["expiry_dates"] = [];
-                            pharmacyData[drug_id]["pack_size"] = pack_size;
-                            pharmacyData[drug_id]["drug_name"] = drug_name;
-                            pharmacyData[drug_id]["drug_short_name"] = drug_name;
+                        if (!pharmacyData[full_name]) {
+                            pharmacyData[full_name] = {};
+                            pharmacyData[full_name]["current_quantity"] = 0;
+                            pharmacyData[full_name]["expiry_dates"] = [];
+                            pharmacyData[full_name]["pack_size"] = pack_size;
+                            pharmacyData[full_name]["drug_name"] = drug_name;
+                            pharmacyData[full_name]["drug_short_name"] = drug_name;
                         }
 
                         if (pharmacy_items[key].current_quantity === 0) continue;
 
-                        pharmacyData[drug_id]["current_quantity"] += parseFloat(current_quantity);
-                        pharmacyData[drug_id]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
+                        pharmacyData[full_name]["current_quantity"] += parseFloat(current_quantity);
+                        pharmacyData[full_name]["expiry_dates"].push(pharmacy_items[key]["expiry_date"]);
                     }
 
                     for (var drugID in pharmacyData) {

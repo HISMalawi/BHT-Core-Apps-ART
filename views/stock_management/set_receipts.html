@@ -37,7 +37,8 @@
             var full_name = selected_drugs_hash[key]["full_name"];
             var drug_id = selected_drugs_hash[key]["drug_id"];
             var pack_size = selected_drugs_hash[key]["pack_size"];
-            short_name_drug_id[short_name] = drug_id;
+            var name = short_name + `(${pack_size})`;
+            short_name_drug_id[name] = drug_id;
             selected.push({short_name: short_name, pack_size: pack_size})
 
         }
@@ -248,7 +249,9 @@
                 __$("drug-list").style.display = "table";
 
                 for (var k in all_drugs) {
-
+                    console.log(all_drugs);
+                    var pack_size = all_drugs[k].pack_size;
+                    var name = all_drugs[k].short_name + `(${pack_size})`;
                     if (counts[all_drugs[k].short_name] == undefined) {
                         counts[all_drugs[k].short_name] = 1;
                     }
@@ -269,14 +272,13 @@
                     r.appendChild(div);
                     var pli = document.createElement("div");
                     var li = document.createElement("div");
-                    li.id = all_drugs[k].short_name;
+                    li.id = name;
                     li.style.display = "table-cell";
-                    li.innerHTML = all_drugs[k].short_name + `(${all_drugs[k].pack_size})`;
+                    li.innerHTML = name;
 
-                    li.setAttribute("value", all_drugs[k].short_name);
-                    li.setAttribute("cms_name", drug_cms_names[all_drugs[k].short_name]);
-                    console.log(drug_cms_names[all_drugs[k].short_name])
-                    console.log(all_drugs[k].short_name)
+                    li.setAttribute("value", name);
+                    li.setAttribute("pack_size", pack_size);
+                    li.setAttribute("cms_name", all_drugs[k].short_name + 'pack of' + pack_size);
                     li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                     li.className = (k % 2 == 0) ? "even" : "odd";
                     li.onmousedown = function () {
@@ -357,14 +359,13 @@
                             }else{
                               var inputValue = drugs_hash[drug_name]["tabs_per_tin"]
                             }*/
-                            var inputValue = drug_cms_packsizes[item.getAttribute("value")];
+                            var inputValue = item.getAttribute("pack_size");
                             var field_type = "tabs_per_tin";
                         }
 
                         if (j == 1) {
                             //var inputID = "Number of expiring tins";
                             var inputID = item.getAttribute("value") + "_" + i + "_total_tins";
-                            console.log(drug_name);
                             var inputValue = drugs_hash[drug_name]["total_tins"] //__$(item.getAttribute("value") + "_expire_amount_" + pos).value;
                             var field_type = "total_tins"
                         }
@@ -1612,6 +1613,7 @@
                             drug_id: drug_id,
                             expiry_date: date_of_expiry,
                             quantity: parseInt(tabs_per_tin) * parseInt(total_tins),
+                            pack_size: parseInt(tabs_per_tin),
                             delivery_date: delivery_date,
                             }]
                         });
@@ -1911,7 +1913,9 @@
             for (var j in drugs) {
 
                 for (var i = 0; i <= total_rows; i++) {
-                    drug_name = drugs[j].short_name + "_" + i;
+                    let pack_size = drugs[j].pack_size;
+                    let name = drugs[j].short_name + `(${pack_size})`;
+                    drug_name = name + "_" + i;
                     drugs_hash[drug_name] = {"tabs_per_tin": "", "total_tins": "", "date_of_expiry": "", "batch_number": ""}
                 }
             }
