@@ -163,7 +163,9 @@ function initializeTable() {
     ],
     columnDefs: [
       {"className": "dt-row-counters", "targets": 0},
-      {"className": "dt-numbers", "targets": 3}
+      {"className": "dt-numbers", "targets": 3},
+      {"className": "dt-numbers", "targets": 4},
+      {"className": "dt-numbers", "targets": 5}
     ]
   });
 
@@ -209,9 +211,9 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Returned &#60;3 </th>
+        <th class="disaggregated-numbers">Returned &#60;3 mo</th>
         <th class="disaggregated-numbers">Returned 3-5 mo</th>
-        <th class="disaggregated-numbers">Returned 6+ mo</th>
+        <th class="disaggregated-numbers">Returned 6&plus; mo</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -381,6 +383,9 @@ function addNumbers(data) {
 var clients = {};
 
 function setDrillClients(age_group, sex, patient_ids, column_number){
+  if(patient_ids.length < 1)
+    return 0;
+
   if(!clients[age_group])
     clients[age_group] = {};
 
@@ -398,7 +403,6 @@ function setDrillClients(age_group, sex, patient_ids, column_number){
   a.setAttribute("href","#");
   a.innerHTML = patient_ids.length ;
   span.appendChild(a);
-
 
   return span.innerHTML;
 }
@@ -419,28 +423,44 @@ function loadGroupData(data){
   var set_age_groups = ageGroups();
   //this.dTable.fnClearTable();
 
-  for(const age_group in set_age_groups){
-    for(const sex in report_gender){
-      for(const record of data){
-        if(!(record == age_group && patient.age_group == age_group))
-          continue
-        
-        if (table_rows[sex] == undefined)
-          table_rows[sex] = {}
-
-        if (table_rows[sex][age_group] == undefined)
-          table_rows[sex][age_group] = {columnOne: [], columnTwo: [], columnThree: []}
-        
-        if(patient.stop_period < 3){
-          table_rows[sex][age_group].columnOne.push(patient)
-        }else if(patient.stop_period >= 3 && patient.stop_period <= 5){
-          table_rows[sex][age_group].columnTwo.push(patient)
-        }else{
-          table_rows[sex][age_group].columnThree.push(patient)
-        }
+  for(const sex of report_gender){
+    for(const age_group of set_age_groups){
+      let records;
+      try {
+        records = data[age_group][sex];
+      }catch(e){
+        records = []
       }
+
+      if(records.length > 0){
+        let columnOne = [];
+        let columnTwo = [];
+        let columnThree = [];
+        for(let record of records){
+          if(record.months < 3){
+            columnOne.push(record.patient_id);
+          }else if(record.months >= 3 && record.months <= 5){
+            columnTwo.push(record.patient_id);
+          }else if(record.months >= 6){
+            columnThree.push(record.patient_id);
+          }
+        }
+        data_table.row.add([ counter++, age_group, sex, 
+          setDrillClients(age_group, sex, columnOne, 1), 
+          setDrillClients(age_group, sex, columnTwo, 2), 
+          setDrillClients(age_group, sex, columnThree, 3)]).draw();
+      }else{
+        data_table.row.add([ counter++, age_group, sex, 0, 0, 0]).draw();
+      }
+
+
     }
   }
+
+
+  document.getElementById('spinner').style = "display: none;";
+  document.getElementById('report-cover').style = "display: none;";
+  return;
 
   for(const sex of report_gender){
     for(const age_group in set_age_groups){
@@ -474,7 +494,10 @@ function loadGroupData(data){
             continue
 
           const row = table_rows[gender][age];
-          data_table.row.add([ counter++, age_group, sex, row.columnOne.length, row.columnTwo.length, row.columnThree.length ]).draw();
+          data_table.row.add([ counter++, age_group, sex, 
+          setDrillClients(age_group, sex, columnOne, 1), 
+          setDrillClients(age_group, sex, columnTwo, 2), 
+          setDrillClients(age_group, sex, columnThree, 3)]).draw();
           // age_group_found = true;
         }
       }
