@@ -209,7 +209,9 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Returned after 30+ days</th>
+        <th class="disaggregated-numbers">Returned &#60;3 </th>
+        <th class="disaggregated-numbers">Returned 3-5 mo</th>
+        <th class="disaggregated-numbers">Returned 6+ mo</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -267,12 +269,18 @@ function addClass(id) {
 
 function addTableBody() {
   var columns = [
-    '<1 year', '1-4 years',
-    '5-9 years', '10-14 years',
-    '15-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years',
+  '<1 year',
+  '1-4 years', '5-9 years',
+  '10-14 years', '15-19 years',
+  '20-24 years',
+  '25-29 years', '30-34 years',
+  '35-39 years', '40-44 years',
+  '45-49 years', '50-54 years',
+  '55-59 years', '60-64 years',
+  '65-69 years', '70-74 years',
+  '75-79 years', '80-84 years',
+  '85-89 years',
+  '90 plus years',
     'Unknown'
   ];
 
@@ -314,13 +322,18 @@ function addTableBody() {
 
 function ageGroups() {
   return [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
+  '<1 year',
+  '1-4 years', '5-9 years',
+  '10-14 years', '15-19 years',
+  '20-24 years',
+  '25-29 years', '30-34 years',
+  '35-39 years', '40-44 years',
+  '45-49 years', '50-54 years',
+  '55-59 years', '60-64 years',
+  '65-69 years', '70-74 years',
+  '75-79 years', '80-84 years',
+  '85-89 years',
+  '90 plus years'
   ]
 }
 
@@ -395,6 +408,8 @@ function drillDown(column_number, sex, age_group){
   location = "pepfar_drill_down.html";
 }
 
+table_rows = {};
+
 function loadGroupData(data){
   //this.loadXLdata();
   //this.report_title = sessionStorage.location_name + " TX ML: " + moment(this.startDate).format('DD/MMM/YYYY')
@@ -404,30 +419,91 @@ function loadGroupData(data){
   var set_age_groups = ageGroups();
   //this.dTable.fnClearTable();
 
+  for(const age_group in set_age_groups){
+    for(const sex in report_gender){
+      for(const record of data){
+        if(!(record == age_group && patient.age_group == age_group))
+          continue
+        
+        if (table_rows[sex] == undefined)
+          table_rows[sex] = {}
 
-  for(var j = 0; j < report_gender.length; j++){
-    var age_group_found = false;
-    for(var i = 0; i < set_age_groups.length; i++){
-
-      for(var age_group in data){
-        var gender = data[age_group];  
-        for(var sex in gender){
-          if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
-            var numbers = gender[sex];
-            data_table.row.add([ counter++, age_group, sex, 
-            setDrillClients(age_group, sex, numbers, 1) ]).draw();
-            age_group_found = true;
-
-          }
+        if (table_rows[sex][age_group] == undefined)
+          table_rows[sex][age_group] = {columnOne: [], columnTwo: [], columnThree: []}
+        
+        if(patient.stop_period < 3){
+          table_rows[sex][age_group].columnOne.push(patient)
+        }else if(patient.stop_period >= 3 && patient.stop_period <= 5){
+          table_rows[sex][age_group].columnTwo.push(patient)
+        }else{
+          table_rows[sex][age_group].columnThree.push(patient)
         }
-      }
-      if(!age_group_found){
-        data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,]).draw();
-      }else{
-        age_group_found = false;
       }
     }
   }
+
+  for(const sex of report_gender){
+    for(const age_group in set_age_groups){
+      for(const patient in data){
+        if(!(patient.gender.substring(0,1).toUpperCase() == sex && patient.age_group == age_group))
+          continue
+        
+        if (table_rows[sex] == undefined)
+          table_rows[sex] = {}
+
+        if (table_rows[sex][age_group] == undefined)
+          table_rows[sex][age_group] = {columnOne: [], columnTwo: [], columnThree: []}
+        
+        if(patient.stop_period < 3){
+          table_rows[sex][age_group].columnOne.push(patient)
+        }else if(patient.stop_period >= 3 && patient.stop_period <= 5){
+          table_rows[sex][age_group].columnTwo.push(patient)
+        }else{
+          table_rows[sex][age_group].columnThree.push(patient)
+        }
+      }
+    }
+  }
+
+
+  for(const sex of report_gender){
+    for(const age_group in set_age_groups){
+      for(const gender of table_rows){
+        for(const age of table_rows[gender]){
+          if(!(gender.substring(0,1).toUpperCase() == sex && age == age_group))
+            continue
+
+          const row = table_rows[gender][age];
+          data_table.row.add([ counter++, age_group, sex, row.columnOne.length, row.columnTwo.length, row.columnThree.length ]).draw();
+          // age_group_found = true;
+        }
+      }
+    }
+  }
+  // for(var j = 0; j < report_gender.length; j++){
+  //   var age_group_found = false;
+  //   for(var i = 0; i < set_age_groups.length; i++){
+
+  //     for(var age_group in data){
+  //       var gender = data[age_group];  
+  //       for(var sex in gender){
+  //         if (age_group == set_age_groups[i]  &&  sex == report_gender[j]) {  
+  //           var numbers = gender[sex];
+
+  //           data_table.row.add([ counter++, age_group, sex, 
+  //           setDrillClients(age_group, sex, numbers, 1) ]).draw();
+  //           age_group_found = true;
+
+  //         }
+  //       }
+  //     }
+  //     if(!age_group_found){
+  //       data_table.row.add([ counter++, set_age_groups[i], report_gender[j], 0,]).draw();
+  //     }else{
+  //       age_group_found = false;
+  //     }
+  //   }
+  // }
 
   document.getElementById('spinner').style = "display: none;";
   document.getElementById('report-cover').style = "display: none;";

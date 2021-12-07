@@ -362,7 +362,7 @@ function addMales() {
     // tx_screened_for_tb += parseInt(tds[6].innerHTML);
   }
 
-  data_table.row.add([31,'All', 'Male', num.tx_new.length, num.tx_curr.length, 
+  data_table.row.add([41,'All', 'Male', num.tx_new.length, num.tx_curr.length, 
     num.tx_given_ipt.length, num.tx_screened_for_tb.length]).node().id = 'all-males'; 
   data_table.draw();
 
@@ -461,13 +461,18 @@ function assignLink(tds, age, gender, num) {
 
 function addTableBody() {
   var columns = [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
+    '<1 year',
+    '1-4 years', '5-9 years',
+    '10-14 years', '15-19 years',
+    '20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
+    '45-49 years', '50-54 years',
+    '55-59 years', '60-64 years',
+    '65-69 years', '70-74 years',
+    '75-79 years', '80-84 years',
+    '85-89 years',
+    '90 plus years'
   ];
 
   var table_body = document.getElementById('table-body');
@@ -545,9 +550,9 @@ function loadAllFemale(data, age_group) {
       var tx_given_ipt = data[age][sex].tx_given_ipt.length;
       
       if(age_group == 'Pregnant'){
-        var count = 32 ; var g = 'FP'; 
+        var count = 42 ; var g = 'FP'; 
       }else if(age_group == 'Breastfeeding'){
-        var count = 34 ; var g = 'FBf'; 
+        var count = 44 ; var g = 'FBf'; 
       }
 
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
@@ -600,7 +605,7 @@ function loadAllFemale(data, age_group) {
 
 
   if(age_group == 'Pregnant') {
-    data_table.row.add([33,'All', 'FNP', 0,0,0,0]).node().id = 'fnp';
+    data_table.row.add([43,'All', 'FNP', 0,0,0,0]).node().id = 'fnp';
     data_table.draw();
     
     var tr = document.getElementById("fnp");;
@@ -719,13 +724,18 @@ var age_group;
 
 function ageGroups() {
   age_groups = [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
+    '<1 year',
+    '1-4 years', '5-9 years',
+    '10-14 years', '15-19 years',
+    '20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
+    '45-49 years', '50-54 years',
+    '55-59 years', '60-64 years',
+    '65-69 years', '70-74 years',
+    '75-79 years', '80-84 years',
+    '85-89 years',
+    '90 plus years'
   ].reverse();
 }
 

@@ -437,12 +437,18 @@ function addClass(id) {
 
 function addTableBody() {
   var columns = [
-    '<1 year', '1-4 years',
-    '5-9 years', '10-14 years',
-    '15-19 years', '20-24 years',
+    '<1 year',
+    '1-4 years', '5-9 years',
+    '10-14 years', '15-19 years',
+    '20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
+    '45-49 years', '50-54 years',
+    '55-59 years', '60-64 years',
+    '65-69 years', '70-74 years',
+    '75-79 years', '80-84 years',
+    '85-89 years',
+    '90 plus years'
   ];
 
   var table_body = document.getElementById('table-body');
@@ -482,10 +488,18 @@ function addTableBody() {
 }
 
 var ageGroups = [
-  '<1 year', '1-4 years','5-9 years',
-  '10-14 years', '15-19 years', '20-24 years',
-  '25-29 years', '30-34 years', '35-39 years',
-  '40-44 years', '45-49 years', '50 plus years'
+  '<1 year',
+  '1-4 years', '5-9 years',
+  '10-14 years', '15-19 years',
+  '20-24 years',
+  '25-29 years', '30-34 years',
+  '35-39 years', '40-44 years',
+  '45-49 years', '50-54 years',
+  '55-59 years', '60-64 years',
+  '65-69 years', '70-74 years',
+  '75-79 years', '80-84 years',
+  '85-89 years',
+  '90 plus years'
 ]
 
 //ageGroups();
@@ -561,8 +575,32 @@ function  setMinMaxAges(group){
   if(group == '45-49 years')
     return [45, 49];
 
-  if(group == '50 plus years')
-    return [50, 10000];
+  if(group == '50-54 years')
+    return [50, 54];
+
+  if(group == '55-59 years')
+    return [55, 59];
+
+  if(group == '60-64 years')
+    return [60, 64];
+
+  if(group == '65-69 years')
+    return [65, 69];
+
+  if(group == '70-74 years')
+    return [70, 74];
+
+  if(group == '75-79 years')
+    return [75, 79];
+
+  if(group == '80-84 years')
+    return [80, 84];
+
+  if(group == '85-89 years')
+    return [85, 89];
+
+  if(group == '90 plus years')
+    return [90, 10000];
 
 }
 
