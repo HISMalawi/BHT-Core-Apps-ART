@@ -3,7 +3,7 @@ const finalList = [
         "drug_id": 105,
         "short_name": "Acyclovir 200mg",
         "full_name": "Acyclovir 200mg",
-        "pack_sizes": [30]
+        "pack_sizes": [100, 500]
     },
     {
         "drug_id": 1044,
@@ -153,7 +153,7 @@ const finalList = [
         "drug_id": 1039,
         "short_name": "Pyridoxine 25mg",
         "full_name": "Pyridoxine (25mg)"
-        ,"pack_sizes": [1000]
+        ,"pack_sizes": [100]
     },
     {
         "drug_id": 977,
