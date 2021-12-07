@@ -278,7 +278,7 @@
 
                     li.setAttribute("value", name);
                     li.setAttribute("pack_size", pack_size);
-                    li.setAttribute("cms_name", all_drugs[k].short_name + 'pack of' + pack_size);
+                    li.setAttribute("cms_name", all_drugs[k].short_name + ' pack of ' + pack_size);
                     li.style.background = (k % 2 == 0) ? "rgb(245, 250, 253)" : "white";
                     li.className = (k % 2 == 0) ? "even" : "odd";
                     li.onmousedown = function () {
@@ -448,6 +448,8 @@
                 header.style.height = "45px";
                 header.style.top = "0px";
                 header.style.position = 'absolute';
+                header.style.fontSize = "1rem"
+                header.style.fontWeight = "bold"
                 header.setAttribute("drug", item.getAttribute("value"));
                 /*header.innerHTML = pos + (pos == 1 ? "<sup>st</sup>" : (pos == 2 ? "<sup>nd</sup>" : (pos == 3 ? "<sup>rd</sup>" : "th"))) +
                               " - " + item.getAttribute("cms_name");*/
