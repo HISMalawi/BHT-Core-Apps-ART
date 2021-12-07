@@ -62,7 +62,7 @@
                     html += "<tbody>";
                     pharmacy_items.forEach(element => {
                         html += "<tr>";
-                        html += "<td class='medication'>" + drugs[element.drug_id].short_name + ` (${drug_cms_packsizes[drugs[element.drug_id].short_name]})` + "</td>";
+                        html += "<td class='medication'>" + drugs[element.drug_id].short_name +  "</td>";
                         html += "<td class='expiry-date'>" + moment(element.transaction_date).format('DD/MMM/YYYY') + "</td>";
                         html += "<td class='medication'>" + element.transaction_type.replaceAll(/Drugs /ig, '') + "</td>";
                         html += "<td class='current-quantity'>" + calulateTins(element.drug_id,element.amount_committed_to_stock) + "</td>";
