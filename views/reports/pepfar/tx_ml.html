@@ -287,12 +287,12 @@ function initializeTable() {
         <th>#</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th class="disaggregated-numbers">Defaulted<br /> (new registration)</th>
-        <th class="disaggregated-numbers">Defaulted<br/> (old registration)</th>
         <th class="disaggregated-numbers">Died</th>
-        <th class="disaggregated-numbers">Stopped</th>
+        <th class="disaggregated-numbers">IIT &#60;3 mo</th>
+        <th class="disaggregated-numbers">IIT 3-5 mo</th>
+        <th class="disaggregated-numbers">IIT 6&plus; mo</th>
         <th class="disaggregated-numbers">Transferred out</th>
-        <th class="disaggregated-numbers">Unknown</th>
+        <th class="disaggregated-numbers">Refused (Stopped)</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -370,13 +370,16 @@ function addClass(id) {
 
 function addTableBody() {
   var columns = [
-    '<1 year', '1-4 years',
-    '5-9 years', '10-14 years',
-    '15-19 years', '20-24 years',
+    '<1 year','1-4 years', 
+    '5-9 years','10-14 years', 
+    '15-19 years','20-24 years',
     '25-29 years', '30-34 years',
     '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years',
-    'Unknown'
+    '45-49 years', '50-54 years',
+    '55-59 years', '60-64 years',
+    '65-69 years', '70-74 years',
+    '75-79 years', '80-84 years',
+    '85-89 years','90 plus years'
   ];
 
   var table_body = document.getElementById('table-body');
@@ -417,13 +420,16 @@ function addTableBody() {
 
 function ageGroups() {
   return [
-    '0-5 months', '6-11 months','12-23 months',
-    '2-4 years', '5-9 years',
-    '10-14 years', '15-17 years',
-    '18-19 years', '20-24 years',
-    '25-29 years', '30-34 years',
-    '35-39 years', '40-44 years',
-    '45-49 years', '50 plus years'
+  '<1 year','1-4 years', 
+  '5-9 years','10-14 years', 
+  '15-19 years','20-24 years',
+  '25-29 years', '30-34 years',
+  '35-39 years', '40-44 years',
+  '45-49 years', '50-54 years',
+  '55-59 years', '60-64 years',
+  '65-69 years', '70-74 years',
+  '75-79 years', '80-84 years',
+  '85-89 years','90 plus years'
   ]
 }
 
