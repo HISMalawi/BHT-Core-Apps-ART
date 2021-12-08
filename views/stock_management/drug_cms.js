@@ -8,8 +8,8 @@ const finalList = [
     {
         "drug_id": 1044,
         "short_name": "ABC 120 /3TC 60mg",
-        "full_name": "Abacavir and Lamivudine 120mg pack of 60 tablets",
-        "pack_sizes": [60]
+        "full_name": "Abacavir and Lamivudine 120mg pack of 30 tablets",
+        "pack_sizes": [30]
     },
     {
         "drug_id": 969,
