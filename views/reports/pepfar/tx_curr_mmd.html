@@ -392,6 +392,9 @@ function initializeReport() {
 }
 
 function createLink(num, age_group, gender, colNum){
+  if(parseInt(num) < 1)
+    return num;
+
   var  span = document.createElement("span");
   var a = document.createElement("a");
   a.setAttribute("href","#");
