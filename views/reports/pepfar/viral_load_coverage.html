@@ -418,9 +418,8 @@ function processFNPRow(pregnant, breastfeeding){
 	let colunmSix = [];
 	let colunmSeven = [];
 	let colunmEight = [];
-	let fnpClients = [];
 
-	for(const patient of genderTotal['Female'].due_for_vl){
+	for(const patient of genderTotal['Female'].tx_curr){
 		let fnp = true;
 
 		for(const fp_client_patient_id of pregnant){
@@ -436,7 +435,7 @@ function processFNPRow(pregnant, breastfeeding){
 		}
 
 		if(fnp)
-			fnpClients.push(patient.patient_id);
+			colunmOne.push(patient.patient_id);
 	
 
 
@@ -449,51 +448,45 @@ function processFNPRow(pregnant, breastfeeding){
 				for(const reason in drillDownClients[gender][age_group][name]){
 					let data = drillDownClients[gender][age_group][name][reason];
 
-					if(name == 'tx_curr'){
+					if(name == 'due_for_vl'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
-								colunmOne.push(patient);
-
-						}
-					}else if(name == 'due_for_vl'){
-						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmTwo.push(patient);
 
 						}
 					}else if(name == 'drawn' && reason == 'routine'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmThree.push(patient);
 
 						}
 					}else if(name == 'drawn' && reason == 'targeted'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmFour.push(patient);
 
 						}
 					}else if(name == 'high_vl' && reason == 'routine'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmFive.push(patient);
 
 						}
 					}else if(name == 'high_vl' && reason == 'targeted'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmSix.push(patient);
 
 						}
 					}else if(name == 'low_vl' && reason == 'routine'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmSeven.push(patient);
 
 						}
 					}else if(name == 'low_vl' && reason == 'targeted'){
 						for(const patient of data){
-							if(fnpClients.indexOf(patient.patient_id) < 0)
+							if(colunmOne.indexOf(patient.patient_id) < 0)
 								colunmEight.push(patient);
 
 						}
