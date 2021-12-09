@@ -76,6 +76,10 @@
 		border-width: 1px 1px 0px 0px !important;
 	}
 
+	.all {
+		background-color: lightyellow !important;
+		color: black !important;
+	}
 </style>
 
 <script>
@@ -231,9 +235,6 @@ function showClients(sex, age_group, name, reason_for_test){
 
 
 function loadData(data){
-  document.getElementById('spinner').style = 'display: none;';
-  document.getElementById('report-cover').style = 'display: none;';
-
 	let data_arry = [];
 	let age_groups = [
 		'<1 year','1-4 years', 
@@ -275,6 +276,316 @@ function loadData(data){
 	}
 
 	initTable(data_arry);
+
+	for(const gender in drillDownClients){
+		for(const age_group in drillDownClients[gender]){
+			let reason = drillDownClients[gender][age_group];
+			for(const name in drillDownClients[gender][age_group]){
+				for(const reason in drillDownClients[gender][age_group][name]){
+					let data = drillDownClients[gender][age_group][name][reason];
+		
+					if(name == 'tx_curr'){
+						for(const patient of data){
+							genderTotal[gender].tx_curr.push(patient);
+						}
+					}else if(name == 'due_for_vl'){
+						for(const patient of data){
+							genderTotal[gender].due_for_vl.push(patient);
+						}
+					}else if(name == 'drawn' && reason == 'routine'){
+						for(const patient of data){
+							genderTotal[gender].sample_drawn_routine.push(patient);
+						}
+					}else if(name == 'drawn' && reason == 'targeted'){
+						for(const patient of data){
+							genderTotal[gender].sample_drawn_targeted.push(patient);
+						}
+					}else if(name == 'high_vl' && reason == 'routine'){
+						for(const patient of data){
+							genderTotal[gender].high_vl_routine.push(patient);
+						}
+					}else if(name == 'high_vl' && reason == 'targeted'){
+						for(const patient of data){
+							genderTotal[gender].high_vl_targeted.push(patient);
+						}
+					}else if(name == 'low_vl' && reason == 'routine'){
+						for(const patient of data){
+							genderTotal[gender].low_vl_routine.push(patient);
+						}
+					}else if(name == 'low_vl' && reason == 'targeted'){
+						for(const patient of data){
+							genderTotal[gender].low_vl_targeted.push(patient);
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	addExtraRows();
+	femaleMaternalStatus();
+}
+
+function addExtraRows(){
+	const row = dataTable.row.add([41, "All", 'Male',
+		addDrillDown("Male", "All", "tx_curr", genderTotal['Male'].tx_curr),
+		addDrillDown("Male", "All", "due_for_vl", genderTotal['Male'].due_for_vl),
+		addDrillDown("Male", "All", "sample_drawn_routine", genderTotal['Male'].sample_drawn_routine),
+		addDrillDown("Male", "All", "sample_drawn_targeted", genderTotal['Male'].sample_drawn_targeted),
+		addDrillDown("Male", "All", "high_vl_routine", genderTotal['Male'].high_vl_routine),
+		addDrillDown("Male", "All", "high_vl_targeted", genderTotal['Male'].high_vl_targeted),
+		addDrillDown("Male", "All", "low_vl_routine", genderTotal['Male'].low_vl_routine),
+		addDrillDown("Male", "All", "low_vl_targeted", genderTotal['Male'].low_vl_targeted)
+	]).draw().node();
+	jQuery( row ).addClass('all');
+}
+
+function addDrillDown(sex, age_group, name, patients){
+	if(patients.length < 1)
+		return 0;
+
+	if(drillDownClients[sex][age_group] == undefined)
+		drillDownClients[sex][age_group] = {};
+	
+	if(drillDownClients[sex][age_group][name] == undefined)
+		drillDownClients[sex][age_group][name] = {};
+	
+
+	let patient_obj = [];
+
+	for(const patient_id of patients){
+		patient_obj.push({patient_id: patient_id})
+	}
+
+	drillDownClients[sex][age_group][name]['Not applicable'] = patient_obj;
+	return `<a href="javascript:showClients('${sex}','${age_group}','${name}', 'Not applicable');">${patients.length}</a>`;
+}
+
+
+var genderTotal = {}
+
+for(const gender of ['Female','Male']){
+	genderTotal[gender] = {
+		tx_curr: [],
+		due_for_vl: [],
+		sample_drawn_routine: [],
+		sample_drawn_targeted: [],
+		high_vl_routine: [],
+		high_vl_targeted: [],
+		low_vl_routine: [],
+		low_vl_targeted: []
+	};
+}
+
+function femaleMaternalStatus(){
+	let url = apiProtocol + "://" + apiURL + ":" + apiPort + '/api/v1/vl_maternal_status';
+	url += `?date=${sessionStorage.sessionDate}&start_date=${start_date}`;
+	url += `&end_date=${end_date}&program_id=${sessionStorage.programID}`;
+	url += '&report_definition=pepfar';
+	let patient_ids = [];
+
+	for(const patient of genderTotal['Female'].tx_curr){
+		patient_ids.push(patient.patient_id);
+	}
+	url += `&patient_ids=${patient_ids.join(",")}`;
+
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      addAllFemaleRows(JSON.parse(this.responseText));
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function addAllFemaleRows(data){
+	processFeamleRows(data.FP, 42, "FP");
+	processFNPRow(data.FP, data.FBf);
+	processFeamleRows(data.FBf, 44, "FBf");
+}
+
+function processFNPRow(pregnant, breastfeeding){
+	let colunmOne = [];
+	let colunmTwo = [];
+	let colunmThree = [];
+	let colunmFour = [];
+	let colunmFive = [];
+	let colunmSix = [];
+	let colunmSeven = [];
+	let colunmEight = [];
+	let fnpClients = [];
+
+	for(const patient of genderTotal['Female'].due_for_vl){
+		let fnp = true;
+
+		for(const fp_client_patient_id of pregnant){
+			if(fp_client_patient_id == patient.patient_id){
+				fnp = false;
+			}
+		}
+
+		for(const fbf_client_patient_id of breastfeeding){
+			if(fbf_client_patient_id == patient.patient_id){
+				fnp = false;
+			}
+		}
+
+		if(fnp)
+			fnpClients.push(patient.patient_id);
+	
+
+
+	}
+
+	for(const gender in drillDownClients){
+		for(const age_group in drillDownClients[gender]){
+			let reason = drillDownClients[gender][age_group];
+			for(const name in drillDownClients[gender][age_group]){
+				for(const reason in drillDownClients[gender][age_group][name]){
+					let data = drillDownClients[gender][age_group][name][reason];
+
+					if(name == 'tx_curr'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmOne.push(patient);
+
+						}
+					}else if(name == 'due_for_vl'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmTwo.push(patient);
+
+						}
+					}else if(name == 'drawn' && reason == 'routine'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmThree.push(patient);
+
+						}
+					}else if(name == 'drawn' && reason == 'targeted'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmFour.push(patient);
+
+						}
+					}else if(name == 'high_vl' && reason == 'routine'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmFive.push(patient);
+
+						}
+					}else if(name == 'high_vl' && reason == 'targeted'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmSix.push(patient);
+
+						}
+					}else if(name == 'low_vl' && reason == 'routine'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmSeven.push(patient);
+
+						}
+					}else if(name == 'low_vl' && reason == 'targeted'){
+						for(const patient of data){
+							if(fnpClients.indexOf(patient.patient_id) < 0)
+								colunmEight.push(patient);
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	const row = dataTable.row.add([43, "All", 'FNP',
+		addDrillDown("Female", "FNP", "tx_curr", colunmOne), 
+		addDrillDown("Female", "FNP", "due_for_vl", colunmTwo), 
+		addDrillDown("Female", "FNP", "sample_drawn_routine", colunmThree), 
+		addDrillDown("Female", "FNP", "sample_drawn_targeted", colunmFour), 
+		addDrillDown("Female", "FNP", "high_vl_routine", colunmFive), 
+		addDrillDown("Female", "FNP", "high_vl_targeted", colunmSix), 
+		addDrillDown("Female", "FNP", "low_vl_routine", colunmSeven), 
+		addDrillDown("Female", "FNP", "low_vl_targeted", colunmEight)
+	]).draw().node();
+	jQuery( row ).addClass('all');
+}
+
+function processFeamleRows(data, rowNumber, groupType){
+	let colunmOne = data;
+	let colunmTwo = [];
+	let colunmThree = [];
+	let colunmFour = [];
+	let colunmFive = [];
+	let colunmSix = [];
+	let colunmSeven = [];
+	let colunmEight = [];
+
+
+	for(const patient_id of colunmOne){
+		for(const patient of genderTotal['Female'].due_for_vl){
+			if(patient_id == patient.patient_id)
+				colunmTwo.push(patient_id);
+
+		}
+		
+		for(const patient of genderTotal['Female'].sample_drawn_routine){
+			if(patient_id == patient.patient_id)
+				colunmThree.push(patient_id);
+
+		}
+
+		for(const patient of genderTotal['Female'].sample_drawn_targeted){
+			if(patient_id == patient.patient_id)
+				colunmFour.push(patient_id);
+
+		}
+
+		for(const patient of genderTotal['Female'].high_vl_routine){
+			if(patient_id == patient.patient_id)
+				colunmFive.push(patient_id);
+
+		}
+
+		for(const patient of genderTotal['Female'].high_vl_targeted){
+			if(patient_id == patient.patient_id)
+				colunmSix.push(patient_id);
+
+		}
+
+		for(const patient of genderTotal['Female'].low_vl_routine){
+			if(patient_id == patient.patient_id)
+				colunmSeven.push(patient_id);
+
+		}
+
+		for(const patient of genderTotal['Female'].low_vl_targeted){
+			if(patient_id == patient.patient_id)
+				colunmEight.push(patient_id);
+
+		}
+	}
+
+	const row = dataTable.row.add([rowNumber, "All", groupType, 
+		addDrillDown("Female", groupType, "tx_curr", colunmOne), 
+		addDrillDown("Female", groupType, "due_for_vl", colunmTwo), 
+		addDrillDown("Female", groupType, "sample_drawn_routine", colunmThree), 
+		addDrillDown("Female", groupType, "sample_drawn_targeted", colunmFour), 
+		addDrillDown("Female", groupType, "high_vl_routine", colunmFive), 
+		addDrillDown("Female", groupType, "high_vl_targeted", colunmSix), 
+		addDrillDown("Female", groupType, "low_vl_routine", colunmSeven), 
+		addDrillDown("Female", groupType, "low_vl_targeted", colunmEight)
+	]).draw().node();
+	jQuery( row ).addClass('all');
+
+	document.getElementById('spinner').style = 'display: none;';
+	document.getElementById('report-cover').style = 'display: none;';
 }
 
 </script>
