@@ -362,33 +362,26 @@ function initializePopUpTable() {
     var age_groups = ageGroups();
     var genders = ["M", "F"];
     const client_sex = ["F", "M"];
-
+    let count = 1
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
           if(element !== "Unknown") {
+            rows.push({
+              number: count,
+              age_group: element,
+              gender: gender,
+              threehp: data[element]["3HP"][gender],
+              sixh: data[element]["6H"][gender],
 
-          if (gender === 'F') {
-            num = index ;
-          } else if (gender === 'M') {
-            num = index + 15;
-          }else{
-            num = index + 31;
-          }
-          rows.push({
-            number: num,
-            age_group: element,
-            gender: gender,
-            threehp: data[element]["3HP"][gender],
-            sixh: data[element]["6H"][gender],
+            })
+            data_table.row.add([count, element, gender,
+              setDrillClients(data[element]["3HP"][gender], count, "threehp"),
+              setDrillClients(data[element]["6H"][gender], count, "sixh"),
+            ]).draw()
 
-          })
-          data_table.row.add([num, element, gender,
-            setDrillClients(data[element]["3HP"][gender], num, "threehp"),
-            setDrillClients(data[element]["6H"][gender], num, "sixh"),
-          ]).draw()
-
-          total_3hp_clients += data[element]["3HP"][gender].length;
-          total_IPT_clients += data[element]["6H"][gender].length;
+            total_3hp_clients += data[element]["3HP"][gender].length;
+            total_IPT_clients += data[element]["6H"][gender].length;
+            count++;
           }
       });
     })
