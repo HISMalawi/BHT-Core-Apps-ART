@@ -5,9 +5,8 @@
 
 <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
-<script type="text/javascript" src="/apps/ART/views/cohort_tool/driller/natural.js"></script>
+<link rel="stylesheet" href="../../../assets/css/datatables/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="../../../assets/css/datatable/scroller.dataTables.min.css" type="text/css">
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
@@ -20,6 +19,7 @@
 <script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<script type="text/javascript" src="../../../views/cohort_tool/driller/natural.js"></script>
 <!-- pring report ends .......................................................................... -->
 
 <style>
@@ -222,6 +222,7 @@ function loadClients(info) {
     pageLength:     10000,
     lengthChange:   false,
     paging:         false,
+    order:          [[ 0, "asc" ]],
     columnDefs: [{
       targets: 0, type: 'natural'
     } ],
@@ -238,7 +239,7 @@ function loadClients(info) {
       }
     ],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
+      {"className": "dt-center", type: "natural", "targets": 0},
       {"className": "dt-center", "targets": 3}
     ]
   } );
