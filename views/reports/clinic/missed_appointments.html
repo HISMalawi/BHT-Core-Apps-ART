@@ -19,6 +19,7 @@
 <script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/sort.natural.js"></script>
 <!-- pring report ends .......................................................................... -->
 
 <style>
@@ -251,7 +252,7 @@ function loadClients(data) {
       }
     ],
     columnDefs: [
-      {"className": "dt-center", "targets": 0},
+      {"className": "dt-center", type: "natural", "targets": 0},
       {"className": "dt-center", "targets": 3},
       {"className": "dt-center", "targets": 4},
       {"className": "dt-center", "targets": 6}
