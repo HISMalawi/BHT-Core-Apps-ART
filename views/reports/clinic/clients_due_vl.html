@@ -4,8 +4,8 @@
 
 <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/jquery.dataTables.min.css" type="text/css">
-<link rel="stylesheet" href="/apps/ART/assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="../../../assets/css/datatable/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="../../../assets/css/datatable/scroller.dataTables.min.css" type="text/css">
 
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
@@ -20,6 +20,7 @@
 <script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
 <!-- pring report ends .......................................................................... -->
 
+<!--script type="text/javascript" src="../../../views/cohort_tool/driller/natural.js"></script-->
 <script type="text/javascript" src="/assets/js/datatables/sort.natural.js"></script>
 
 <style>
@@ -126,6 +127,13 @@ function buildList() {
   var start_date = url.searchParams.get("start_date");
   var end_date = url.searchParams.get("end_date");
   
+  let text = `Clients due for VL <span style="font-size: 16px;">`;
+  text += `(clients with an appointment between: `;
+  text += `<b>${moment(start_date).format("DD/MMM/YYYY")}</b> `;
+  text += ` and <b>${moment(end_date).format("DD/MMM/YYYY")}</b>)</span>`;
+  document.getElementById("helpText0").innerHTML = text;
+
+
   isFilingNumverEnabled(start_date, end_date, f);
 }
 
@@ -187,7 +195,7 @@ function getList(sdate, edate) {
   var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
   url += "/clients_due_vl?date=" + sessionStorage.sessionDate;
   url += `&program_id=${sessionStorage.programID}`;
-  url += `&start_date=${sdate}&end_date=${edate}`; 
+  url += `&start_date=${sdate}&end_date=${edate}`;
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -227,8 +235,10 @@ function loadClients(data) {
     if(last_result_order_date != 'N/A')
       last_result_order_date = moment(data[i].last_result_order_date).format('DD/MMM/YYYY');
 
-    formatted_data.push([addClientLink(npid, data[i].patient_id), app_date, art_start_date, 
-      months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); 
+    //formatted_data.push([addClientLink(npid, data[i].patient_id), app_date, art_start_date, 
+      //months_on_ART, mile_stone, last_result_order_date, last_result, result_date]); 
+    formatted_data.push([npid, app_date, art_start_date, addClientLink(months_on_ART, data[i].patient_id), 
+      mile_stone, last_result_order_date, last_result, result_date]); 
   }
   
   jQuery('#clients').DataTable( {
@@ -244,7 +254,7 @@ function loadClients(data) {
     paging:         false,
     order:          [[0, "asc"]],
     columnDefs: [
-      {"className": "dt-left",type: 'natural', "targets": 0},
+      {"className": "dt-left", type: 'natural', "targets": 0},
       {"className": "dt-center", "targets": 1},
       {"className": "dt-center", "targets": 2},
       {"className": "dt-right", "targets": 3},
@@ -327,7 +337,9 @@ function isFilingNumverEnabled(start_date, end_date, f){
 
         <input type="text" name="summary"
           tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
-          tt_pageStyleClass= "NoControls" helpText='Clients due for VL <span style="font-size: 16px;">(clients with an appointment in the specified period)</span>' optional = "true"/>
+          tt_pageStyleClass= "NoControls" 
+          helpText='' 
+          optional = "true"/>
 
       </form>
 
