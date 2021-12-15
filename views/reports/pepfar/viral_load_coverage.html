@@ -388,8 +388,9 @@ function femaleMaternalStatus(){
 	for(const patient of genderTotal['Female'].tx_curr){
 		patient_ids.push(patient.patient_id);
 	}
-	url += `&patient_ids=${patient_ids.join(",")}`;
-
+	
+	let params  = {patient_ids: patient_ids};
+	params = JSON.stringify(params);
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -397,10 +398,10 @@ function femaleMaternalStatus(){
       addAllFemaleRows(JSON.parse(this.responseText));
     }
   };
-  xhttp.open("GET", url, true);
+  xhttp.open("POST", url, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
   xhttp.setRequestHeader('Content-type', "application/json");
-  xhttp.send();
+  xhttp.send(params);
 }
 
 function addAllFemaleRows(data){
