@@ -291,7 +291,7 @@ function loadData(data, age_group) {
           defaulted = outcome[c][i];
         }else if(c == 'Patient died'){
           died = outcome[c][i];
-        }else if(c == 'Stopped'){
+        }else if(c.match(/Stopped/i)){
           stopped = outcome[c][i];
         }else if(c == 'Patient transferred out'){
           to = outcome[c][i];
@@ -305,9 +305,9 @@ function loadData(data, age_group) {
 
     if(total_reg > 0) {
       data_table.row.add([set_quarter, qinterval, age_group, total_reg,
-        '', alive, died, defaulted, stopped, to, unknown]).node().id = row_id;
+        '', alive, died, defaulted, stopped, to, unknown]).node().id = set_quarter;
       data_table.draw();
-      addClass(row_id);
+      addClass(set_quarter);
     }
   }
 }
