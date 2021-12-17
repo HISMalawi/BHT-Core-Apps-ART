@@ -1,0 +1,343 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<link rel="stylesheet" href="../../../assets/css/datatables/jquery.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="../../../assets/css/datatable/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<!-- pring report start .......................................................................... -->
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.flash.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/buttons.print.min.js"></script>
+<script type="text/javascript" src="../../../views/cohort_tool/driller/natural.js"></script>
+<!-- pring report ends .......................................................................... -->
+
+<style>
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+#spinner {
+  position: absolute;
+  top: 150px;
+  left: 40%;
+  z-index: 991;
+}
+
+#clearButton, #cancelButton {
+  display: none;
+}
+
+.btn-primary {
+  display: block;
+  width: 115px;
+  height: 25px;
+  background: #4E9CAF;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#clients th {
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+#clients td {
+  border-style: solid;
+  border-width: 0px 1px 1px 0px;
+}
+
+#clients {
+  border-collapse: collapse;
+}
+
+.dataTables_scrollBody {
+ overflow-x:hidden !important;
+ overflow-y:auto !important;
+}
+
+.npid, .gender, .birthdate {
+  text-align: center;
+}
+
+.given_name, .family_name {
+  text-align: left;
+  padding-left: 5px;
+}
+tfoot {
+  visibility: hidden;
+}
+
+</style>
+
+
+<script>
+var href = window.location.href;
+var url = new URL(href);
+var start_date  = url.searchParams.get("start_date");
+var end_date    = url.searchParams.get("end_date");
+
+function changeFinishButton() {
+  var b = document.getElementById('nextButton');
+  b.innerHTML = '<span>Finish</span>';
+  b.setAttribute('onmousedown','back();');
+
+}
+
+function addRebuildButton(){
+
+	let root = document.getElementById("buttons");
+	root.innerHTML += `<button class="button red navButton" 
+		style='float: left;' 
+		onmousedown="javascript:renegerateReport();">
+		<span>Rebuild outcomes</span></button>`;
+}
+
+function renegerateReport(){
+	rebuild_outcome = true;
+  /*jQuery('#clients').dataTable().fnClearTable();
+  jQuery('#clients').dataTable().fnDestroy();
+	getList(start_date, end_date);*/
+	var f = document.getElementById('inputFrame' + tstCurrentPage);
+  f.innerHTML = '';
+  buildDataTable(f);
+  getList(start_date, end_date);
+}
+
+function back() {
+  document.location = '/';
+}
+
+function buildList() {
+  var f = document.getElementById('inputFrame' + tstCurrentPage);
+  f.style = 'width: 96%; height: 89%;';
+  buildDataTable(f);
+  getList(start_date, end_date);
+}
+
+function buildDataTable(e) {
+  var table = document.createElement('table');
+  table.setAttribute('id','clients');
+  table.style = 'width: 100%;';
+  e.appendChild(table);
+
+  var theader = document.createElement('thead');
+  table.appendChild(theader);
+  var tr = document.createElement('tr');
+  theader.appendChild(tr);
+  var tfoot = document.createElement('tfoot');
+  var tfoot_tr = document.createElement('tr');
+  var tfoot_td = document.createElement('td');
+  tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  BHT-Core Version : ${sessionStorage.coreVersion} 
+                  ART Version : ${sessionStorage.ARTVersion} 
+                  API Version ${sessionStorage.apiVersion}`;
+  tfoot_tr.appendChild(tfoot_td);
+  tfoot.appendChild(tfoot_tr);
+  table.appendChild(tfoot);
+  var headers = ['ARV#','Gender','DOB','Drug Name','Date', 'Pack size','Total pack', 'Total pills'];
+  
+  for(var i = 0 ; i < headers.length ; i++){
+    var th = document.createElement('th');
+    th.innerHTML = headers[i];
+    tr.appendChild(th);
+    
+    if(i == 0) 
+      th.setAttribute('class', 'npid');
+
+    if(i == 1) 
+      th.setAttribute('class', 'given_name');
+
+    if(i == 2) 
+      th.setAttribute('class', 'family_name');
+
+    if(i == 3) 
+      th.setAttribute('class', 'gender');
+
+    if(i == 4) 
+      th.setAttribute('class', 'birthdate');
+  
+  }
+
+}
+
+var rebuild_outcome = false;
+
+function getList(sdate, edate) {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/latest_regimen_dispensed?start_date=" + sdate + "&end_date=" + edate
+  url += "&program_id=" + sessionStorage.programID;
+	url += `&rebuild_outcome=${rebuild_outcome}`;
+  url += "&date=" + sessionStorage.sessionDate;
+	rebuild_outcome = false;
+
+  document.getElementById('spinner').style = 'display: inline;';
+  document.getElementById('report-cover').style = 'display: inline;';
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      loadClients(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+let count_patients = [];
+
+function loadClients(info) {
+  var formatted_data = [];
+	count_patients = [];
+
+  for (const patient_id in info) {
+  	for (const order_id in info[patient_id]) {
+			const data = info[patient_id][order_id];
+			let pack_sizes = data.pack_sizes;
+			let drug_name = data.name;
+			let identifier = data.identifier;
+			let dispensation_date = moment(data.dispensation_date).format("DD/MMM/YYYY");
+			let birthdate = data.birthdate ? moment(data.birthdate).format("DD/MMM/YYYY") : 'N/A';
+			let quantity = data.quantity;
+   
+			formatted_data.push([identifier, data.gender, birthdate, drug_name,
+   			dispensation_date, pack_sizes[0], pack_sizes.length, quantity]);
+  	}
+		count_patients.push(patient_id);
+	}
+
+	//return
+
+  var period = moment(start_date).format('DDMMMYYYY') + " - " + moment(end_date).format('DDMMMYYYY');
+   
+  jQuery('#clients').DataTable( {
+    fixedHeader:    true,
+    searching:      false,
+    data:           formatted_data,
+    deferRender:    true,
+    scrollY:        400,
+    scrollCollapse: false,
+    scroller:       false,
+    pageLength:     10000,
+    lengthChange:   false,
+    paging:         false,
+    order:          [[ 0, "asc" ]],
+    columnDefs: [{
+      targets: 0, type: 'natural'
+    } ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'csv',
+        title: 'Clinc ' + sessionStorage.currentLocation + ' client regimen report: ' + period,
+        footer: true 
+      },
+      {
+        extend: 'pdf',
+        title: sessionStorage.currentLocation + ' client regimen report: ' + period 
+      }
+    ],
+    columnDefs: [
+      {"className": "dt-center", type: "natural", "targets": 0},
+      {"className": "dt-center", "targets": 3}
+    ]
+  } );
+
+	let helpText = document.getElementById('helpText0');
+	let text = `Regimen report <span style="font-size: 16px;">`;
+  text += `(reporting period: `;
+  text += `<b>${moment(start_date).format("DD/MMM/YYYY")}</b> `;
+  text += ` and <b>${moment(end_date).format("DD/MMM/YYYY")}</b>)`;
+	text += `     <b>Total clients: ${count_patients.length}</b></span>`;
+	helpText.innerHTML = text;
+
+  document.getElementById('spinner').style = 'display: none;';
+  document.getElementById('report-cover').style = 'display: none;';
+}
+
+function addSelectButton(person_id) {
+  var span = document.createElement('span');
+  var button  = document.createElement('a');
+  button.setAttribute('onmousedown', 'selectClient(' + person_id + ')');
+  button.innerHTML = 'Select';
+  button.setAttribute('class','btn-primary');
+  button.setAttribute('href','#');
+  span.appendChild(button);
+  return span.innerHTML;
+}
+
+function selectClient(patient_id) {
+  document.location = '/views/confirm.html?person_id=' + patient_id;
+}
+
+function addClassIMGcontainter(person_id) {
+  var tr = document.getElementById('row-' + person_id);
+  var cells = tr.getElementsByTagName('td');
+
+  for(var i = 0 ; i < cells.length ; i++) {
+    if(i == 0) 
+      cells[i].setAttribute('class', 'npid');
+
+    if(i == 1) 
+      cells[i].setAttribute('class', 'given_name');
+
+    if(i == 2) 
+      cells[i].setAttribute('class', 'family_name');
+
+    if(i == 3) 
+      cells[i].setAttribute('class', 'gender');
+
+    if(i == 4) 
+      cells[i].setAttribute('class', 'birthdate');
+
+  }
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+
+      <form>
+
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none'; changeFinishButton(); buildList();" 
+          tt_pageStyleClass= "NoControls" helpText="Regimen report" optional = "true"/>
+
+      </form>
+
+   </div>
+ </div>
+</body>
+
+<img src="/apps/ART/assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
+
+
+<script>setTimeout(addRebuildButton, 1000);</script>
