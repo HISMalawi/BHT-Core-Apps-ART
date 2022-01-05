@@ -681,14 +681,15 @@ function updateFNProw() {
   }
   
   var tds = fnp_row.getElementsByTagName('td');
+  
+  const fnp_new = all_female_tx_new_data.filter(item => !fp_bf_tx_new_data.includes(item))
+  const fnp_curr = all_female_tx_curr_data.filter(item => !fp_bf_tx_curr_data.includes(item))
 
-  tds[3].innerHTML = (all_female_tx_new - fp_bf_tx_new);  
-  tds[4].innerHTML = (all_female_tx_curr - fp_bf_tx_curr);  
+  tds[3].innerHTML = fnp_new.length;  
+  tds[4].innerHTML = fnp_curr.length;  
   tds[5].innerHTML = (all_female_tx_given_ipt - fp_bf_tx_given_ipt);  
   tds[6].innerHTML = (all_female_tx_screened_for_tb - fp_bf_tx_screened_for_tb);  
 
-  const fnp_new = all_female_tx_new_data.filter(item => !fp_bf_tx_new_data.includes(item))
-  const fnp_curr = all_female_tx_curr_data.filter(item => !fp_bf_tx_curr_data.includes(item))
 
   appendLinks('fnp', 'Female', {tx_new: fnp_new, tx_curr: fnp_curr})
   
