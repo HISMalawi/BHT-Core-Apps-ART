@@ -130,7 +130,8 @@ function buildDataTable(e) {
   tfoot_td.innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  API Version ${sessionStorage.apiVersion}
+                  Vbox ID: ${sessionStorage.vboxID}`;
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
   table.appendChild(tfoot);

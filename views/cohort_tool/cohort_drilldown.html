@@ -85,7 +85,8 @@ function initTable(){
   document.getElementById('footer-content').innerHTML= `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  API Version ${sessionStorage.apiVersion}
+                  Vbox ID: ${sessionStorage.vboxID}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,

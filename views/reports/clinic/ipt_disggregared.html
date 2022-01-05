@@ -328,7 +328,8 @@ function addNumbers(data) {
   document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
-                  API Version ${sessionStorage.apiVersion}`;
+                  API Version ${sessionStorage.apiVersion}
+                  Vbox ID: ${sessionStorage.vboxID}`;
   var rows = table_body.children;
   var total = 0;
 
