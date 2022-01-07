@@ -75,6 +75,7 @@
         var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
         var lab_orders_required = false;
         var oldtstCurrentPage = null;
+        var guardianOnly = false;
 
 
         var labResultsTable = null;
@@ -1834,7 +1835,7 @@
             function redirectToHIVClinicConsultation(orders){
                 createHIVClinicConsultation();
             }
-
+            
 
             function createHIVClinicConsultation() {
                 var currentInput = document.getElementById("touchscreenInput" + tstCurrentPage);
@@ -1843,7 +1844,7 @@
                     return;
                 }
 
-                if(!sessionStorage.guardianOnly === "true" && !activate_finish_btn){
+                if(guardianOnly === true && !activate_finish_btn){
                     return;
                 }
 
@@ -1961,7 +1962,7 @@
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
-                if(sessionStorage.guardianOnly === "true" || sessionStorage.patient_type === "Drug refill") {
+                if(guardianOnly === true || sessionStorage.patient_type === "Drug refill") {
                     var obs = {
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
@@ -2771,6 +2772,7 @@
                 var family_planning_method_to_take_concept_id = 1618;
                 var tubal_ligation_value_coded = 1719;
                 var refer_to_art_clinician_concept_id = 6969;
+                var patient_present_concept_id = 1805
 
                 var tubal_ligation_url = apiProtocol + "://" + apiURL + ":" + apiPort;
                 tubal_ligation_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
@@ -2787,6 +2789,11 @@
                 refer_to_clinician_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
                 refer_to_clinician_url += "&concept_id=" + refer_to_art_clinician_concept_id;
                 refer_to_clinician_url += "&obs_datetime=" + sessionStorage.sessionDate;
+                
+                var patient_present_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+                patient_present_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+                patient_present_url += "&concept_id=" + patient_present_concept_id;
+                patient_present_url += "&obs_datetime=" + sessionStorage.sessionDate;
 
                 var xhttp1 = new XMLHttpRequest();
                 xhttp1.onreadystatechange = function () {
@@ -2832,7 +2839,23 @@
                                             refer_to_clinician_already_asked = true;
                                         }
 
+                                var xhttp5 = new XMLHttpRequest();
+                                xhttp5.onreadystatechange = function () {
+                                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                                        var patient_present_observations = JSON.parse(this.responseText);
+                                        if (patient_present_observations.length > 0){
+                                            if(patient_present_observations[0].value_coded === 1066) {
+                                                guardianOnly = true;
+                                            }
+                                        }
+
                                         gotoNextPage();
+                                    }
+                                };
+                                xhttp5.open("GET", patient_present_url, true);
+                                xhttp5.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                                xhttp5.setRequestHeader('Content-type', "application/json");
+                                xhttp5.send();
                                     }
                                 };
                                 xhttp3.open("GET", refer_to_clinician_url, true);
@@ -2846,6 +2869,7 @@
                         xhttp2.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
                         xhttp2.setRequestHeader('Content-type', "application/json");
                         xhttp2.send();
+
                     }
                 };
 
@@ -2955,7 +2979,7 @@
 
             <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
             name="observations[][value_coded_or_text]"
-            condition="sessionStorage.guardianOnly === 'true' || sessionStorage.patient_type === 'Drug refill'"
+            condition="guardianOnly === true || sessionStorage.patient_type === 'Drug refill'"
             tt_pageStyleClass="NoKeyboard" multiple="multiple"
             tt_onUnLoad="removeAllergicToCPT();"
             tt_onLoad="changeNextBTN();controlNoneSelection(); setFunctionForSubmittingForm(); 
@@ -4202,7 +4226,7 @@
                     }
                 }
 
-                if(sessionStorage.guardianOnly === "true" || sessionStorage.patient_type === 'Drug refill')
+                if(guardianOnly === true || sessionStorage.patient_type === 'Drug refill')
                     closeCover();
 
                     
