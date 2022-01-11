@@ -397,6 +397,8 @@ function assignNum(age, gender, num) {
     var tds = cells[i].getElementsByTagName('td');
     if(tds[1].innerHTML == age){
       assignTD(tds, num, gender);
+    }else if(tds[1].innerHTML.match(/&lt;1 year/) && age == '<1 year'){
+      assignTD(tds, num, gender);
     }
   }
 }
