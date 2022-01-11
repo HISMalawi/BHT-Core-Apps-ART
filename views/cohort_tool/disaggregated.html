@@ -787,7 +787,8 @@ function updateFNProw() {
   for(var i = 0 ; i < female_rows.length; i++){
     var tds = female_rows[i].getElementsByTagName('td');
     
-    if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+    //if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+    if(tds[1].innerHTML.match(/year/i)) {
       all_female_tx_new_data = [...all_female_tx_new_data, ...parseColumnData(tds[3])]
       all_female_tx_curr_data =[...all_female_tx_curr_data, ...parseColumnData(tds[4])]
       all_female_tx_given_ipt_data = [...all_female_tx_given_ipt_data, ...parseColumnData(tds[5])]

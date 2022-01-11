@@ -667,7 +667,8 @@ function updateFNProw() {
   for(var i = 0 ; i < female_rows.length; i++){
     var tds = female_rows[i].getElementsByTagName('td');
     
-    if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+    //if(tds[1].innerHTML.match(/months/i) || tds[1].innerHTML.match(/years/)) {
+    if(tds[1].innerHTML.match(/year/i)) {
       var tx_new_data = parseColumnData(tds[3])
       var tx_cur_data = parseColumnData(tds[4])
 
