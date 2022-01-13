@@ -242,6 +242,7 @@
       <tr>
         <th>ARV#</th>
         <th>DOB</th>
+        <th>Gender</th>
         <th>Dispensed date</th>
       </tr>
     </thead>
@@ -464,7 +465,7 @@ function initializePopUpTable() {
 
       td = document.createElement("td");
       td.setAttribute("class", "main-table-td");
-      td.innerHTML = element.birthdate;
+      td.innerHTML = moment(element.birthdate).format("DD/MMM/YYYY");
       tr.appendChild(td);
 
       td = document.createElement("td");
@@ -472,6 +473,10 @@ function initializePopUpTable() {
       td.innerHTML = element.gender;
       tr.appendChild(td);
 
+      td = document.createElement("td");
+      td.setAttribute("class", "main-table-td");
+      td.innerHTML = moment(element.dispensation_date).format("DD/MMM/YYYY");
+      tr.appendChild(td);
 
       // for(var i = 0; i< drugs_info.length; i++){
       //   var tTr = document.createElement("tr");
