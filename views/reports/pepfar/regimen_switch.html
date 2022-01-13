@@ -189,6 +189,10 @@ function loadClients(info) {
   var formatted_data = [];
   var c = 0;
 
+  for (const patient_id in info) {
+    console.log(info[patient_id].arv_number)
+  }
+
   for (var patient_id in info) {
     var data = info[patient_id];
 
