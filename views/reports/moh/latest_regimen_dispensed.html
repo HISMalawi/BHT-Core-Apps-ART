@@ -220,7 +220,7 @@ function loadClients(info) {
 			const data = info[patient_id][order_id];
 			let pack_sizes = data.pack_sizes;
 			let drug_name = data.name;
-			let identifier = data.identifier;
+			let identifier = data.identifier || 'N/A';
 			let dispensation_date = moment(data.dispensation_date).format("DD/MMM/YYYY");
 			let birthdate = data.birthdate ? moment(data.birthdate).format("DD/MMM/YYYY") : 'N/A';
 			let quantity = data.quantity;
