@@ -254,12 +254,12 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: sessionStorage.currentLocation + ' client regimen report: ' + period,
+        title: `MoH ${sessionStorage.currentLocation}` + ' client regimen report: ' + period,
         footer: true 
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' client regimen report: ' + period 
+        title: `MoH ${sessionStorage.currentLocation}` + ' client regimen report: ' + period 
       }
     ],
     columnDefs: [

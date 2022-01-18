@@ -194,7 +194,7 @@ function loadClients(info) {
     var family_name = data.family_name;
     var gender = data.gender;
     var birthdate = moment(data.birthdate).format('DD/MMM/YYYY');
-    var arv_num = data.arv_number;
+    var arv_num = data.arv_number || 'N/A';
     var previous_reg = data.previous_regimen;
     var current_reg = data.current_regimen;
     var medications = [];
@@ -231,12 +231,12 @@ function loadClients(info) {
     buttons: [
       {
         extend: 'csv',
-        title: 'Clinc ' + sessionStorage.currentLocation + ' client regimen swicth report: ' + period,
+        title: 'Clinc ' + sessionStorage.currentLocation + ' client regimen switch report: ' + period,
         footer: true 
       },
       {
         extend: 'pdf',
-        title: sessionStorage.currentLocation + ' client regimen history report: ' + period 
+        title: 'Clinc ' + sessionStorage.currentLocation + ' client regimen switch report: ' + period
       }
     ],
     columnDefs: [
