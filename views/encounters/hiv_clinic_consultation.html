@@ -4101,9 +4101,13 @@
             function offerCxCa() {
                 if(!sessionStorage.patientGender.match(/F/i))
                     return false;
+                
 
                 if(!activateCxCascreening)
                     return false;
+
+                if($('pregnant').value === 'YES') 
+                    return false 
 
                 if(clientWithinCxCaRange() && clientCxCaDue()){
                     return true;
