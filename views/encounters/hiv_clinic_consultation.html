@@ -643,6 +643,7 @@
             var current_patient_bmi = '22.4'
             var current_weight_percentile = ''
             var everReceivedARTAnswer = '';
+            var patientCurrentlyPregnant = false;
             var familyPlanningLogic = {
                 "ORAL CONTRACEPTIVE PILLS": {
                     "DEPO-PROVERA": 'N', "INTRAUTERINE CONTRACEPTION": 'N', 'CONTRACEPTIVE IMPLANT': 'N',
@@ -4070,6 +4071,7 @@
                 if (this.readyState == 4 ) {
                     if (this.status == 201 || this.status == 200 ) {
                         last_cxca_details = JSON.parse(this.responseText);
+                        patientPregnant();
                     }
                 }
                 };
@@ -4079,6 +4081,28 @@
                 xhttp.send();
             }
 
+            function patientPregnant() {
+                let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += "/observations?person_id=" + sessionStorage.patientID;
+                url += "&concept_id=" +  6131;
+                url += "&obs_datetime=" + sessionStorage.sessionDate;
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        let data = JSON.parse(this.responseText);
+                        if(data[0].value_coded === 1065) {
+                            patientCurrentlyPregnant = true;
+                        }
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
             var last_cxca_details;
 
             function clientCxCaDue(){
@@ -4110,7 +4134,8 @@
 
                 if(!activateCxCascreening)
                     return false;
-
+                if(patientCurrentlyPregnant) 
+                    return false
                 if($('pregnant').value === 'YES') 
                     return false 
 
