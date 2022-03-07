@@ -182,7 +182,6 @@ function loadList(info) {
   let c = 1;
 
   for (const category of info) {
-		console.log(category)
   	formatted_data.push([c++, category.name, addLink(category.name, category.units)]); 
 		drillDownData[category.name] = [];
 		for(const dispensation of category.dispensations){
@@ -320,6 +319,9 @@ function selectClient(patient_id) {
   vertical-align: middle;
 }
 
+#closeBTN {
+  float: left;
+}
 </style>
 
 <script>
@@ -384,7 +386,7 @@ function drillDown(name){
   container.innerHTML += `<div id="drill-down-buttons">
     <button id="closeBTN" style="width: 110px;" class="button green navButton" onmousedown="closePopUP();"><span>Close</span></button>
   </div>`;
-  beautifyTable();
+  beautifyTable(name);
 }
 
 function closePopUP(){
@@ -392,7 +394,7 @@ function closePopUP(){
 	$("report-cover").style = "display: none;";
 }
 
-function beautifyTable(){
+function beautifyTable(name){
   jQuery('#table2').DataTable( {
     fixedHeader:    true,
     searching:      false,
@@ -404,10 +406,14 @@ function beautifyTable(){
     lengthChange:   false,
     paging:         false,
     dom: 'Bfrtip',
+    columnDefs: [{
+      targets: 0, type: 'natural',
+      targets: 3, type: 'date'
+    } ],
     buttons: [
       {
         extend: 'csv',
-        title: 'PEPFAR' + sessionStorage.currentLocation + ' SC ARV dispensation drill down: '
+        title: 'PEPFAR' + sessionStorage.currentLocation + `${name} SC ARV dispensation drill drillDown`
       }
     ],
     columnDefs: [
