@@ -367,7 +367,8 @@ function initializePopUpTable() {
     let count = 1
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
-          if(element !== "Unknown") {
+        console.log(element);
+          if(element !== "Unknown" && element !== "Location") {
             rows.push({
               number: count,
               age_group: element,
