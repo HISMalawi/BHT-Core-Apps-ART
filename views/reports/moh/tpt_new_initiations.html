@@ -286,6 +286,7 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>District</th>
         <th>Age group</th>
         <th>Gender</th>
         <th>3HP</th>
@@ -365,19 +366,21 @@ function initializePopUpTable() {
     var genders = ["M", "F"];
     const client_sex = ["F", "M"];
     let count = 1
+    let location = data.Location;
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
         console.log(element);
           if(element !== "Unknown" && element !== "Location") {
             rows.push({
               number: count,
+              location: location,
               age_group: element,
               gender: gender,
               threehp: data[element]["3HP"][gender],
               sixh: data[element]["6H"][gender],
 
             })
-            data_table.row.add([count, element, gender,
+            data_table.row.add([count, location, element, gender,
               setDrillClients(data[element]["3HP"][gender], count, "threehp"),
               setDrillClients(data[element]["6H"][gender], count, "sixh"),
             ]).draw()
