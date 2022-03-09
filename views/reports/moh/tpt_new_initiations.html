@@ -286,10 +286,13 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>District</th>
         <th>Age group</th>
         <th>Gender</th>
-        <th>3HP</th>
-        <th>6H</th>
+        <th>3HP (Started New on ART)</th>
+        <th>3HP (Started Previously on ART)</th>
+        <th>6H (Started New on ART)</th>
+        <th>6H (Started Previously on ART)</th>
       </tr>
     </thead>
     <tfoot>
@@ -365,24 +368,31 @@ function initializePopUpTable() {
     var genders = ["M", "F"];
     const client_sex = ["F", "M"];
     let count = 1
+    let location = data.Location;
     client_sex.forEach(gender => {
       Object.keys(data).forEach((element, index) => {
-          if(element !== "Unknown") {
+        console.log(element);
+          if(element !== "Unknown" && element !== "Location") {
             rows.push({
               number: count,
+              location: location,
               age_group: element,
               gender: gender,
-              threehp: data[element]["3HP"][gender],
-              sixh: data[element]["6H"][gender],
+              threehpnew: data[element]["3HP_new"][gender],
+              threehpprev: data[element]["3HP_prev"][gender],
+              sixhnew: data[element]["6H_new"][gender],
+              sixhprev: data[element]["6H_prev"][gender],
 
             })
-            data_table.row.add([count, element, gender,
-              setDrillClients(data[element]["3HP"][gender], count, "threehp"),
-              setDrillClients(data[element]["6H"][gender], count, "sixh"),
+            data_table.row.add([count, location, element, gender,
+              setDrillClients(data[element]["3HP_new"][gender], count, "threehpnew"),
+              setDrillClients(data[element]["3HP_prev"][gender], count, "threehpprev"),
+              setDrillClients(data[element]["6H_new"][gender], count, "sixhnew"),
+              setDrillClients(data[element]["6H_prev"][gender], count, "sixhprev"),
             ]).draw()
 
-            total_3hp_clients += data[element]["3HP"][gender].length;
-            total_IPT_clients += data[element]["6H"][gender].length;
+            total_3hp_clients += data[element]["3HP_new"][gender].length + data[element]["3HP_prev"][gender].length;
+            total_IPT_clients += data[element]["6H_new"][gender].length +  data[element]["6H_prev"][gender].length;
             count++;
           }
       });
