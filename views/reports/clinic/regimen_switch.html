@@ -136,7 +136,7 @@ function buildDataTable(e) {
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
   table.appendChild(tfoot);
-  var headers = ['ARV#','Gender','DOB','Prev.Reg','Curr.Reg','ARVs', 'Curr.reg dispensed'];
+  var headers = ['ARV#','Gender','DOB','ART start date', 'Weight','Prev.Reg','Curr.Reg','ARVs', 'Curr.reg dispensed'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -153,9 +153,15 @@ function buildDataTable(e) {
       th.setAttribute('class', 'family_name');
 
     if(i == 3) 
-      th.setAttribute('class', 'gender');
+      th.setAttribute('class', 'start-date');
 
     if(i == 4) 
+      th.setAttribute('class', 'weight');
+
+    if(i == 5) 
+      th.setAttribute('class', 'gender');
+
+    if(i == 6) 
       th.setAttribute('class', 'birthdate');
   
   }
@@ -194,6 +200,8 @@ function loadClients(info) {
     var family_name = data.family_name;
     var gender = data.gender;
     var birthdate = moment(data.birthdate).format('DD/MMM/YYYY');
+    var start_date = moment(data.art_start_date).format('DD/MMM/YYYY');
+    var weight = data.current_weight;
     var arv_num = data.arv_number || 'N/A';
     var previous_reg = data.previous_regimen;
     var current_reg = data.current_regimen;
@@ -206,7 +214,7 @@ function loadClients(info) {
       prescription_date = moment(meds[i].start_date).format('DD/MMM/YYYY');
     }  
   
-    formatted_data.push([arv_num, gender, birthdate, previous_reg,
+    formatted_data.push([arv_num, gender, birthdate, start_date, weight, previous_reg,
     current_reg, medications.join('<br />'), prescription_date]);
   }
  
