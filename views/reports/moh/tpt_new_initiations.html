@@ -290,8 +290,8 @@
         <th>Age group</th>
         <th>Gender</th>
         <th>3HP (Started New on ART)</th>
-        <th>3HP (Started Previously on ART)</th>
         <th>6H (Started New on ART)</th>
+        <th>3HP (Started Previously on ART)</th>
         <th>6H (Started Previously on ART)</th>
       </tr>
     </thead>
@@ -379,15 +379,15 @@ function initializePopUpTable() {
               age_group: element,
               gender: gender,
               threehpnew: data[element]["3HP_new"][gender],
-              threehpprev: data[element]["3HP_prev"][gender],
               sixhnew: data[element]["6H_new"][gender],
+              threehpprev: data[element]["3HP_prev"][gender],
               sixhprev: data[element]["6H_prev"][gender],
 
             })
             data_table.row.add([count, location, element, gender,
               setDrillClients(data[element]["3HP_new"][gender], count, "threehpnew"),
-              setDrillClients(data[element]["3HP_prev"][gender], count, "threehpprev"),
               setDrillClients(data[element]["6H_new"][gender], count, "sixhnew"),
+              setDrillClients(data[element]["3HP_prev"][gender], count, "threehpprev"),
               setDrillClients(data[element]["6H_prev"][gender], count, "sixhprev"),
             ]).draw()
 
