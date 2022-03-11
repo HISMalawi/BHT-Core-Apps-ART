@@ -861,7 +861,7 @@ function isARTPrescribed() {
 //isARTPrescribed();
 
 function getCPTDosage() {
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/cpt_dosage/";
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/cpt_dosage";
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -876,7 +876,7 @@ function getCPTDosage() {
 }
 
 function getIPTDosage() {
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/ipd_dosage/";
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/ipd_dosage";
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -2401,7 +2401,7 @@ function prescribed3HP(){
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
             var obj = JSON.parse(this.responseText);
             for(var i = 0; i < obj.length; i++){
-                if(parseInt(obj[i].value_coded) === 9974)
+                if([10565, 9974].indexOf(obj[i].value_coded) > -1 )
                     prescribed_3hp = true;
                     
             }

@@ -1960,6 +1960,7 @@
                 var cpt_concept_id = 916
                 var ipt_concept_id = 656
                 var rfp_concept_id = 9974
+                var rfp_two_concept_id = 10565
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
@@ -1968,7 +1969,7 @@
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
                     }
-                    var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
+                    var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)","3HP (INH 300 / RFP 300)"];
                     if (__$('touchscreenInput' + tstCurrentPage)) {
                         var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2002,6 +2003,12 @@
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
                                             value_coded: rfp_concept_id
+                                        })
+                                    }
+                                    if (selected_drugs[i] == "3HP (INH 300 / RFP 300)") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: rfp_two_concept_id
                                         })
                                     }
                                 }
@@ -2245,7 +2252,7 @@
 
                 }
 
-                var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
+                var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)","3HP (INH 300 / RFP 300)"];
                 if (__$('touchscreenInput' + tstCurrentPage)) {
                     var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2279,6 +2286,12 @@
                                     obs.observations.push({
                                         concept_id: medication_orders_concept_id,
                                         value_coded: rfp_concept_id
+                                    })
+                                }
+                                if (selected_drugs[i] == "3HP (INH 300 / RFP 300)") {
+                                    obs.observations.push({
+                                        concept_id: medication_orders_concept_id,
+                                        value_coded: rfp_two_concept_id
                                     })
                                 }
                             }
@@ -2990,7 +3003,8 @@
             controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <!--option value="3HP (RFP + INH)">3HP (RFP + INH)</option-->
+               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+                <option value="3HP (INH 300 / RFP 300)">3HP (INH 300 / RFP 300)</option>
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3971,6 +3985,7 @@
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                 <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+                <option value="3HP (INH 300 / RFP 300)">3HP (INH 300 / RFP 300)</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
@@ -4202,7 +4217,7 @@
 
             function controlNoneSelection() {
                 var  inputFrame =  document.getElementById("inputFrame" + tstCurrentPage);
-                inputFrame.style = "position: absolute; top: 150px;width: 96% !important; height: 345px !important;";
+                inputFrame.style = "position: absolute; top: 150px;width: 96% !important; height: 385px !important;";
                 var helpText =  document.getElementById("helpText" + tstCurrentPage);
                 helpText.style =  "width: 99%;";
                 var currentMeds = document.createElement("span");
@@ -4597,7 +4612,7 @@
                 var options  = select_options.children;
                 
                 for(var i = 0; i < options.length; i++){
-                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
+                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue").match(/3HP/i)){
                         if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
@@ -4620,31 +4635,47 @@
                 var options  = select_options.children;
                 var ipt_option;
                 var rfp_option;
+                var rfp_two_option;
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
                     }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         rfp_option = options[i];
+                    }else if(options[i].getAttribute("tstvalue") == "3HP (INH 300 / RFP 300)"){
+                        rfp_two_option = options[i];
                     }
                 } 
 
-                if(ipt_option == undefined || rfp_option == undefined)
+                if(ipt_option == undefined || rfp_option == undefined || rfp_two_option == undefined)
                     return;
 
                 try {
-                    if(rfp_option.getAttribute("style").match(/lightblue/i)){
-                        if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                    if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                        if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
                             messageCover.style = "display: inline;";
                             messageDiv.style = "display: inline;";
                             return;
                         }
                     }
                 }catch(e){
-                    //return;
+                    //console.log(e);
                 }
 
-                if(rfp_option.getAttribute("style").match(/lightblue/i)){
+                try {        
+                    if( rfp_option.getAttribute("style").match(/lightblue/i) && rfp_two_option.getAttribute("style").match(/lightblue/i) ){
+                        if(e.id == rfp_option.id){
+                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), rfp_two_option);
+                        }else{
+                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), rfp_option);
+                        }
+                    }
+                }catch(e){
+
+                }
+
+
+                if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
                     checkIfClientWantstogetPregnant();
                 }
 
