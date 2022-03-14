@@ -4312,6 +4312,7 @@
                 tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 tb_status = __$('tb_status').value.toUpperCase();
                 allergicToSulphur = $('allergic_to_sulphur').value.toUpperCase();
+                tpt_history = __$('touchscreenInput70').value.toUpperCase();
 
                 if (allergicToSulphur.toUpperCase() == 'YES') {
                     //cpt_option_input.style.backgroundColor = '#CDBA96';
@@ -4384,19 +4385,48 @@
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
                 var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
+                var rfp_option_two_input = jQuery("[tstvalue='3HP (INH 300 / RFP 300)']")[0];
 
                 var ipt_id = ipt_option_input.id;
                 var cpt_id = cpt_option_input.id;
                 var rfp_id = rfp_option_input.id;
+                var rfp_two_id = rfp_option_two_input.id;
 
                 
                 var ipt_input = document.getElementById('optionValue' + ipt_id);
                 var cpt_input = document.getElementById('optionValue' + cpt_id);
                 var rfp_input = document.getElementById('optionValue' + rfp_id);
+                var rfp_two_input = document.getElementById('optionValue' + rfp_two_id);
                 
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
                 var allergicToSulphur = $('allergic_to_cotrimoxazole').value.toUpperCase();
+                var tpt_history = document.getElementById("routine_tb_therapy").value.toUpperCase();
+
+                if (parseFloat(sessionStorage.currentWeight) < 20) {
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (WEIGHT BELOW REGULATION)</span>";
+                    rfp_option_input.removeAttribute('onclick');
+                    rfp_option_input.setAttribute("onmousedown", "");
+                    rfp_option_input.removeAttribute("onmouseup");
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
+                if (parseFloat(sessionStorage.currentWeight) < 25) {
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (WEIGHT BELOW REGULATION)</span>";
+                    rfp_option_two_input.onclick = null;
+                    //rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.setAttribute("onmousedown", "");
+
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
 
                 if (allergicToSulphur.toUpperCase() == 'YES') {
                     //cpt_option_input.style.backgroundColor = '#CDBA96';
@@ -4494,6 +4524,64 @@
                     img_input.alt = '';
                 }
 
+                if(tpt_history == 'CURRENTLY ON 3HP'){
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on 3HP)</span>";
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on 3HP)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on 3HP)</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
+                if(tpt_history == 'CURRENTLY ON IPT'){
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on IPT)</span>";
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on IPT)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on IPT)</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
                 if(ever_completed_tb_therapy == false) {
                     if(pastTPTdispensation["Isoniazid"] != undefined && 
                         pastTPTdispensation["Rifapentine"] == undefined){
@@ -4548,6 +4636,15 @@
                         img_input = rfp_option_input.getElementsByTagName("img")[0];
                         img_input.src = '';
                         img_input.alt = '';
+
+                        rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TPT completed)</span>";
+                        rfp_option_two_input.onclick = null;
+                        rfp_option_two_input.onmousedown = null;
+                        rfp_option_two_input.onmouseup = null;
+
+                        img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
                     }
 
                 } 
@@ -4571,6 +4668,15 @@
                     rfp_option_input.onmouseup = null;
 
                     img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
                   }
@@ -4613,7 +4719,7 @@
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue").match(/3HP/i)){
-                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i)){
+                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;

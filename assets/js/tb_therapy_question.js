@@ -143,7 +143,7 @@ function display3HPsideEffects(){
 }
 
 function autoSelectMedication(){
-  if(!activate_3HP_auto_select)
+  if(!activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) < 20)
     return;
 
   var select_options = document.getElementById("tt_currentUnorderedListOptions");
@@ -227,7 +227,8 @@ function set3HPdisplay(){
 }
 
 function validate3HPdeSelection(){
-  if(!activate_3HP_auto_select)
+  
+  if(!activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) < 20)
     return;
 
   var select_options = document.getElementById("tt_currentUnorderedListOptions");
