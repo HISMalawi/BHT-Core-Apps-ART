@@ -820,7 +820,7 @@ function getMedicationOrders() {
     medication_order_date = medication_order_date.getFullYear() + "-" + (medication_order_date.getMonth() + 1) + "-" + medication_order_date.getDate()
 
     var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/1/patients/" + sessionStorage.patientID + "/dosages?date=" + medication_order_date;
-    var medication_order_concept_id = 1282;
+    //var medication_order_concept_id = 1282;
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
@@ -2264,8 +2264,8 @@ function buildFastTrackMedicationTable(){
 
     for (var drugName in medication_orders) {
         var am_dose = medication_orders[drugName]["am"];
-        var concept_id = medication_orders[drugName]["concept_id"];
-        var drug_id = medication_orders[drugName]["drug_id"];
+        /*var concept_id = medication_orders[drugName]["concept_id"];
+        var drug_id = medication_orders[drugName]["drug_id"];*/
         var drug_name = medication_orders[drugName]["drug_name"];
         var pm_dose = medication_orders[drugName]["pm"];
         var units = medication_orders[drugName]["units"];
