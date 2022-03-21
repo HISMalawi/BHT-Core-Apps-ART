@@ -223,11 +223,8 @@ function initializeTable() {
         <th class="disaggregated-numbers">TX curr (receiving ART)</th>
         <th class="disaggregated-numbers">TX curr (received IPT)</th>
         <th class="disaggregated-numbers">TX curr (screened for TB)</th>
-        <th class="disaggregated-numbers">0A</th>
-        <th class="disaggregated-numbers">2A</th>
         <th class="disaggregated-numbers">4A</th>
         <th class="disaggregated-numbers">5A</th>
-        <th class="disaggregated-numbers">6A</th>
         <th class="disaggregated-numbers">7A</th>
         <th class="disaggregated-numbers">8A</th>
         <th class="disaggregated-numbers">9A</th>
@@ -237,19 +234,22 @@ function initializeTable() {
         <th class="disaggregated-numbers">13A</th>
         <th class="disaggregated-numbers">14A</th>
         <th class="disaggregated-numbers">15A</th>
-        <th class="disaggregated-numbers">16A</th>
         <th class="disaggregated-numbers">17A</th>
-        <th class="disaggregated-numbers">0P</th>
-        <th class="disaggregated-numbers">2P</th>
-        <th class="disaggregated-numbers">4P</th>
-        <th class="disaggregated-numbers">9P</th>
-        <th class="disaggregated-numbers">11P</th>
+        <th class="disaggregated-numbers">4PP</th>
+        <th class="disaggregated-numbers">4PA</th>
+        <th class="disaggregated-numbers">9PP</th>
+        <th class="disaggregated-numbers">9PA</th>
+        <th class="disaggregated-numbers">11PP</th>
+        <th class="disaggregated-numbers">11PA</th>
+        <th class="disaggregated-numbers">12PP</th>
+        <th class="disaggregated-numbers">12PA</th>
         <th class="disaggregated-numbers">14PP</th>
-        <th class="disaggregated-numbers">14P</th>
+        <th class="disaggregated-numbers">14PA</th>
         <th class="disaggregated-numbers">15PP</th>
-        <th class="disaggregated-numbers">15P</th>
-        <th class="disaggregated-numbers">16P</th>
-        <th class="disaggregated-numbers">17P</th>
+        <th class="disaggregated-numbers">15PA</th>
+        <th class="disaggregated-numbers">17PP</th>
+        <th class="disaggregated-numbers">17PA</th>
+        <!--th class="disaggregated-numbers">17P</th-->
         <th class="disaggregated-numbers">Unknown</th>
         <th class="disaggregated-numbers">Total (regimen)</th>
       </tr>
@@ -423,7 +423,7 @@ function addMales() {
 
   data_table.row.add([41,'All', 'Male', tx_new, tx_curr, 
     tx_given_ipt, tx_screened_for_tb,
-    0,0,0,0,0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0]).node().id = 'all-males'; 
+    0,0,0,0,0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0]).node().id = 'all-males'; 
   data_table.draw();
   addClass('all-males');
   updateMaleTotals('all-males', num)
@@ -637,7 +637,7 @@ function addTableBody() {
       table_body.appendChild(tr);
       var td_count = 0;
 
-      while (td_count < 36) {
+      while (td_count < 35) {
         var td = document.createElement('td');
         tr.appendChild(td);
         if(td_count == 0)
@@ -707,7 +707,7 @@ function loadAllFemale(data, age_group) {
 
       data_table.row.add([count,'All', g, tx_new, tx_curr, 
         tx_given_ipt, tx_screened_for_tb,
-        0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0]).node().id = age_group.toLowerCase();
+        0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0]).node().id = age_group.toLowerCase();
       data_table.draw();
       addClass(age_group.toLowerCase()); 
 
@@ -727,7 +727,7 @@ function loadAllFemale(data, age_group) {
   }
 
   if(age_group == 'Pregnant') {
-    data_table.row.add([43,'All', 'FNP', 0,0,0,0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'fnp';
+    data_table.row.add([43,'All', 'FNP', 0,0,0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0]).node().id = 'fnp';
     data_table.draw();
 
     var tr = document.getElementById("fnp");;
@@ -1047,150 +1047,146 @@ function addRegimen(data, tds){
   var total = 0;
   var total_data = []
   for(var regimen in  data){
-    if(regimen == '0A') {
+    if(regimen == '4A') {
       tds[7].innerHTML = data[regimen].length;
       assignLink(tds[7], data[regimen]);
     }
 
-    if(regimen == '2A'){
+    if(regimen == '5A'){
       tds[8].innerHTML = data[regimen].length;
       assignLink(tds[8], data[regimen]);
     }
 
-    if(regimen == '4A') {
+    if(regimen == '7A') {
       tds[9].innerHTML = data[regimen].length;
       assignLink(tds[9], data[regimen])
     }
 
-    if(regimen == '5A'){
+    if(regimen == '8A'){
       tds[10].innerHTML = data[regimen].length;
       assignLink(tds[10], data[regimen]);
     }
     
-    if(regimen == '6A'){
+    if(regimen == '9A'){
       tds[11].innerHTML = data[regimen].length;
       assignLink(tds[11], data[regimen]);
     }
 
-    if(regimen == '7A'){
+    if(regimen == '10A'){
       tds[12].innerHTML = data[regimen].length;
       assignLink(tds[12], data[regimen]);
     }
     
-    if(regimen == '8A') {
+    if(regimen == '11A') {
       tds[13].innerHTML = data[regimen].length;
       assignLink(tds[13], data[regimen]);
     }
     
-    if(regimen == '9A') {
+    if(regimen == '12A') {
       tds[14].innerHTML = data[regimen].length;
       assignLink(tds[14], data[regimen]);
     }
     
-    if(regimen == '10A') {
+    if(regimen == '13A') {
       tds[15].innerHTML = data[regimen].length;
       assignLink(tds[15], data[regimen]);
     }
     
-    if(regimen == '11A'){
+    if(regimen == '14A'){
       tds[16].innerHTML = data[regimen].length;
       assignLink(tds[16], data[regimen]);
     }
     
-    if(regimen == '12A'){
+    if(regimen == '5A'){
       tds[17].innerHTML = data[regimen].length;
       assignLink(tds[17], data[regimen]);
     }
     
-    if(regimen == '13A') {
+    if(regimen == '17A') {
       tds[18].innerHTML = data[regimen].length;
       assignLink(tds[18], data[regimen]);
     }
 
-    if(regimen == '14A'){
+    if(regimen == '4PP'){
       tds[19].innerHTML = data[regimen].length;
       assignLink(tds[19], data[regimen]);
     }
 
-    if(regimen == '15A'){
+    if(regimen == '4PA'){
       tds[20].innerHTML = data[regimen].length;
       assignLink(tds[20], data[regimen]);
     }
     
-    if(regimen == '16A'){
+    if(regimen == '9PP'){
       tds[21].innerHTML = data[regimen].length;
       assignLink(tds[21], data[regimen]);
     }
     
-    if(regimen == '17A'){
+    if(regimen == '9PA'){
       tds[22].innerHTML = data[regimen].length;
       assignLink(tds[22], data[regimen]);
     }
     
-    if(regimen == '0P'){
+    if(regimen == '11PP'){
       tds[23].innerHTML = data[regimen].length;
       assignLink(tds[23], data[regimen]);
     }
     
-    if(regimen == '2P'){
+    if(regimen == '11PA'){
       tds[24].innerHTML = data[regimen].length;
       assignLink(tds[24], data[regimen]);
     }
     
-    if(regimen == '4P'){
+    if(regimen == '12PP'){
       tds[25].innerHTML = data[regimen].length;
       assignLink(tds[25], data[regimen]);
     }
     
-    if(regimen == '9P'){
+    if(regimen == '12PA'){
       tds[26].innerHTML = data[regimen].length;
       assignLink(tds[26], data[regimen]);
     }
     
-    if(regimen == '11P'){
+    if(regimen == '14PP'){
       tds[27].innerHTML = data[regimen].length;
       assignLink(tds[27], data[regimen]);
     }
     
-    if(regimen == '14PP'){
+    if(regimen == '14PA'){
       tds[28].innerHTML = data[regimen].length;
       assignLink(tds[28], data[regimen]);
     }
     
-    if(regimen == '14P'){
+    if(regimen == '15PP'){
       tds[29].innerHTML = data[regimen].length;
       assignLink(tds[29], data[regimen]);
     }
     
-    if(regimen == '15PP'){
+    if(regimen == '15PA'){
       tds[30].innerHTML = data[regimen].length;
       assignLink(tds[30], data[regimen]);
     }
     
-    if(regimen == '15P'){
+    if(regimen == '17PP'){
       tds[31].innerHTML = data[regimen].length;
       assignLink(tds[31], data[regimen]);
     }
     
-    if(regimen == '16P'){
+    if(regimen == '17PA'){
       tds[32].innerHTML = data[regimen].length;
       assignLink(tds[32], data[regimen]);
     }
     
-    if(regimen == '17P'){
+    if(regimen == 'N/A'){
       tds[33].innerHTML = data[regimen].length;
       assignLink(tds[33], data[regimen]);
-    }
-    if(regimen == 'N/A'){
-      tds[34].innerHTML = data[regimen].length;
-      assignLink(tds[34], data[regimen]);
     }
     total_data = [...total_data, ...data[regimen]]
     total += data[regimen].length;
   }
 
-  tds[35].innerHTML = total;
-  assignLink(tds[35], total_data)
+  tds[34].innerHTML = total;
+  assignLink(tds[34], total_data)
 
   if(allRows.length > 0){
     fetchRegimens(allRows[0]);
