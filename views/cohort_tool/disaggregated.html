@@ -134,7 +134,7 @@ function initializeTable() {
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
                   API Version ${sessionStorage.apiVersion}
-                  Vbox ID: ${sessionStorage.vboxID}`;
+                  Site UUID: ${sessionStorage.siteUUID}`;
   data_table = $('#example').DataTable({
     fixedHeader: true,
     searching: false,
@@ -308,7 +308,7 @@ function initializeReport() {
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
                   API Version ${sessionStorage.apiVersion}
-                  Vbox ID: ${sessionStorage.vboxID}`;
+                  Site UUID: ${sessionStorage.siteUUID}`;
   if(quarter == 'Custom'){
     url += "&start_date=" + start_date;
     url += "&end_date=" + end_date;
