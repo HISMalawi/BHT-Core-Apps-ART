@@ -275,7 +275,7 @@ function showDisaggregatedReport(){
 <table>
   <tr id="version-row">
     <td class="numbers">&nbsp;</td>
-    <td colspan="4" id="version">Version 27</td>
+    <td colspan="4" id="version">Version 28</td>
   </tr>
   <tr>
     <td class="numbers">1.</td>
@@ -1077,7 +1077,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">4</td>
-    <td><a class="regimen" href="#" @click="drillDown('four_p');" id="four_p"><!-- four_p --></a></td>
+    <td>
+      <div class="granules">
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><span>PP</span></div>
+          <div class="granules-cell"><span>PA</span></div>
+        </div>
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('four_pp');" id="four_pp">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('four_pa');" id="four_pa">0</a></div>
+        </div>
+      </div>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('four_a');" id="four_a"><!-- four_a --></a></td>
   </tr>
   
@@ -1155,12 +1166,12 @@ function showDisaggregatedReport(){
     <td>
       <div class="granules">
         <div class="granules-row">
-          <div class="granules-cell granules-right-td"><span>Tabs</span></div>
-          <div class="granules-cell"><span>Granules</span></div>
+          <div class="granules-cell granules-right-td"><span>PP</span></div>
+          <div class="granules-cell"><span>PA</span></div>
         </div>
         <div class="granules-row">
-          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('nine_p_tabs');" id="nine_p_tabs">0</a></div>
-          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('nine_p_granules');" id="nine_p_granules">0</a></div>
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('nine_pp');" id="nine_pp">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('nine_pa');" id="nine_pa">0</a></div>
         </div>
       </div>
     </td>
@@ -1196,12 +1207,12 @@ function showDisaggregatedReport(){
     <td>
       <div class="granules">
         <div class="granules-row">
-          <div class="granules-cell granules-right-td"><span>Tabs</span></div>
-          <div class="granules-cell"><span>Granules</span></div>
+          <div class="granules-cell granules-right-td"><span>PP</span></div>
+          <div class="granules-cell"><span>PA</span></div>
         </div>
         <div class="granules-row">
-          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('eleven_p_tabs');" id="eleven_p_tabs">0</a></div>
-          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('eleven_p_granules');" id="eleven_p_granules">0</a></div>
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('eleven_pp');" id="eleven_pp">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('eleven_pa');" id="eleven_pa">0</a></div>
         </div>
       </div>
     </td>
@@ -1219,7 +1230,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">12</td>
-    <td style="background-color:#D9D9D9;">&nbsp;</td>
+    <td>
+      <div class="granules">
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><span>PP</span></div>
+          <div class="granules-cell"><span>PA</span></div>
+        </div>
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('twelve_pp');" id="twelve_pp">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('twelve_pa');" id="twelve_pa">0</a></div>
+        </div>
+      </div>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('twelve_a');" id="twelve_a"><!-- twelve_a --></a></td>
   </tr>
   
@@ -1253,11 +1275,11 @@ function showDisaggregatedReport(){
       <div class="granules">
         <div class="granules-row">
           <div class="granules-cell granules-right-td"><span>PP</span></div>
-          <div class="granules-cell"><span>P</span></div>
+          <div class="granules-cell"><span>PA</span></div>
         </div>
         <div class="granules-row">
           <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('fourteen_pp');" id="fourteen_pp">0</a></div>
-          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fourteen_p');" id="fourteen_p">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fourteen_pa');" id="fourteen_pa">0</a></div>
         </div>
       </div>
     </td>
@@ -1279,11 +1301,11 @@ function showDisaggregatedReport(){
       <div class="granules">
         <div class="granules-row">
           <div class="granules-cell granules-right-td"><span>PP</span></div>
-          <div class="granules-cell"><span>P</span></div>
+          <div class="granules-cell"><span>PA</span></div>
         </div>
         <div class="granules-row">
           <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('fifteen_pp');" id="fifteen_pp">0</a></div>
-          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fifteen_p');" id="fifteen_p">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('fifteen_p');" id="fifteen_pa">0</a></div>
         </div>
       </div>
     </td>
@@ -1316,7 +1338,18 @@ function showDisaggregatedReport(){
     <td style="border-right-width:0px; border-bottom-width: 0px;
       border-left-width:0px; border-top-width:0px; text-align:right; padding-right: 5px;
       font-weight:bold;">17</td>
-    <td><a class="regimen" href="#" @click="drillDown('seventeen_p');" id="seventeen_p"><!-- seventeen_p --></a></td>
+    <td>
+      <div class="granules">
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><span>PP</span></div>
+          <div class="granules-cell"><span>PA</span></div>
+        </div>
+        <div class="granules-row">
+          <div class="granules-cell granules-right-td"><a class="regimen" href="#" @click="drillDown('seventeen_pp');" id="seventeen_pp">0</a></div>
+          <div class="granules-cell"><a class="regimen" href="#" @click="drillDown('seventeen_pa');" id="seventeen_pa">0</a></div>
+        </div>
+      </div>
+    </td>
     <td><a class="regimen" href="#" @click="drillDown('seventeen_a');" id="seventeen_a"><!-- seventeen_a --></a></td>
   </tr>
   
@@ -2556,7 +2589,7 @@ function renderResults() {
   tableData.push([ "BHT-Core Version :"+sessionStorage.coreVersion
                     +"    ART Version :"+sessionStorage.ARTVersion
                     +"    API Version :"+sessionStorage.apiVersion
-                    +"    Vbox ID:" + sessionStorage.vboxID
+                    +"    Site UUID:" + sessionStorage.siteUUID
                     +"    Report Period :"+quarter
                     +"    Site :"+sessionStorage.currentLocation,""]);
 
