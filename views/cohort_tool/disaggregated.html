@@ -131,6 +131,8 @@ var data_table;
 
 function initializeTable() {
   document.getElementById("footer-content").innerHTML = `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} 
+                  Quarter: ${start_date}-${$end_date}
+                  QuarterName: ${quarter}
                   BHT-Core Version : ${sessionStorage.coreVersion} 
                   ART Version : ${sessionStorage.ARTVersion} 
                   API Version ${sessionStorage.apiVersion}
