@@ -151,7 +151,7 @@ function buildDataTable(e) {
   tfoot_tr.appendChild(tfoot_td);
   tfoot.appendChild(tfoot_tr);
   table.appendChild(tfoot);*/
-  var headers = ['ARV#','NPID', 'Patient Type', 'First name','Last name', 'Gender','DOB','Date set'];
+  var headers = ['NPID', 'Patient Type', 'First name','Last name', 'Gender','DOB','Date set'];
   
   for(var i = 0 ; i < headers.length ; i++){
     var th = document.createElement('th');
@@ -193,12 +193,11 @@ function loadClients(data) {
     let gender = data[i].gender;
     let patient_type = data[i].patient_type;
     let birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
-    let arv_number = data[i].arv_number;
     let person_id = data[i].patient_id;
     let npid = data[i].npid;
     let date_set = moment(data[i].date_set).format('DD/MMM/YYYY');
     
-    formatted_data.push([arv_number, npid, patient_type, given_name, family_name,
+    formatted_data.push([npid, patient_type, given_name, family_name,
      gender, birthdate, date_set]);
   }
  
@@ -229,14 +228,13 @@ function loadClients(data) {
       }
     ],*/
     columnDefs: [
-      {"className": "dt-arv-number", "targets": 0},
-      {"className": "dt-npid", "targets": 1},
-      {"className": "dt-patient_type", "targets": 2},
+      {"className": "dt-npid", "targets": 0},
+      {"className": "dt-patient_type", "targets": 1},
+      {"className": "dt-name", "targets": 2},
       {"className": "dt-name", "targets": 3},
-      {"className": "dt-name", "targets": 4},
-      {"className": "dt-gender", "targets": 5},
-      {"className": "dt-date", "targets": 6},
-      {"className": "dt-date", "targets": 7}
+      {"className": "dt-gender", "targets": 4},
+      {"className": "dt-date", "targets": 5},
+      {"className": "dt-date", "targets": 6}
     ]
   } );
 
