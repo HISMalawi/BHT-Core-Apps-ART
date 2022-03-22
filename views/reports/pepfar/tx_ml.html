@@ -208,7 +208,7 @@ function initializeTable() {
   date_title += ' - ' + moment(end_date).format('DD/MMM/YYYY');
   document.getElementById('reporting-period').innerHTML = date_title;
   document.getElementById('footer-content').innerHTML =  `Date Created:  ${moment().format('YYYY-MM-DD:h:m:s')} \n 
-                  Quarter: ${start_date}-${$end_date} \n
+                  Quarter: ${start_date} to ${end_date} \n
                   BHT-Core Version : ${sessionStorage.coreVersion} \n
                   ART Version : ${sessionStorage.ARTVersion} \n
                   API Version ${sessionStorage.apiVersion}
