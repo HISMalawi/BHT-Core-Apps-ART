@@ -44,7 +44,7 @@ function prepareForVLcheck() {
   if(nextButton) {
     if(nextButton.innerHTML.match(/Next/i)) {
       nextButtonVL = nextBtn.getAttribute('onmousedown');
-      nextBtn.setAttribute('onmousedown', 'processVLalert();');
+      nextBtn.setAttribute('onmousedown', 'checkIfResultsGiven();');
     }
   }
  

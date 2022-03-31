@@ -47,6 +47,8 @@
     <script type="text/javascript" src="/assets/js/httpUtils.js"></script>
     <script type="text/javascript" src="/assets/js/GlobalProperty.js"></script>
     <link rel="stylesheet" href="/assets/css/lab.min.css" type="text/css">
+
+    <script type="text/javascript" src="../../../../assets/js/labResultsGivenToClient.js"></script>
     <script type="text/javascript" src="/assets/js/lab.min.js"></script>
 
     <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
@@ -68,7 +70,7 @@
     <script type="text/javascript" src="/apps/ART/assets/js/other_side_effects_keyboard.js"></script>
     
     <script type="text/javascript" src="/apps/ART/assets/js/tpt_keyboard.js"></script>
-    
+
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
         var patientGender = sessionStorage.patientGender;
@@ -4111,7 +4113,7 @@
                 if (this.readyState == 4 ) {
                     if (this.status == 201 || this.status == 200 ) {
                         let data = JSON.parse(this.responseText);
-                        if(data[0].value_coded === 1065) {
+                        if(data.length > 0 && data[0].value_coded === 1065) {
                             patientCurrentlyPregnant = true;
                         }
                     }
@@ -5030,7 +5032,7 @@ var reason_for_not_using_fpm = "";
                 margin-top: -5px;
             }
 
-            #tb-treatment-popup-div, #safe-family-planning-popup-div {
+            #tb-treatment-popup-div, #safe-family-planning-popup-div , #results-given-popup-div{
                 display: none;
                 background-color: #F4F4F4;
                 border: 2px solid #E0E0E0;
@@ -5175,6 +5177,43 @@ var reason_for_not_using_fpm = "";
         </div>
 
         <div id="lab-order-cover"></div>
+
+
+
+
+        <div id="results-given-popup-div">
+            <div id="lab-popup-header">
+                <center id='weight_readings_header'>Notification</center>
+            </div>
+            <br/>
+            <div>
+                        <span style="font-size: 16pt;">
+                            <center>
+                                <br/>
+                                Result(s) Given to Client?
+                                <br/>
+                            </center>
+                        </span>
+                <div style="padding-top: 65px;">
+                    <button id="yesGiven" class="button green navButton" onmousedown="createGivenToClientEncounters()"><span>Yes</span></button>
+                    <button id="noGiven" class="button red navButton" onmousedown="hideResultsGivenPopup()"><span>No</span></button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         <script type="text/javascript">
