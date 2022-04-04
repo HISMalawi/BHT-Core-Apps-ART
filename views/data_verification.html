@@ -1,0 +1,64 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+		defer="true"></script>
+	<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+	<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+	<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+	<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+	<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+	<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+
+	<script type="text/javascript">
+		var tt_cancel_destination = "/";
+		var tstCurrentDate = sessionStorage.sessionDate;
+		function resetNextButton() {
+			var nextButton = document.getElementById('nextButton');
+			nextButton.setAttribute('onmousedown', 'finishPage();');
+		}
+		function finishPage() {
+			var verifier = __$('touchscreenInput' + tstCurrentPage).value;
+			var verification_date = __$('verification_date').value;
+			var payload = {
+           "data_cleaning_datetime": verification_date,
+           "supervisors" : [verifier]
+         }
+	  	var session_stats_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/data_cleaning_confirmation";
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+							window.location.href = "/"
+            }
+        };
+        xhttp.open("POST", session_stats_url, true);
+        xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+        xhttp.setRequestHeader('Content-type', "application/json");
+        xhttp.send(JSON.stringify(payload));
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="container">
+		<div id="content">
+			<form>
+				<input field_type="date" helpText="Date data cleaning done"
+					name="verification_date" id="verification_date" tt_pageStyleClass="Date DatesOnly"
+					type="text" />
+				<input field_type="text" helpText="Verified by" id="verifier" name="verifier" size="30"
+					tt_onLoad="resetNextButton();" tt_onUnLoad="" type="text" />
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>
