@@ -47,6 +47,8 @@
     <script type="text/javascript" src="/assets/js/httpUtils.js"></script>
     <script type="text/javascript" src="/assets/js/GlobalProperty.js"></script>
     <link rel="stylesheet" href="/assets/css/lab.min.css" type="text/css">
+
+    <script type="text/javascript" src="../../../../assets/js/labResultsGivenToClient.js"></script>
     <script type="text/javascript" src="/assets/js/lab.min.js"></script>
 
     <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
@@ -68,7 +70,7 @@
     <script type="text/javascript" src="/apps/ART/assets/js/other_side_effects_keyboard.js"></script>
     
     <script type="text/javascript" src="/apps/ART/assets/js/tpt_keyboard.js"></script>
-    
+
     <script type="text/javascript">
         var patient_id = sessionStorage.patientID;
         var patientGender = sessionStorage.patientGender;
@@ -1960,6 +1962,7 @@
                 var cpt_concept_id = 916
                 var ipt_concept_id = 656
                 var rfp_concept_id = 9974
+                var rfp_two_concept_id = 10565
 
                 var allergic_to_sulphur_concept_id = 8012;
                 var refer_to_art_clinician_concept_id = 6969;
@@ -1968,7 +1971,7 @@
                     encounter_id: encounter.encounter_id,
                     observations: [ ]
                     }
-                    var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
+                    var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)","3HP (INH 300 / RFP 300)"];
                     if (__$('touchscreenInput' + tstCurrentPage)) {
                         var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2002,6 +2005,12 @@
                                         obs.observations.push({
                                             concept_id: medication_orders_concept_id,
                                             value_coded: rfp_concept_id
+                                        })
+                                    }
+                                    if (selected_drugs[i] == "3HP (INH 300 / RFP 300)") {
+                                        obs.observations.push({
+                                            concept_id: medication_orders_concept_id,
+                                            value_coded: rfp_two_concept_id
                                         })
                                     }
                                 }
@@ -2245,7 +2254,7 @@
 
                 }
 
-                var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)"];
+                var medication_orders = ["ARV", "CPT", "IPT","3HP (RFP + INH)","3HP (INH 300 / RFP 300)"];
                 if (__$('touchscreenInput' + tstCurrentPage)) {
                     var current_input_help_text = __$('touchscreenInput' + tstCurrentPage).getAttribute("helptext")
 
@@ -2279,6 +2288,12 @@
                                     obs.observations.push({
                                         concept_id: medication_orders_concept_id,
                                         value_coded: rfp_concept_id
+                                    })
+                                }
+                                if (selected_drugs[i] == "3HP (INH 300 / RFP 300)") {
+                                    obs.observations.push({
+                                        concept_id: medication_orders_concept_id,
+                                        value_coded: rfp_two_concept_id
                                     })
                                 }
                             }
@@ -2457,6 +2472,7 @@
                     'Not applicable': 1175,
                     'Patient refused': 3580,
                     'Chemotherapy': 10001,
+                    'Hysterectomy': 5276,
                     'Services not available': 10543,
                     'Provider not available': 10544
                 };
@@ -2990,7 +3006,8 @@
             controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
-               <!--option value="3HP (RFP + INH)">3HP (RFP + INH)</option-->
+               <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+                <option value="3HP (INH 300 / RFP 300)">3HP (INH 300 / RFP 300)</option>
                <option value="IPT">IPT</option>
                <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
            </select>
@@ -3172,6 +3189,7 @@
                   <option value="Not due for screening">Not due for screening</option>
                   <option value="Patient refused">Patient refused</option>
                   <option value="Client preferred counseling">Client preferred counseling</option>
+                  <option value="Hysterectomy">Client has had a Hysterectomy performed</option>
                   <option value="Chemotherapy">Chemotherapy</option>
                   <option value="Services not available">Services not available</option>
                   <option value="Provider not available">Provider not available</option>
@@ -3971,6 +3989,7 @@
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                 <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
+                <option value="3HP (INH 300 / RFP 300)">3HP (INH 300 / RFP 300)</option>
                 <option value="IPT">IPT</option>
                 <option value="NONE OF THE ABOVE">NONE OF THE ABOVE</option>
             </select>
@@ -4017,6 +4036,7 @@
             var activateCxCascreening;
             var CxCa_age_ranges;
             var client_due_for_CXCa = false;
+            var hadHysterectomy = false;
 
             function isCxCaActivated() {
 
@@ -4071,6 +4091,7 @@
                 if (this.readyState == 4 ) {
                     if (this.status == 201 || this.status == 200 ) {
                         last_cxca_details = JSON.parse(this.responseText);
+                        previousHysterectomy();
                         patientPregnant();
                     }
                 }
@@ -4092,9 +4113,31 @@
                 if (this.readyState == 4 ) {
                     if (this.status == 201 || this.status == 200 ) {
                         let data = JSON.parse(this.responseText);
-                        if(data[0].value_coded === 1065) {
+                        if(data.length > 0 && data[0].value_coded === 1065) {
                             patientCurrentlyPregnant = true;
                         }
+                    }
+                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+            function previousHysterectomy() {
+                let url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+                url += "/observations?person_id=" + sessionStorage.patientID;
+                url += "&concept_id=" +  10008;
+                url += "value_coded=5276"
+                
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 ) {
+                    if (this.status == 201 || this.status == 200 ) {
+                        let data = JSON.parse(this.responseText);
+                        if(data.length > 0) {
+                            hadHysterectomy = true;
+                        } 
                     }
                 }
                 };
@@ -4138,6 +4181,8 @@
                     return false
                 if($('pregnant').value === 'YES') 
                     return false 
+                if(hadHysterectomy)
+                    return false
 
                 if(clientWithinCxCaRange() && clientCxCaDue()){
                     return true;
@@ -4202,7 +4247,7 @@
 
             function controlNoneSelection() {
                 var  inputFrame =  document.getElementById("inputFrame" + tstCurrentPage);
-                inputFrame.style = "position: absolute; top: 150px;width: 96% !important; height: 345px !important;";
+                inputFrame.style = "position: absolute; top: 150px;width: 96% !important; height: 385px !important;";
                 var helpText =  document.getElementById("helpText" + tstCurrentPage);
                 helpText.style =  "width: 99%;";
                 var currentMeds = document.createElement("span");
@@ -4297,6 +4342,7 @@
                 tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 tb_status = __$('tb_status').value.toUpperCase();
                 allergicToSulphur = $('allergic_to_sulphur').value.toUpperCase();
+                tpt_history = __$('touchscreenInput70').value.toUpperCase();
 
                 if (allergicToSulphur.toUpperCase() == 'YES') {
                     //cpt_option_input.style.backgroundColor = '#CDBA96';
@@ -4369,19 +4415,48 @@
                 var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
                 var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
                 var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
+                var rfp_option_two_input = jQuery("[tstvalue='3HP (INH 300 / RFP 300)']")[0];
 
                 var ipt_id = ipt_option_input.id;
                 var cpt_id = cpt_option_input.id;
                 var rfp_id = rfp_option_input.id;
+                var rfp_two_id = rfp_option_two_input.id;
 
                 
                 var ipt_input = document.getElementById('optionValue' + ipt_id);
                 var cpt_input = document.getElementById('optionValue' + cpt_id);
                 var rfp_input = document.getElementById('optionValue' + rfp_id);
+                var rfp_two_input = document.getElementById('optionValue' + rfp_two_id);
                 
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
                 var allergicToSulphur = $('allergic_to_cotrimoxazole').value.toUpperCase();
+                var tpt_history = document.getElementById("routine_tb_therapy").value.toUpperCase();
+
+                if (parseFloat(sessionStorage.currentWeight) < 20) {
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (WEIGHT BELOW REGULATION)</span>";
+                    rfp_option_input.removeAttribute('onclick');
+                    rfp_option_input.setAttribute("onmousedown", "");
+                    rfp_option_input.removeAttribute("onmouseup");
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
+                if (parseFloat(sessionStorage.currentWeight) < 25) {
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (WEIGHT BELOW REGULATION)</span>";
+                    rfp_option_two_input.onclick = null;
+                    //rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.setAttribute("onmousedown", "");
+
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
 
                 if (allergicToSulphur.toUpperCase() == 'YES') {
                     //cpt_option_input.style.backgroundColor = '#CDBA96';
@@ -4479,6 +4554,64 @@
                     img_input.alt = '';
                 }
 
+                if(tpt_history == 'CURRENTLY ON 3HP'){
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on 3HP)</span>";
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on 3HP)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on 3HP)</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
+                if(tpt_history == 'CURRENTLY ON IPT'){
+                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on IPT)</span>";
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on IPT)</span>";
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on IPT)</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
                 if(ever_completed_tb_therapy == false) {
                     if(pastTPTdispensation["Isoniazid"] != undefined && 
                         pastTPTdispensation["Rifapentine"] == undefined){
@@ -4533,6 +4666,15 @@
                         img_input = rfp_option_input.getElementsByTagName("img")[0];
                         img_input.src = '';
                         img_input.alt = '';
+
+                        rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TPT completed)</span>";
+                        rfp_option_two_input.onclick = null;
+                        rfp_option_two_input.onmousedown = null;
+                        rfp_option_two_input.onmouseup = null;
+
+                        img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                        img_input.src = '';
+                        img_input.alt = '';
                     }
 
                 } 
@@ -4556,6 +4698,15 @@
                     rfp_option_input.onmouseup = null;
 
                     img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
                   }
@@ -4597,8 +4748,8 @@
                 var options  = select_options.children;
                 
                 for(var i = 0; i < options.length; i++){
-                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i)){
+                    if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue").match(/3HP/i)){
+                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;
@@ -4620,31 +4771,47 @@
                 var options  = select_options.children;
                 var ipt_option;
                 var rfp_option;
+                var rfp_two_option;
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
                     }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         rfp_option = options[i];
+                    }else if(options[i].getAttribute("tstvalue") == "3HP (INH 300 / RFP 300)"){
+                        rfp_two_option = options[i];
                     }
                 } 
 
-                if(ipt_option == undefined || rfp_option == undefined)
+                if(ipt_option == undefined || rfp_option == undefined || rfp_two_option == undefined)
                     return;
 
                 try {
-                    if(rfp_option.getAttribute("style").match(/lightblue/i)){
-                        if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                    if(ipt_option.getAttribute("style").match(/lightblue/i)){
+                        if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
                             messageCover.style = "display: inline;";
                             messageDiv.style = "display: inline;";
                             return;
                         }
                     }
                 }catch(e){
-                    //return;
+                    //console.log(e);
                 }
 
-                if(rfp_option.getAttribute("style").match(/lightblue/i)){
+                try {        
+                    if( rfp_option.getAttribute("style").match(/lightblue/i) && rfp_two_option.getAttribute("style").match(/lightblue/i) ){
+                        if(e.id == rfp_option.id){
+                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), rfp_two_option);
+                        }else{
+                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), rfp_option);
+                        }
+                    }
+                }catch(e){
+
+                }
+
+
+                if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
                     checkIfClientWantstogetPregnant();
                 }
 
@@ -4865,7 +5032,7 @@ var reason_for_not_using_fpm = "";
                 margin-top: -5px;
             }
 
-            #tb-treatment-popup-div, #safe-family-planning-popup-div {
+            #tb-treatment-popup-div, #safe-family-planning-popup-div , #results-given-popup-div{
                 display: none;
                 background-color: #F4F4F4;
                 border: 2px solid #E0E0E0;
@@ -5010,6 +5177,43 @@ var reason_for_not_using_fpm = "";
         </div>
 
         <div id="lab-order-cover"></div>
+
+
+
+
+        <div id="results-given-popup-div">
+            <div id="lab-popup-header">
+                <center id='weight_readings_header'>Notification</center>
+            </div>
+            <br/>
+            <div>
+                        <span style="font-size: 16pt;">
+                            <center>
+                                <br/>
+                                Result(s) Given to Client?
+                                <br/>
+                            </center>
+                        </span>
+                <div style="padding-top: 65px;">
+                    <button id="yesGiven" class="button green navButton" onmousedown="createGivenToClientEncounters()"><span>Yes</span></button>
+                    <button id="noGiven" class="button red navButton" onmousedown="hideResultsGivenPopup()"><span>No</span></button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         <script type="text/javascript">

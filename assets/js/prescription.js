@@ -325,21 +325,22 @@ function showSelectedMeds() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-            var obj = JSON.parse(this.responseText);
-            var drugs = [];
+            let obj = JSON.parse(this.responseText);
+            let drugs = [];
             
-            for(var i = 0 ; i < obj.length ; i++) {        
-              var drug = {
+            for(var i = 0 ; i < obj.length ; i++) {      
+              let drug = {
                 drug_name: obj[i].drug_name,
                 concept_name: obj[i].concept_name,
                 drug_id: obj[i].drug_id,
                 units: obj[i].units,
                 pack_size: (obj[i].pack_size == null ? 1 : obj[i].pack_size),
                 am: obj[i].am,
-                noon: '0',
+                noon: 0,
                 pm: obj[i].pm,
                 category: (obj[i].regimen_category != undefined ? obj[i].regimen_category : ''),
-                alternative_drug_name: obj[i].alternative_drug_name
+                alternative_drug_name: obj[i].alternative_drug_name,
+                frequency: obj[i].frequency
               }
               drugs.push(drug);
             }
@@ -395,8 +396,7 @@ function continueShowSelectedMeds() {
     var tbody = document.createElement("tbody");
     tbody.setAttribute("id", "selected-medication-tbody");
     table.appendChild(tbody);
-    var med_frequency = "Daily (QOD)";
-
+    // var med_frequency = "Daily (QOD)";
     if (givenRegimens[selectedRegimens]) {
         var rows = givenRegimens[selectedRegimens];
         for (var i = 0; i < rows.length; i++) {
@@ -438,17 +438,17 @@ function continueShowSelectedMeds() {
             td.setAttribute("class", "numbers");
             tr.appendChild(td);
 
-            var frequency = rows[i].frequency;
-            if(!selectedRegimens.match(/Unknown/i)){
-                if(prescribed_3hp && rows[i].drug_name.match(/Rifapentine|Isoniazid/i)){
-                    frequency = "Weekly (QW)";
-                }else{
-                    frequency = "Daily (QOD)";
-                }
-            }
+            // var frequency = rows[i].frequency;
+            // if(!selectedRegimens.match(/Unknown/i)){
+            //     if(prescribed_3hp && rows[i].drug_name.match(/Rifapentine|Isoniazid/i)){
+            //         frequency = "Weekly (QW)";
+            //     }else{
+            //         frequency = "Daily (QOD)";
+            //     }
+            // }
 
             var td = document.createElement("td");
-            td.innerHTML = (frequency == undefined ? med_frequency : frequency);
+            td.innerHTML = rows[i].frequency;
             td.setAttribute("class", "med-frequency");
             tr.appendChild(td);
 
@@ -474,6 +474,7 @@ function continueShowSelectedMeds() {
         var drug_name = medication_orders[drugName]["drug_name"];
         var pm_dose = medication_orders[drugName]["pm"];
         var units = medication_orders[drugName]["units"];
+        var med_frequency = medication_orders[drugName]["frequency"];
 
         var tr = document.createElement("tr");
         tbody.appendChild(tr);
@@ -518,11 +519,11 @@ function continueShowSelectedMeds() {
         td.setAttribute("class", "numbers");
         tr.appendChild(td);
 
-        if(prescribed_3hp && (drug_name.match(/Rifapentine/i) ||drug_name.match(/Isoniazid/i))){
-            med_frequency = "Weekly (QW)";
-        }else{
-            med_frequency = "Daily (QOD)";
-        }
+        // if(prescribed_3hp && (drug_name.match(/Rifapentine/i) ||drug_name.match(/Isoniazid/i))){
+        //     med_frequency = "Weekly (QW)";
+        // }else{
+        //     med_frequency = "Daily (QOD)";
+        // }
 
         var td = document.createElement("td");
         td.innerHTML = med_frequency;
@@ -783,7 +784,8 @@ function getRegimens() {
                         noon: '0',
                         pm: obj[key][i].pm,
                         category: (obj[key][i].regimen_category != undefined ? obj[key][i].regimen_category : ''),
-                        alternative_drug_name: obj[key][i].alternative_drug_name
+                        alternative_drug_name: obj[key][i].alternative_drug_name,
+                        frequency: obj[key][i].frequency
                     }
 
                     passedRegimens[key].push(drug);
@@ -818,7 +820,7 @@ function getMedicationOrders() {
     medication_order_date = medication_order_date.getFullYear() + "-" + (medication_order_date.getMonth() + 1) + "-" + medication_order_date.getDate()
 
     var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/1/patients/" + sessionStorage.patientID + "/dosages?date=" + medication_order_date;
-    var medication_order_concept_id = 1282;
+    //var medication_order_concept_id = 1282;
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
@@ -861,7 +863,7 @@ function isARTPrescribed() {
 //isARTPrescribed();
 
 function getCPTDosage() {
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/cpt_dosage/";
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/cpt_dosage";
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -876,7 +878,7 @@ function getCPTDosage() {
 }
 
 function getIPTDosage() {
-    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/ipd_dosage/";
+    var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/ipd_dosage";
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1485,21 +1487,21 @@ function postRegimenOrders(encounter) {
         var drug_name = medication_orders[drugName]["drug_name"];
         var pm_dose = medication_orders[drugName]["pm"];
         var units = medication_orders[drugName]["units"];
-        try {
-            var frequency = medication_orders[drug_name]["frequency"];
-            if(!frequency)
-                frequency = "Daily (QOD)";
+        var frequency = medication_orders[drugName]["frequency"];
+        // try {
+        //     var frequency = medication_orders[drug_name]["frequency"];
+        //     if(!frequency)
+        //         frequency = "Daily (QOD)";
 
-        }catch(e){
-            var frequency = "Daily (QOD)";
-        }
+        // }catch(e){
+        //     var frequency = "Daily (QOD)";
+        // }
 
         var drug_order = {drug_name: drug_name, drug_id: drug_id, 
                frequency: frequency, units: units, am: am_dose, pm: pm_dose};
         drug_orders.push(drug_order);
     }
-
-
+    
     for (var i = 0; i < drug_orders.length; i++) {
         morning_tabs = parseFloat(drug_orders[i]["am"]);
         evening_tabs = parseFloat(drug_orders[i]["pm"]);
@@ -1524,9 +1526,9 @@ function postRegimenOrders(encounter) {
 
         //Check if its  3HP perscription and if yes change frequency from Daily to Weekly for 
         //Isoniazid or Rifapentine
-        if(!selectedRegimens.match(/Unknown/i) && prescribed_3hp && drug_orders[i].drug_name.match(/Isoniazid|Rifapentine/i)){
-            frequency = "Weekly (QW)"
-        }
+        // if(!selectedRegimens.match(/Unknown/i) ){ //&& prescribed_3hp && drug_orders[i].drug_name.match(/Isoniazid|Rifapentine/i)){
+        //     frequency = "Weekly (QW)"
+        // }
 
         drug_order = {
             drug_inventory_id: drug_orders[i].drug_id,
@@ -2262,8 +2264,8 @@ function buildFastTrackMedicationTable(){
 
     for (var drugName in medication_orders) {
         var am_dose = medication_orders[drugName]["am"];
-        var concept_id = medication_orders[drugName]["concept_id"];
-        var drug_id = medication_orders[drugName]["drug_id"];
+        /*var concept_id = medication_orders[drugName]["concept_id"];
+        var drug_id = medication_orders[drugName]["drug_id"];*/
         var drug_name = medication_orders[drugName]["drug_name"];
         var pm_dose = medication_orders[drugName]["pm"];
         var units = medication_orders[drugName]["units"];
@@ -2401,7 +2403,7 @@ function prescribed3HP(){
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
             var obj = JSON.parse(this.responseText);
             for(var i = 0; i < obj.length; i++){
-                if(parseInt(obj[i].value_coded) === 9974)
+                if([10565, 9974].indexOf(obj[i].value_coded) > -1 )
                     prescribed_3hp = true;
                     
             }

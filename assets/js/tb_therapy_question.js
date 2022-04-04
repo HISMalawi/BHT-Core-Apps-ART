@@ -143,7 +143,7 @@ function display3HPsideEffects(){
 }
 
 function autoSelectMedication(){
-  if(!activate_3HP_auto_select)
+  if(!activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) < 20)
     return;
 
   var select_options = document.getElementById("tt_currentUnorderedListOptions");
@@ -227,17 +227,21 @@ function set3HPdisplay(){
 }
 
 function validate3HPdeSelection(){
-  if(!activate_3HP_auto_select)
+  
+  if(!activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) < 20)
     return;
 
   var select_options = document.getElementById("tt_currentUnorderedListOptions");
   var options  = select_options.children;
   var auto_select = true;
   var option3HP;
+  var option3HP2;
 
   for(var i = 0; i < options.length; i++){
-    if(options[i].innerHTML.match(/RFP/i)){
+    if(options[i].innerHTML.match(/3HP \(RFP \+ INH\)/i)){
       option3HP = options[i];
+    }else if(options[i].innerHTML.match(/INH 300/i)){
+      option3HP2 = options[i];
     }
 
     if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
@@ -258,8 +262,8 @@ function validate3HPdeSelection(){
 
   reason_for_no_selecting_3hp = [];
 
-  if(auto_select && option3HP){
-    if(!option3HP.innerHTML.match(/lightblue/i)){
+  if(auto_select && (option3HP || option3HP2)){
+    if(!option3HP.innerHTML.match(/lightblue/i) && !option3HP2.innerHTML.match(/lightblue/i)){
       alertReasonForNo3HP();
     }
   }
