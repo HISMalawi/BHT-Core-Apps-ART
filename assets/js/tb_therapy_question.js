@@ -155,7 +155,8 @@ function autoSelectMedication(){
                 
   for(var i = 0; i < options.length; i++){
       if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
+        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)
+         || options[i].innerHTML.match(/complete/i)){
         auto_select = false;
       }
   } 
@@ -185,7 +186,7 @@ function autoSelectMedication(){
       if(options[i].innerHTML.match(/lightblue/i))
         updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
 
-      if(i == 3){
+      if(i == 5){
         clearInput();
         validateMedicationToprescribe();
       }

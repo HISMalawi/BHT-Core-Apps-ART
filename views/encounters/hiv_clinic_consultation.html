@@ -4431,7 +4431,7 @@
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
                 var allergicToSulphur = $('allergic_to_cotrimoxazole').value.toUpperCase();
-                var tpt_history; 
+                let tpt_history; 
 
                 if(ever_completed_tb_therapy_question_asked == false){
                     tpt_history = document.getElementById("routine_tb_therapy").value.toUpperCase();
@@ -4494,92 +4494,8 @@
                     img_input = rfp_option_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
-                }
-
-                if (tb_status == 'CONFIRMED TB ON TREATMENT') {
-                    //ipt_option_input.style.backgroundColor = '#CDBA96';
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (CONFIRMED TB ON TREATMENT)</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
-
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (CONFIRMED TB ON TREATMENT)</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
-
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
                     
-                }
-
-                if (tb_status == 'CONFIRMED TB NOT ON TREATMENT') {
-                    //ipt_option_input.style.backgroundColor = '#CDBA96';
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (CONFIRMED TB NOT ON TREATMENT)</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
-
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                    
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (CONFIRMED TB NOT ON TREATMENT)</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
-
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                }
-
-                if (tb_status == 'TB SUSPECTED') {
-                    //ipt_option_input.style.backgroundColor = '#CDBA96';
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (TB SUSPECTED)</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
-
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                    
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TB SUSPECTED)</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
-
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                }
-
-                /*if(tpt_history == 'CURRENTLY ON 3HP'){
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on 3HP)</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
-
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                    
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on 3HP)</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
-
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-
-                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on 3HP)</span>";
+                    rfp_option_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TB SUSPECTED)</span>";
                     rfp_option_two_input.onclick = null;
                     rfp_option_two_input.onmousedown = null;
                     rfp_option_two_input.onmouseup = null;
@@ -4587,108 +4503,12 @@
                     img_input = rfp_option_two_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
-                }*/
 
-                if(tpt_history.match(/complete/i)){
-                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history})</span>`;
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
-
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-                    
-                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history})</span>`;
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
-
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-
-                    rfp_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history})</span>`;
-                    rfp_option_two_input.onclick = null;
-                    rfp_option_two_input.onmousedown = null;
-                    rfp_option_two_input.onmouseup = null;
-
-                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
                 }
-
-                if(ever_completed_tb_therapy == false) {
-                    if(pastTPTdispensation["Isoniazid"] != undefined && 
-                        pastTPTdispensation["Rifapentine"] == undefined){
-                            if(pastTPTdispensation["Isoniazid"] >= 168)
-                                ever_completed_tb_therapy  = true;    
-                    }
-                    
-                    if(pastTPTdispensation["Rifapentine"] != undefined && pastTPTdispensation["Isoniazid"] != undefined) {
-                        if(pastTPTdispensation["Isoniazid"] >= 36 && pastTPTdispensation["Rifapentine"] >= 72)
-                            ever_completed_tb_therapy = true;
-
-                    }
-                        
-                    
-                }
-
-                /*if client have already finished a course of  TB  thereapy*/
-                if(checkIfEverCompletedTBtherapyAsked() == false || ever_completed_tb_therapy == true ){
-                    try {
-                        //three_hp_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["3HP (3 months of RFP + INH)?"].trim().toUpperCase() == "YES");
-                        //ipt_therapy_completed  = (yesNo_Hash["Previous TB treatment history"]["IPT (minimum 6 months of INH)?"].trim().toUpperCase() == "YES");
-                        var three_hp_therapy_completed = false; 
-                        var ipt_therapy_completed =  false; 
-
-                        var routine_tb_therapy = document.getElementById("routine_tb_therapy").value;
-                        if (routine_tb_therapy == "Complete course of 3HP in the past (3 months RFP+INH)"){
-                            three_hp_therapy_completed = true;
-                        }else if(routine_tb_therapy == "Complete course of IPT in the past (min. 6 months of INH)"){
-                            ipt_therapy_completed = true;
-                        }
-                    }catch(e){
-                        ipt_therapy_completed = ever_completed_tb_therapy;
-                        three_hp_therapy_completed = ever_completed_tb_therapy;
-                    }
-                    
-                    if (ipt_therapy_completed || three_hp_therapy_completed || ever_completed_tb_therapy) {
-                        //ipt_option_input.style.backgroundColor = '#CDBA96';
-                        ipt_input.innerHTML = "<span class='disabled_check'>IPT (TPT completed)</span>";
-                        ipt_option_input.onclick = null;
-                        ipt_option_input.onmousedown = null;
-                        ipt_option_input.onmouseup = null;
-
-                        img_input = ipt_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                        
-                        rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TPT completed)</span>";
-                        rfp_option_input.onclick = null;
-                        rfp_option_input.onmousedown = null;
-                        rfp_option_input.onmouseup = null;
-
-                        img_input = rfp_option_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-
-                        rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TPT completed)</span>";
-                        rfp_option_two_input.onclick = null;
-                        rfp_option_two_input.onmousedown = null;
-                        rfp_option_two_input.onmouseup = null;
-
-                        img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                        img_input.src = '';
-                        img_input.alt = '';
-                    }
-
-                } 
 
                 var tpt_side_effect_found = three3HPsideEffectsFound(); 
 
                 if(tpt_side_effect_found){ 
-                   //ipt_option_input.style.backgroundColor = '#CDBA96';
                     ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
                     ipt_option_input.onclick = null;
                     ipt_option_input.onmousedown = null;
@@ -4715,7 +4535,60 @@
                     img_input = rfp_option_two_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
-                  }
+                }
+
+                if (tb_status.match(/TB SUSPECTED|CONFIRMED TB NOT ON TREATMENT|CONFIRMED TB ON TREATMENT/i) 
+                    || tpt_history.match(/complete/i)) {
+                    
+                    let tpt_history_string = "";
+                    if(tpt_history.match(/complete/i))
+                        tpt_history_string = `<span style="font-size:20px;">${tpt_history}</span>`;
+                    
+                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history_string ||= tb_status})</span>`;
+                    ipt_option_input.onclick = null;
+                    ipt_option_input.onmousedown = null;
+                    ipt_option_input.onmouseup = null;
+
+                    img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    
+                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history_string ||= tb_status})</span>`;
+                    rfp_option_input.onclick = null;
+                    rfp_option_input.onmousedown = null;
+                    rfp_option_input.onmouseup = null;
+
+                    img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+
+                    rfp_option_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history_string ||= tb_status})</span>`;
+                    rfp_option_two_input.onclick = null;
+                    rfp_option_two_input.onmousedown = null;
+                    rfp_option_two_input.onmouseup = null;
+
+                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                }
+
+
+                if(ever_completed_tb_therapy == false) {
+                    if(pastTPTdispensation["Isoniazid"] != undefined && 
+                        pastTPTdispensation["Rifapentine"] == undefined){
+                            if(pastTPTdispensation["Isoniazid"] >= 168)
+                                ever_completed_tb_therapy  = true;    
+                    }
+                    
+                    if(pastTPTdispensation["Rifapentine"] != undefined && pastTPTdispensation["Isoniazid"] != undefined) {
+                        if(pastTPTdispensation["Isoniazid"] >= 36 && pastTPTdispensation["Rifapentine"] >= 72)
+                            ever_completed_tb_therapy = true;
+
+                    }
+                        
+                    
+                }
+
             }
 
             function addChangeAllergicToCPTValue() {
@@ -4766,7 +4639,7 @@
                     }
                 } 
 
-                setTimeout(autoSelectMedication, 100);
+                setTimeout(autoselectmedication, 100);
             }
 
             function validateIPTRFP(e){
