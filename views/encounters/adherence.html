@@ -595,6 +595,7 @@
             var frequency = medicationPillCountsArray[i].frequency;
             var expected = calculateExpected(given, dose, start_date, frequency);
             var adherence = calculateAdherence(given, pill_count, expected);
+
             if (adherence >= 95 && adherence <= 105) {
                 td.innerHTML = '<span style="color: green; font-style: italic;font-weight: bold;">Good adherence</span>';
             } else {
@@ -705,13 +706,14 @@
         table.appendChild(tr);
 
         var td = document.createElement('td');
-        td.innerHTML = 'Tabs per day';
+        td.innerHTML = "Tabs per";
         td.setAttribute('class', 'data-row');
         tr.appendChild(td);
 
         for (var i = 0; i < medicationPillCountsArray.length; i++) {
             var td = document.createElement('td');
             td.innerHTML = medicationPillCountsArray[i].equivalent_daily_dose;
+            td.innerHTML += ` ${medicationPillCountsArray[i].frequency.match(/week/i) ? '<b>QW</b>' : '<b>QOD</b>'}`;
             td.setAttribute('class', 'data-row');
             tr.appendChild(td);
         }
