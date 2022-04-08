@@ -4647,10 +4647,10 @@
                 var messageCover =  document.getElementById("lab-order-cover");
 
                 var select_options = document.getElementById("tt_currentUnorderedListOptions");
-                var options  = select_options.children;
-                var ipt_option;
-                var rfp_option;
-                var rfp_two_option;
+                let options  = select_options.children;
+                let ipt_option;
+                let rfp_option;
+                let rfp_two_option;
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
@@ -4666,19 +4666,19 @@
                     return;
 
                 try {
-                    if(ipt_option.getAttribute("style").match(/lightblue/i)){
-                        if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
+                    if(ipt_option.innerHTML.match(/lightblue/i)){
+                        if(rfp_option.innerHTML.match(/lightblue/i) || rfp_two_option.innerHTML.match(/lightblue/i)){
                             messageCover.style = "display: inline;";
                             messageDiv.style = "display: inline;";
                             return;
                         }
                     }
                 }catch(e){
-                    //console.log(e);
+                    console.log(e);
                 }
 
-                try {        
-                    if( rfp_option.getAttribute("style").match(/lightblue/i) && rfp_two_option.getAttribute("style").match(/lightblue/i) ){
+                try {       
+                    if( rfp_option.innerHTML.match(/lightblue/i) && rfp_two_option.innerHTML.match(/lightblue/i) ){
                         if(e.id == rfp_option.id){
                             updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), rfp_two_option);
                         }else{
@@ -4686,15 +4686,18 @@
                         }
                     }
                 }catch(e){
-
+                    console.log(e);
                 }
 
+                //debugger
 
                 try {
-                    if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
+                    if(rfp_two_option.innerHTML.match(/lightblue/i) || rfp_option.innerHTML.match(/lightblue/i)){
                         checkIfClientWantstogetPregnant();
                     }
-                }catch(e){}
+                }catch(e){
+                    console.log(e);
+                }
 
                 validate3HPdeSelection();
             }
@@ -4713,9 +4716,8 @@
                     var rfp_option;
                 
                     for(var i = 0; i < options.length; i++){
-                        if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                            rfp_option = options[i];
-                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                        if(options[i].getAttribute("tstvalue").match(/3HP/i) && options[i].innerHTML.match(/lightblue/i)){
+                            updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), this); 
                             showMessage("3HP can not be given to a client<br />that is trying to get pregnant.");
                             return;
                         }
@@ -4729,9 +4731,8 @@
                         var rfp_option;
                     
                         for(var i = 0; i < options.length; i++){
-                            if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                                rfp_option = options[i];
-                                updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                            if(options[i].getAttribute("tstvalue").match(/3HP/i) && options[i].innerHTML.match(/lightblue/i)){
+                                updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), this); 
                                 showMessage("3HP can not be given to a client<br />with Jaundice.");
                             }
                         } 
