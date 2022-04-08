@@ -151,8 +151,10 @@ function autoSelectMedication(){
   var auto_select = true;
                 
   for(var i = 0; i < options.length; i++){
-      if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
+      if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/on IPT/i)  
+        || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) 
+        || options[i].innerHTML.match(/Aller/i)
+        || options[i].innerHTML.match(/on 3hp/i)){
         auto_select = false;
       }
   } 
@@ -244,7 +246,7 @@ function validate3HPdeSelection(){
       option3HP2 = options[i];
     }
 
-    if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
+    if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/on 3hp/i) || options[i].innerHTML.match(/on IPT/i) || options[i].innerHTML.match(/TPT/i) 
         || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)){
         auto_select = false;
       }

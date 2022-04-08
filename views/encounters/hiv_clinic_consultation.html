@@ -4749,7 +4749,7 @@
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue").match(/3HP/i)){
-                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
+                        if(options[i].innerHTML.match(/on IPT/i) || options[i].innerHTML.match(/on 3hp/i)  || options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;
