@@ -3002,8 +3002,8 @@
             condition="guardianOnly === true || sessionStorage.patient_type === 'Drug refill'"
             tt_pageStyleClass="NoKeyboard" multiple="multiple"
             tt_onUnLoad="removeAllergicToCPT();"
-            tt_onLoad="changeNextBTN();controlNoneSelection(); setFunctionForSubmittingForm(); 
-            controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
+            tt_onLoad="setFunctionForSubmittingForm();changeNextBTN();
+            controlNoneSelection(); controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                <option value="ARVs">ARVs</option>
                <option value="CPT">CPT</option>
                <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
@@ -3984,8 +3984,8 @@
                     name="observations[][value_coded_or_text]"
                     tt_pageStyleClass="NoKeyboard" multiple="multiple"
                     tt_onUnLoad="removeAllergicToCPT(); diactivateFinishBTN();"
-                    tt_onLoad="controlNoneSelection(); controlCPTIPTOptions(); 
-                    addChangeAllergicToCPTValue();setFunctionForSubmittingForm();">
+                    tt_onLoad="setFunctionForSubmittingForm(); controlNoneSelection(); 
+                    controlCPTIPTOptions(); addChangeAllergicToCPTValue();">
                 <option value="ARVs">ARVs</option>
                 <option value="CPT">CPT</option>
                 <option value="3HP (RFP + INH)">3HP (RFP + INH)</option>
@@ -4690,15 +4690,17 @@
                 }
 
 
-                if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
-                    checkIfClientWantstogetPregnant();
-                }
+                try {
+                    if(rfp_option.getAttribute("style").match(/lightblue/i) || rfp_two_option.getAttribute("style").match(/lightblue/i)){
+                        checkIfClientWantstogetPregnant();
+                    }
+                }catch(e){}
 
                 validate3HPdeSelection();
             }
 
             function checkIfClientWantstogetPregnant(){
-var reason_for_not_using_fpm = "";
+                var reason_for_not_using_fpm = "";
                 try {
                     reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
                 }catch(e){
