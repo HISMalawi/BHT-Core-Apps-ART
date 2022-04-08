@@ -46,6 +46,7 @@ function everCompleteTBtherapy(){
 var ever_completed_tb_therapy = false;
 var show_completed_tb_therapy_location = false;
 var ever_completed_tb_therapy_question_asked = false;
+var ever_completed_tb_therapy_answer = "";
 
 
 function getTBtheraptObs() {
@@ -60,8 +61,10 @@ function getTBtheraptObs() {
             ever_completed_tb_therapy_question_asked = true;
 
             try {
-              if(tb_history_obs[i].value_text.match(/Complete/i))
+              if(tb_history_obs[i].value_text.match(/Complete/i)){
                 ever_completed_tb_therapy = true;
+                ever_completed_tb_therapy_answer = tb_history_obs[i].value_text;
+              }
 
             }catch(e){
               continue;

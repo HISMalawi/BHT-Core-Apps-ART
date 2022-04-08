@@ -4431,7 +4431,13 @@
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
                 var allergicToSulphur = $('allergic_to_cotrimoxazole').value.toUpperCase();
-                var tpt_history = document.getElementById("routine_tb_therapy").value.toUpperCase();
+                var tpt_history; 
+
+                if(ever_completed_tb_therapy_question_asked == false){
+                    tpt_history = document.getElementById("routine_tb_therapy").value.toUpperCase();
+                }else{
+                    tpt_history = ever_completed_tb_therapy_answer;
+                }
 
                 if (parseFloat(sessionStorage.currentWeight) < 20) {
                     
@@ -4554,7 +4560,7 @@
                     img_input.alt = '';
                 }
 
-                if(tpt_history == 'CURRENTLY ON 3HP'){
+                /*if(tpt_history == 'CURRENTLY ON 3HP'){
                     ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on 3HP)</span>";
                     ipt_option_input.onclick = null;
                     ipt_option_input.onmousedown = null;
@@ -4581,10 +4587,10 @@
                     img_input = rfp_option_two_input.getElementsByTagName("img")[0];
                     img_input.src = '';
                     img_input.alt = '';
-                }
+                }*/
 
-                if(tpt_history == 'CURRENTLY ON IPT'){
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Currently on IPT)</span>";
+                if(tpt_history.match(/complete/i)){
+                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history})</span>`;
                     ipt_option_input.onclick = null;
                     ipt_option_input.onmousedown = null;
                     ipt_option_input.onmouseup = null;
@@ -4593,7 +4599,7 @@
                     img_input.src = '';
                     img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Currently on IPT)</span>";
+                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history})</span>`;
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -4602,7 +4608,7 @@
                     img_input.src = '';
                     img_input.alt = '';
 
-                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Currently on IPT)</span>";
+                    rfp_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history})</span>`;
                     rfp_option_two_input.onclick = null;
                     rfp_option_two_input.onmousedown = null;
                     rfp_option_two_input.onmouseup = null;
