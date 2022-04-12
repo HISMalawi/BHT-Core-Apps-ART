@@ -4642,65 +4642,146 @@
                 setTimeout(autoselectmedication, 100);
             }
 
-            function validateIPTRFP(e){
-                var messageDiv = document.getElementById("ipt-rfp-popup-div");
-                var messageCover =  document.getElementById("lab-order-cover");
-
-                var select_options = document.getElementById("tt_currentUnorderedListOptions");
-                let options  = select_options.children;
-                let ipt_option;
-                let rfp_option;
-                let rfp_two_option;
-                
-                for(var i = 0; i < options.length; i++){
-                    if(options[i].getAttribute("tstvalue") == "IPT"){
-                        ipt_option = options[i];
-                    }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
-                        rfp_option = options[i];
-                    }else if(options[i].getAttribute("tstvalue") == "3HP (INH 300 / RFP 300)"){
-                        rfp_two_option = options[i];
+            function validateIPTRFP(element) {
+                let is = function (name) { return element.innerText.trim() === name }
+                let isChecked = element.innerHTML.match(/lightblue/i)
+                let autoSelectMeds = true
+                /*
+                * Build object for tracking list options for Medications
+                */
+                let options = (() => {
+                    let data = {}
+                    let list = document.getElementById("tt_currentUnorderedListOptions").children
+                    for(let i = 0; i < list.length; i++){
+                        let option = list[i]
+                        data[option.getAttribute('tstvalue')] = {
+                            _obj: option,
+                            elementID: option.id,
+                            isChecked: option.innerHTML.match(/lightblue/i) ? true : false
+                        }
+                        if (option.innerHTML.match(/TB /i) || option.innerHTML.match(/TPT /i) 
+                            || option.innerHTML.match(/Contrain/i) || option.innerHTML.match(/Aller/i)) {
+                                autoSelectMeds = false
+                            }
                     }
-                } 
+                    return data
+                })();
+                let ipt = options['IPT']
+                let threeHp = options['3HP (RFP + INH)']
+                let threeHpTwo = options['3HP (INH 300 / RFP 300)']
 
-                if(ipt_option == undefined || rfp_option == undefined || rfp_two_option == undefined)
+                if ((is('3HP (RFP + INH)') || is('3HP (INH 300 / RFP 300)')) && isChecked) {
+                    checkIfClientWantstogetPregnant()
+                }
+
+                /**
+                 * 3HP and IPT cannot be selected together
+                 */
+                if ((is('IPT') && isChecked) && (threeHp.isChecked || threeHpTwo.isChecked)) {
+                    document.getElementById("ipt-rfp-popup-div").style = "display: inline;";
+                    document.getElementById("lab-order-cover").style = "display: inline;";
+                    return;
+                } else if ((is('3HP (RFP + INH)') || is('3HP (INH 300 / RFP 300)')) && isChecked && ipt.isChecked) {
+                    document.getElementById("ipt-rfp-popup-div").style = "display: inline;";
+                    document.getElementById("lab-order-cover").style = "display: inline;";
+                    return;
+                }
+
+                /**
+                 * 3HP (RFP + INH) and 3HP (INH 300 / RFP 300) can't be selected at once. When one
+                 * is Selected, toggle out the other one 
+                */
+                if (is('3HP (RFP + INH)') && isChecked && threeHpTwo.isChecked) {
+                    updateTouchscreenInputForSelect(__$('optionValue' + threeHpTwo.elementID), threeHpTwo._obj);
+                } else if (is('3HP (INH 300 / RFP 300)') && isChecked && threeHp.isChecked) {
+                    updateTouchscreenInputForSelect(__$('optionValue' + threeHp.elementID), threeHp._obj);
+                }
+
+                // This block is weird.. but dont delete pulizi!!
+                var reason_for_not_using_fpm = "";
+                try {
+                    reason_for_not_using_fpm = $("reason_for_not_using_fpm").value;
+                }catch(e){
+                    reason_for_not_using_fpm = "";
+                }
+
+                if(reason_for_not_using_fpm == "Patient wants to get pregnant")
                     return;
 
-                try {
-                    if(ipt_option.innerHTML.match(/lightblue/i)){
-                        if(rfp_option.innerHTML.match(/lightblue/i) || rfp_two_option.innerHTML.match(/lightblue/i)){
-                            messageCover.style = "display: inline;";
-                            messageDiv.style = "display: inline;";
-                            return;
-                        }
+                reason_for_no_selecting_3hp = [];
+    
+                /**
+                 * Prompt reason for not selecting 3HP 
+                 */
+                if (activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) > 20) {
+                    if ((is('IPT') || is('3HP (INH 300 / RFP 300)') || is('3HP (RFP + INH)')) 
+                        && (autoSelectMeds && !isChecked)) {
+                        alertReasonForNo3HP()
+                        return
                     }
-                }catch(e){
-                    console.log(e);
                 }
 
-                try {       
-                    if( rfp_option.innerHTML.match(/lightblue/i) && rfp_two_option.innerHTML.match(/lightblue/i) ){
-                        if(e.id == rfp_option.id){
-                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), rfp_two_option);
-                        }else{
-                            updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), rfp_option);
-                        }
-                    }
-                }catch(e){
-                    console.log(e);
-                }
-
-                //debugger
-
-                try {
-                    if(rfp_two_option.innerHTML.match(/lightblue/i) || rfp_option.innerHTML.match(/lightblue/i)){
-                        checkIfClientWantstogetPregnant();
-                    }
-                }catch(e){
-                    console.log(e);
-                }
-
-                validate3HPdeSelection();
             }
+
+            // function validateIPTRFP(e){
+            //     console.log(e.innerText)
+            //     var messageDiv = document.getElementById("ipt-rfp-popup-div");
+            //     var messageCover =  document.getElementById("lab-order-cover");
+
+            //     var select_options = document.getElementById("tt_currentUnorderedListOptions");
+            //     let options  = select_options.children;
+            //     let ipt_option;
+            //     let rfp_option;
+            //     let rfp_two_option;
+                
+            //     for(var i = 0; i < options.length; i++){
+            //         if(options[i].getAttribute("tstvalue") == "IPT"){
+            //             ipt_option = options[i];
+            //         }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
+            //             rfp_option = options[i];
+            //         }else if(options[i].getAttribute("tstvalue") == "3HP (INH 300 / RFP 300)"){
+            //             rfp_two_option = options[i];
+            //         }
+            //     } 
+
+            //     if(ipt_option == undefined || rfp_option == undefined || rfp_two_option == undefined)
+            //         return;
+
+            //     try {
+            //         if(ipt_option.innerHTML.match(/lightblue/i)){
+            //             if(rfp_option.innerHTML.match(/lightblue/i) || rfp_two_option.innerHTML.match(/lightblue/i)){
+            //                 messageCover.style = "display: inline;";
+            //                 messageDiv.style = "display: inline;";
+            //                 return;
+            //             }
+            //         }
+            //     }catch(e){
+            //         console.log(e);
+            //     }
+
+            //     try {       
+            //         if( rfp_option.innerHTML.match(/lightblue/i) && rfp_two_option.innerHTML.match(/lightblue/i) ){
+            //             if(e.id == rfp_option.id){
+            //                 updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), rfp_two_option);
+            //             }else{
+            //                 updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), rfp_option);
+            //             }
+            //         }
+            //     }catch(e){
+            //         console.log(e);
+            //     }
+
+            //     //debugger
+
+            //     try {
+            //         if(rfp_two_option.innerHTML.match(/lightblue/i) || rfp_option.innerHTML.match(/lightblue/i)){
+            //             checkIfClientWantstogetPregnant();
+            //         }
+            //     }catch(e){
+            //         console.log(e);
+            //     }
+            //     validate3HPdeSelection();
+            // }
 
             function checkIfClientWantstogetPregnant(){
                 var reason_for_not_using_fpm = "";
@@ -4749,12 +4830,15 @@
                 var options  = select_options.children;
                 var ipt_option;
                 var rfp_option;
+                var rfp_two_option
                 
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
                     }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
                         rfp_option = options[i];
+                    }else if(options[i].getAttribute("tstvalue") == "3HP (INH 300 / RFP 300)"){
+                        rfp_two_option = options[i];
                     }
                 } 
 
@@ -4762,7 +4846,12 @@
                     updateTouchscreenInputForSelect(__$('optionValue' + ipt_option.id), this); 
                     checkIfClientWantstogetPregnant();
                 }else{
-                    updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                    if (rfp_two_option.innerHTML.match(/lightblue/i)) {
+                        updateTouchscreenInputForSelect(__$('optionValue' + rfp_two_option.id), this); 
+                    }
+                    if (rfp_option.innerHTML.match(/lightblue/i)) {
+                        updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                    }
                 }
 
                 messageDiv.style = "display: none;";
