@@ -1071,15 +1071,123 @@ let drillDownHash = {};
 
 function drillDown(age, gender, col_name){
   if(col_name.match(/new/i)){
-    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_new.join(",")
+    fetchClients(drillDownHash[age][gender].tx_new);
   }else if(col_name.match(/curr/i)){
-    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_curr.join(",");
+    fetchClients(drillDownHash[age][gender].tx_curr);
   }else if(col_name.match(/tb/i)){
-    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_screened_for_tb.join(",");
+    fetchClients(drillDownHash[age][gender].tx_screened_for_tb);
   }else if(col_name.match(/ipt/i)){
-    sessionStorage.pepfarDrillDown = drillDownHash[age][gender].tx_given_ipt.join(",");
+    fetchClients(drillDownHash[age][gender].tx_given_ipt);
+  }
+}
+</script>
+
+
+
+<div id="drill-down-popup">
+  <table id="drill-down-clients">
+    <thead>
+      <tr>
+        <th>ARV number</th>
+        <th>Gender</th>
+        <th>Birth Date</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+  </table>
+
+  <div class="buttonsDiv" style="top: 615px !important; width: 95.7%;">
+    <button class="button blue navButton" onmousedown="javascript:hideDrillDownPopup();"><span>Close</span></button>
+  </div>
+</div>
+
+
+<style>
+
+  #drill-down-clients {
+    width: 90% !important; 
+    padding: 0px 10 0px 10px;
   }
 
-  window.location = "pepfar_drill_down.html";
-}
+  #drill-down-popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 991; /* Sit on top */
+    padding-top: 20px; /* Location of the box */
+    left: 15;
+    top: 15;
+    width: 97.5%; /* Full width */
+    height: 90%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: white; /* Fallback color */
+    /*background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-left: 10px;
+  }
+
+</style>
+
+<script>
+
+  var data_table_clients;
+
+  function fetchClients(patient_ids) {
+
+    document.getElementById("report-cover").style ="display: inline;";
+    document.getElementById("drill-down-popup").style = "display: inline;";
+    
+    if(data_table_clients == undefined) {
+      data_table_clients = $('#drill-down-clients').DataTable({
+        fixedHeader: true,
+        searching: false,
+        paging: false,
+        scrollY: 400,
+        Processing: true,
+        ServerSide: true,
+        scroller: {
+          loadingIndicator: true
+        },
+        columnDefs: [
+          {"className": "dt-numbers", "targets": 0}
+        ]
+      });
+    }
+    getClients(patient_ids, data_table_clients);
+  }
+ 
+  function getClients(patient_ids, data_table_clients) {
+    var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+    url += `/clients?person_ids=${patient_ids.join(",")}`;
+    sessionStorage.removeItem("pepfarDrillDown");
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+        const obj = JSON.parse(this.responseText);
+        for(const p of obj){
+          data_table_clients.row.add([p.identifier, p.gender, p.birthdate, showBTN(p.person_id)]).draw();
+        }
+      }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send();
+  }
+
+  function showBTN(person_id){
+    const set_uri = "/views/patient_dashboard.html?patient_id=" +  person_id;
+    let span = document.createElement("span");
+    let btn = document.createElement("button");
+    btn.setAttribute("class", "button green navButton");
+    btn.innerHTML = "<span>Show</span>";
+    btn.setAttribute("onmousedown", "location='" + set_uri + "'");
+    span.appendChild(btn);
+    return span.innerHTML;
+  }
+
+  function hideDrillDownPopup(){
+    document.getElementById("report-cover").style ="display: none;";
+    document.getElementById("drill-down-popup").style = "display: none;";
+    data_table_clients.clear().draw();
+  }
 </script>
