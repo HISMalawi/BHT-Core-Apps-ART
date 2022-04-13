@@ -1135,22 +1135,9 @@ function drillDown(age, gender, col_name){
     document.getElementById("report-cover").style ="display: inline;";
     document.getElementById("drill-down-popup").style = "display: inline;";
     
-    if(data_table_clients == undefined) {
-      data_table_clients = $('#drill-down-clients').DataTable({
-        fixedHeader: true,
-        searching: false,
-        paging: false,
-        scrollY: 400,
-        Processing: true,
-        ServerSide: true,
-        scroller: {
-          loadingIndicator: true
-        },
-        columnDefs: [
-          {"className": "dt-numbers", "targets": 0}
-        ]
-      });
-    }
+    if(data_table_clients == undefined)
+      destroyCreate([]);
+    
     getClients(patient_ids, data_table_clients);
   }
  
@@ -1158,14 +1145,19 @@ function drillDown(age, gender, col_name){
     var url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
     url += `/clients?person_ids=${patient_ids.join(",")}`;
     sessionStorage.removeItem("pepfarDrillDown");
+    let clients = [];
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
         const obj = JSON.parse(this.responseText);
         for(const p of obj){
-          data_table_clients.row.add([p.identifier, p.gender, p.birthdate, showBTN(p.person_id)]).draw();
+          clients.push([p.identifier, p.gender, p.birthdate, showBTN(p.person_id)]);
         }
+
+        if(clients.length > 0)
+          destroyCreate(clients);
+
       }
     };
     xhttp.open("GET", url, true);
@@ -1189,5 +1181,26 @@ function drillDown(age, gender, col_name){
     document.getElementById("report-cover").style ="display: none;";
     document.getElementById("drill-down-popup").style = "display: none;";
     data_table_clients.clear().draw();
+  }
+
+  function destroyCreate(data){
+    if(data_table_clients != undefined)
+      data_table_clients.destroy();
+
+    data_table_clients = $('#drill-down-clients').DataTable({
+        fixedHeader: true,
+        searching: false,
+        paging: false,
+        scrollY: 400,
+        Processing: true,
+        ServerSide: true,
+        data: data,
+        scroller: {
+          loadingIndicator: true
+        },
+        columnDefs: [
+          {"className": "dt-numbers", "targets": 0}
+        ]
+      });
   }
 </script>
