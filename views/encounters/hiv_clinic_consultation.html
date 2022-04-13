@@ -4753,7 +4753,7 @@
                 for(var i = 0; i < options.length; i++){
                     if(options[i].getAttribute("tstvalue") == "IPT"){
                         ipt_option = options[i];
-                    }else if(options[i].getAttribute("tstvalue") == "3HP (RFP + INH)"){
+                    }else if(options[i].getAttribute("tstvalue").match(/3HP/i)){
                         rfp_option = options[i];
                     }
                 } 
@@ -4762,7 +4762,13 @@
                     updateTouchscreenInputForSelect(__$('optionValue' + ipt_option.id), this); 
                     checkIfClientWantstogetPregnant();
                 }else{
-                    updateTouchscreenInputForSelect(__$('optionValue' + rfp_option.id), this); 
+                    for(const opt of options){
+                        if(opt.innerHTML.match(/lightblue/i) && opt.getAttribute("tstvalue").match(/3HP|IPT/i))
+                            updateTouchscreenInputForSelect(__$('optionValue' + opt.id), this); 
+
+                    }
+                
+                    updateTouchscreenInputForSelect(__$('optionValue' + ipt_option.id), this); 
                 }
 
                 messageDiv.style = "display: none;";
