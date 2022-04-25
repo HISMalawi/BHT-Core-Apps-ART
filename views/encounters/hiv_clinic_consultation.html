@@ -2658,6 +2658,7 @@
             }
 
             function setNextButtonToGetInputValue(key) {
+                console.log(key)
                 __$('nextButton').onmousedown = function () {
                     value = __$('touchscreenInput' + tstCurrentPage).value;
                     answers_hash[key] = value;
@@ -4544,7 +4545,7 @@
                     if(tpt_history.match(/complete/i))
                         tpt_history_string = `<span style="font-size:20px;">${tpt_history}</span>`;
                     
-                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history_string ||= tb_status})</span>`;
+                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
                     ipt_option_input.onclick = null;
                     ipt_option_input.onmousedown = null;
                     ipt_option_input.onmouseup = null;
@@ -4553,7 +4554,7 @@
                     img_input.src = '';
                     img_input.alt = '';
                     
-                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history_string ||= tb_status})</span>`;
+                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
                     rfp_option_input.onclick = null;
                     rfp_option_input.onmousedown = null;
                     rfp_option_input.onmouseup = null;
@@ -4562,7 +4563,7 @@
                     img_input.src = '';
                     img_input.alt = '';
 
-                    rfp_option_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history_string ||= tb_status})</span>`;
+                    rfp_option_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
                     rfp_option_two_input.onclick = null;
                     rfp_option_two_input.onmousedown = null;
                     rfp_option_two_input.onmouseup = null;
