@@ -181,7 +181,7 @@
 
     getVisits();
     var encounter_date = moment(new Date()).format("YYYY-MM-DD");
-    submitParameters(stats, "/reports/encounters?date=" + encounter_date, "renderStats");
+    submitParameters(stats, `/reports/encounters?date=${encounter_date}&program_id=${sessionStorage.programID}`, "renderStats");
 
     try {
         var cover = document.getElementById('submit-cover');
@@ -263,7 +263,7 @@
 
     function getUserStats() {
         var stats = {encounter_types: [6, 7, 51, 52, 53, 68, 9, 25, 54]};
-        var session_stats_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/reports/encounters?date=" + encounter_date;
+        var session_stats_url = apiProtocol + "://" + apiURL + ":" + apiPort + `/api/v1/reports/encounters?date=${encounter_date}&program_id=${sessionStorage.programID}`;
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
