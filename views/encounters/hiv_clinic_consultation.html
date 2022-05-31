@@ -2995,9 +2995,7 @@
 
             <input allowFreeText="false" id="breastfeeding" name="observations[][value_coded_or_text]" type="hidden"
             condition=""/>
-
-
-
+    
             <select allowFreeText="false" helpText="Medication to prescribe during this visit" id="med_to_prescribe"
             name="observations[][value_coded_or_text]"
             condition="guardianOnly === true || sessionStorage.patient_type === 'Drug refill'"
@@ -4407,27 +4405,75 @@
 
             }
 
+            /*
+             * unchecks and disables touchscreen selection option 
+            */
+            function tt_unselect_and_disable_option(targetValue, description='', options={}) {
+                // we need a reference to the Input Element of the current page inorder to update 
+                // the select element's stored value.
+                var tstInput = document.getElementById('touchscreenInput' + tstCurrentPage)
+                var values = tstInput.value.split(';')
+
+                if (values.includes(targetValue)) {
+                    //Remove the value we want to unselect from the Input Element reference
+                    tstInput.value = values.filter(function(value) { 
+                        return value != targetValue; 
+                    }).join(';');
+                }
+                try {
+                    // Get the targeValue's DOM element and clear traces of value selection
+                    var el = jQuery("[tstvalue='" + targetValue + "']")[0];
+                    el.removeAttribute("onmousedown");
+                    el.removeAttribute('onclick');
+                    el.removeAttribute("onmouseup");
+                    img_input = el.getElementsByTagName("img")[0];
+                    img_input.src = '';
+                    img_input.alt = '';
+                    if (typeof options.bgColor === 'string') {
+                        el.style.backgroundColor = options.bgColor;
+                    }
+                    if (description)  {
+                        document.getElementById('optionValue' + el.id).innerHTML = "<span class='disabled_check'>" + targetValue + " " + description + "</span>";
+                    }
+                } catch (e) {
+                    console.error(e)
+                }
+            }
+
+            var three_hp_auto_selection_done = false
+
             function controlCPTIPTOptions() {
-                validateMedicationToprescribe();
-                set3HPvalidation();
+                let can_auto_select_3hp = true
+                try {
+                    can_auto_select_3hp = validateMedicationToprescribe();
+                    set3HPvalidation();
+                } catch (e) {
+                    console.error(e)
+                }
+                // initialise auto selection only once
+                if (!three_hp_auto_selection_done && can_auto_select_3hp) {
+                    three_hp_auto_selection_done = true
+                    setTimeout(autoSelectMedication, 100)
+                }
             }
 
             function validateMedicationToprescribe() {
-                var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
-                var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
-                var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
-                var rfp_option_two_input = jQuery("[tstvalue='3HP (INH 300 / RFP 300)']")[0];
+                var ok = true;
+                // var ipt_option_input = jQuery("[tstvalue='IPT']")[0];
+                // var cpt_option_input = jQuery("[tstvalue='CPT']")[0];
+                // var rfp_option_input = jQuery("[tstvalue='3HP (RFP + INH)']")[0];
+                // var rfp_option_two_input = jQuery("[tstvalue='3HP (INH 300 / RFP 300)']")[0];
 
-                var ipt_id = ipt_option_input.id;
-                var cpt_id = cpt_option_input.id;
-                var rfp_id = rfp_option_input.id;
-                var rfp_two_id = rfp_option_two_input.id;
+                // var ipt_id = ipt_option_input.id;
+                // var cpt_id = cpt_option_input.id;
+                // var rfp_id = rfp_option_input.id;
+                // var rfp_two_id = rfp_option_two_input.id;
 
                 
-                var ipt_input = document.getElementById('optionValue' + ipt_id);
-                var cpt_input = document.getElementById('optionValue' + cpt_id);
-                var rfp_input = document.getElementById('optionValue' + rfp_id);
-                var rfp_two_input = document.getElementById('optionValue' + rfp_two_id);
+                // var ipt_input = document.getElementById('optionValue' + ipt_id);
+                // var cpt_input = document.getElementById('optionValue' + cpt_id);
+                // var rfp_input = document.getElementById('optionValue' + rfp_id);
+                // var rfp_two_input = document.getElementById('optionValue' + rfp_two_id);
                 
                 var tb_treatment__status = __$('tb_treatment_question').value.toUpperCase();
                 var tb_status = __$('tb_status').value.toUpperCase();
@@ -4441,136 +4487,153 @@
                 }
 
                 if (parseFloat(sessionStorage.currentWeight) < 20) {
-                    
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (WEIGHT BELOW REGULATION)</span>";
-                    rfp_option_input.removeAttribute('onclick');
-                    rfp_option_input.setAttribute("onmousedown", "");
-                    rfp_option_input.removeAttribute("onmouseup");
+                    tt_unselect_and_disable_option('3HP (RFP + INH)', '(WEIGHT BELOW REGULATION)')
+                    ok = false;
+                    // rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (WEIGHT BELOW REGULATION)</span>";
+                    // rfp_option_input.removeAttribute('onclick');
+                    // rfp_option_input.setAttribute("onmousedown", "");
+                    // rfp_option_input.removeAttribute("onmouseup");
 
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
                 if (parseFloat(sessionStorage.currentWeight) < 25) {
-                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (WEIGHT BELOW REGULATION)</span>";
-                    rfp_option_two_input.onclick = null;
-                    //rfp_option_two_input.onmousedown = null;
-                    rfp_option_two_input.setAttribute("onmousedown", "");
+                    tt_unselect_and_disable_option('3HP (INH 300 / RFP 300)', '(WEIGHT BELOW REGULATION)');
+                    ok = false;
+                    // rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (WEIGHT BELOW REGULATION)</span>";
+                    // rfp_option_two_input.onclick = null;
+                    // //rfp_option_two_input.onmousedown = null;
+                    // rfp_option_two_input.setAttribute("onmousedown", "");
 
-                    rfp_option_two_input.onmouseup = null;
+                    // rfp_option_two_input.onmouseup = null;
 
-                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
                 if (allergicToSulphur.toUpperCase() == 'YES') {
+                    tt_unselect_and_disable_option('CPT', '(Allergic)', { bgColor: '#CDBA96' });
+                    ok = false;
                     //cpt_option_input.style.backgroundColor = '#CDBA96';
-                    cpt_input.innerHTML = "<span class='disabled_check'>CPT (Allergic)</span>";
-                    cpt_option_input.onclick = null;
-                    cpt_option_input.onmousedown = null;
-                    cpt_option_input.onmouseup = null;
+                    // cpt_input.innerHTML = "<span class='disabled_check'>CPT (Allergic)</span>";
+                    // cpt_option_input.onclick = null;
+                    // cpt_option_input.onmousedown = null;
+                    // cpt_option_input.onmouseup = null;
 
-                    img_input = cpt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = cpt_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
                 if (tb_treatment__status == 'YES') {
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (TB SUSPECTED)</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
+                    tt_unselect_and_disable_option('IPT', '(TB SUSPECTED)');
+                    tt_unselect_and_disable_option('3HP (RFP + INH)', '(TB SUSPECTED)');
+                    tt_unselect_and_disable_option('3HP (INH 300 / RFP 300)', '(TB SUSPECTED)');
+                    ok = false;
+                    // ipt_input.innerHTML = "<span class='disabled_check'>IPT (TB SUSPECTED)</span>";
+                    // ipt_option_input.onclick = null;
+                    // ipt_option_input.onmousedown = null;
+                    // ipt_option_input.onmouseup = null;
 
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TB SUSPECTED)</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
+                    // rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (TB SUSPECTED)</span>";
+                    // rfp_option_input.onclick = null;
+                    // rfp_option_input.onmousedown = null;
+                    // rfp_option_input.onmouseup = null;
 
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                     
-                    rfp_option_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TB SUSPECTED)</span>";
-                    rfp_option_two_input.onclick = null;
-                    rfp_option_two_input.onmousedown = null;
-                    rfp_option_two_input.onmouseup = null;
+                    // rfp_option_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (TB SUSPECTED)</span>";
+                    // rfp_option_two_input.onclick = null;
+                    // rfp_option_two_input.onmousedown = null;
+                    // rfp_option_two_input.onmouseup = null;
 
-                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
-
+                    // img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
                 var tpt_side_effect_found = three3HPsideEffectsFound(); 
 
-                if(tpt_side_effect_found){ 
-                    ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
+                if(tpt_side_effect_found) {
+                    var contraindications_txt = "(Contraindications: " +  display3HPsideEffects().join(", ")  + ")";
+                    tt_unselect_and_disable_option('IPT', contraindications_txt);
+                    tt_unselect_and_disable_option('3HP (RFP + INH)', contraindications_txt);
+                    tt_unselect_and_disable_option('3HP (INH 300 / RFP 300)', contraindications_txt);
+                    ok = false;
 
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // ipt_input.innerHTML = "<span class='disabled_check'>IPT (Contraindications: " +  display3HPsideEffects().join(", ")  + ")</span>";
+                    // ipt_option_input.onclick = null;
+                    // ipt_option_input.onmousedown = null;
+                    // ipt_option_input.onmouseup = null;
+
+                    // img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                     
-                    rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
+                    // rfp_input.innerHTML = "<span class='disabled_check'>3HP (RFP + INH) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
+                    // rfp_option_input.onclick = null;
+                    // rfp_option_input.onmousedown = null;
+                    // rfp_option_input.onmouseup = null;
 
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
 
-                    rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
-                    rfp_option_two_input.onclick = null;
-                    rfp_option_two_input.onmousedown = null;
-                    rfp_option_two_input.onmouseup = null;
+                    // rfp_two_input.innerHTML = "<span class='disabled_check'>3HP (INH 300 / RFP 300) (Contraindications: "  +  display3HPsideEffects().join(", ")  + ")</span>";
+                    // rfp_option_two_input.onclick = null;
+                    // rfp_option_two_input.onmousedown = null;
+                    // rfp_option_two_input.onmouseup = null;
 
-                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
                 if (tb_status.match(/TB SUSPECTED|CONFIRMED TB NOT ON TREATMENT|CONFIRMED TB ON TREATMENT/i) 
                     || tpt_history.match(/complete/i)) {
-                    
                     let tpt_history_string = "";
                     if(tpt_history.match(/complete/i))
                         tpt_history_string = `<span style="font-size:20px;">${tpt_history}</span>`;
                     
-                    ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
-                    ipt_option_input.onclick = null;
-                    ipt_option_input.onmousedown = null;
-                    ipt_option_input.onmouseup = null;
+                    tt_unselect_and_disable_option('IPT', `${tpt_history_string || (tpt_history_string = tb_status)}`);
+                    tt_unselect_and_disable_option('3HP (RFP + INH)', `${tpt_history_string || (tpt_history_string = tb_status)}`);
+                    tt_unselect_and_disable_option('3HP (INH 300 / RFP 300)', `${tpt_history_string || (tpt_history_string = tb_status)}`);
+                    ok = false;
+                    // ipt_input.innerHTML = `<span class='disabled_check'>IPT (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
+                    // ipt_option_input.onclick = null;
+                    // ipt_option_input.onmousedown = null;
+                    // ipt_option_input.onmouseup = null;
 
-                    img_input = ipt_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = ipt_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                     
-                    rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
-                    rfp_option_input.onclick = null;
-                    rfp_option_input.onmousedown = null;
-                    rfp_option_input.onmouseup = null;
+                    // rfp_input.innerHTML = `<span class='disabled_check'>3HP (RFP + INH) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
+                    // rfp_option_input.onclick = null;
+                    // rfp_option_input.onmousedown = null;
+                    // rfp_option_input.onmouseup = null;
 
-                    img_input = rfp_option_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
 
-                    rfp_option_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
-                    rfp_option_two_input.onclick = null;
-                    rfp_option_two_input.onmousedown = null;
-                    rfp_option_two_input.onmouseup = null;
+                    // rfp_option_two_input.innerHTML = `<span class='disabled_check'>3HP (INH 300 / RFP 300) (${tpt_history_string || (tpt_history_string = tb_status)})</span>`;
+                    // rfp_option_two_input.onclick = null;
+                    // rfp_option_two_input.onmousedown = null;
+                    // rfp_option_two_input.onmouseup = null;
 
-                    img_input = rfp_option_two_input.getElementsByTagName("img")[0];
-                    img_input.src = '';
-                    img_input.alt = '';
+                    // img_input = rfp_option_two_input.getElementsByTagName("img")[0];
+                    // img_input.src = '';
+                    // img_input.alt = '';
                 }
 
 
@@ -4585,11 +4648,9 @@
                         if(pastTPTdispensation["Isoniazid"] >= 36 && pastTPTdispensation["Rifapentine"] >= 72)
                             ever_completed_tb_therapy = true;
 
-                    }
-                        
-                    
+                    }                    
                 }
-
+                return ok
             }
 
             function addChangeAllergicToCPTValue() {
@@ -4620,27 +4681,28 @@
             }
 
 
-
-
             //will  move to a  new file  later.
             function set3HPvalidation(){
                 var select_options = document.getElementById("tt_currentUnorderedListOptions");
                 var options  = select_options.children;
-                
-                for(var i = 0; i < options.length; i++){
+                for(var i = 0; i < options.length; i++){ 
                     if(options[i].getAttribute("tstvalue") == "IPT" || options[i].getAttribute("tstvalue").match(/3HP/i)){
-                        if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
+                        if (options[i].innerHTML.match(/TB|TPT|Contrain|REGULATION|Complete/i)) {
                             options[i].setAttribute("onmousedown", "");
                             options[i].setAttribute("onclick", "");
                             continue;
                         }
+                        // if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/REGULATION/i)){
+                        //     options[i].setAttribute("onmousedown", "");
+                        //     options[i].setAttribute("onclick", "");
+                        //     continue;
+                        // }
                         var onclick_values = "null; updateTouchscreenInputForSelect(__$('optionValue' + this.id), this); validateIPTRFP(this);";
                         options[i].setAttribute("onmousedown", onclick_values);
                         options[i].setAttribute("onclick", "");
                     }
-                } 
-
-                setTimeout(autoselectmedication, 100);
+                }
+                // setTimeout(autoSelectMedication, 100);
             }
 
             function validateIPTRFP(e){

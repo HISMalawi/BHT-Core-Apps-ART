@@ -154,13 +154,12 @@ function autoSelectMedication(){
   var auto_select = true;
                 
   for(var i = 0; i < options.length; i++){
-      if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
-        || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)
-         || options[i].innerHTML.match(/complete/i)){
+    if(options[i].innerHTML.match(/TB /i) || options[i].innerHTML.match(/TPT /i) 
+      || options[i].innerHTML.match(/Contrain/i) || options[i].innerHTML.match(/Aller/i)
+        || options[i].innerHTML.match(/complete/i)){
         auto_select = false;
-      }
-  } 
-
+    }
+  }
   if(auto_select == true){
     for(var i = 0; i < options.length; i++){
       var reason_for_not_using_fpm = "";
@@ -173,12 +172,11 @@ function autoSelectMedication(){
 
       }catch(e){
       }
-
-      if(!options[i].innerHTML.match(/lightblue/i))
+      if(!options[i].innerHTML.match(/lightblue/i) && options[i].innerText.match(/ARV|CPT|RFP 300/i))
         updateTouchscreenInputForSelect(__$('optionValue' + options[i].id), options[i]); 
 
-      if(i == 2)
-        break;
+      // if(i == 2)
+      //   break;
 
     }
   }else{
@@ -231,7 +229,6 @@ function set3HPdisplay(){
 }
 
 function validate3HPdeSelection(){
-  
   if(!activate_3HP_auto_select || parseFloat(sessionStorage.currentWeight) < 20)
     return;
 
